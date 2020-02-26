@@ -87,3 +87,8 @@ local_settings.py
 
 .env
 db.sqlite3
+servidor/Scripts/
+
+*.cfg
+
+servidor/servidor/settings.py
