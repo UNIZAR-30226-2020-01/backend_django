@@ -42,7 +42,7 @@ CREATE TABLE "tipo_album"
 (
  "id"   integer NOT NULL,
  "tipo" varchar(10) NOT NULL,
- CONSTRAINT "PK_tipo_audio" PRIMARY KEY ( "id" )
+ CONSTRAINT "PK_tipo_album" PRIMARY KEY ( "id" )
 );
 
 
