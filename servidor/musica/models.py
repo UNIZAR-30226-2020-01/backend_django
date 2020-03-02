@@ -9,7 +9,7 @@ from django.db import models
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from utils.lyrics import Lyrics_api
+from utils.lyrics.lyrics import Lyrics_api
 
 
 

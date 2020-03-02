@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '&af@4k@!tkthx2k_7g3j=cs_l%jf4x+&*6kqbpi6@&i+708v9!'
 
 # Contraseña de la bd en una variable de entorno:
-PASSWORD_POSTGRESQL = get_env_variable('PASSWORD_POSTGRESQL')
+PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
