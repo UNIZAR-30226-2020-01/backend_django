@@ -2,7 +2,7 @@
 language: python
 
 python:
-  - "3.4"
+  #- "3.4"
   - "3.7"
 
 # usamos postgres
@@ -15,12 +15,12 @@ env:
     - PIP_USE_MIRRORS=true
     - BUILD_ON_TRAVIS=true
   matrix:
-    - DJANGO=1.7 DB=postgres
+    - DB=postgres
 
 #commands to install dependencies
 install:
 #- pip install -q Django==$DJANGO
-  - pip install -q -r requirements.txt
+  - pip install -q -r servidor/requirements.txt
 
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
@@ -28,4 +28,6 @@ before_script:
 
 #command to run the test suite
 script:
-  - python manage.py test
+  - pwd
+  - ls
+  - python servidor/manage.py test
