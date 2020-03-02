@@ -98,21 +98,39 @@ WSGI_APPLICATION = 'servidor.wsgi.application'
 # password = lQ9n_mpqPGxX5TumMLOWA62notw2MmJB
 # default-character-set = utf8
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST' : 'kandula.db.elephantsql.com',
-        'NAME' : 'ghjcpmoz',
-        'DATABASE' : 'ghjcpmoz',
-        'PORT' : '5432',
-        'USER' : 'ghjcpmoz',
-        'PASSWORD' : PASSWORD_POSTGRESQL,
-        'CHARSET' : 'utf8',
-        # 'OPTIONS': {
-        #     'read_default_file': os.path.join(BASE_DIR, r'servidor\postgresql.cnf'),
-        # },
-    },
-}
+
+# Para travis:
+if os.getenv('TRAVIS', None):
+    DEBUG = False
+    TEMPLATE_DEBUG = True
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'travis_ci_test',
+            'USER': 'travis',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+            'CHARSET' : 'utf8',
+        }
+    }
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST' : 'kandula.db.elephantsql.com',
+            'NAME' : 'ghjcpmoz',
+            'DATABASE' : 'ghjcpmoz',
+            'PORT' : '5432',
+            'USER' : 'ghjcpmoz',
+            'PASSWORD' : PASSWORD_POSTGRESQL,
+            'CHARSET' : 'utf8',
+            # 'OPTIONS': {
+            #     'read_default_file': os.path.join(BASE_DIR, r'servidor\postgresql.cnf'),
+            # },
+        },
+    }
 
 
 

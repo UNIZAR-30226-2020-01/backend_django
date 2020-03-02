@@ -13,7 +13,7 @@ env:
     - DJANGO_SETTINGS_MODULE="servidor.settings"
     - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django/servidor"
     - PIP_USE_MIRRORS=true
-    - BUILD_ON_TRAVIS=true
+    #- BUILD_ON_TRAVIS=true # ya no es necesaria, por defecto tenemos TRAVIS=true
   matrix:
     - DB=postgres
 
@@ -28,6 +28,4 @@ before_script:
 
 #command to run the test suite
 script:
-  - pwd
-  - ls
   - python servidor/manage.py test
