@@ -35,7 +35,7 @@ class Spotisearcher:
         return albums
 
 
-#spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+# programa de prueba:
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         name = ' '.join(sys.argv[1:])
