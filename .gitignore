@@ -94,3 +94,5 @@ servidor/Scripts/
 servidor/servidor/settings.py
 
 servidor/musica/migrations/
+
+servidor/utils/spotify_credentials.py

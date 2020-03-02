@@ -42,7 +42,7 @@ class Audio(models.Model):
     titulo = models.CharField(max_length=100)
     archivo = models.FileField()
     pista = models.IntegerField()
-    letra = models.CharField(max_length=5000) # esto es muy a ojo
+    letra = models.TextField(blank=True) 
     album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album')
     tipo = models.ForeignKey('TipoAudio', models.DO_NOTHING, db_column='tipo')
 
@@ -71,7 +71,7 @@ class Audio(models.Model):
             m.save()
         return m
 
-
+    # Version anterior, usando señales (la dejo por si nos es util mas tarde)
     # @receiver(post_save, sender=Audio)
     # def buscar_letra(sender, **kwargs):
     #     es_cancion = True # esto habra que cambiarlo
