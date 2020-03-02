@@ -2,7 +2,11 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from utils.secret.set_credentials import the_secret_function
+try:
+    from utils.secret.set_credentials import the_secret_function
+except ImportError: # Travis
+    pass
+
 
 def main():
     if not os.getenv('TRAVIS', None):
