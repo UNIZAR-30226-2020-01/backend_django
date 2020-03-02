@@ -1,0 +1,31 @@
+# fuente original: https://www.lesinskis.com/travis_ci_django.html
+language: python
+
+python:
+  - "3.4"
+  - "3.7"
+
+# usamos postgres
+services: psql
+
+env:
+  global:
+    - DJANGO_SETTINGS_MODULE="servidor.settings"
+    - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django"
+    - PIP_USE_MIRRORS=true
+    - BUILD_ON_TRAVIS=true
+  matrix:
+    - DJANGO=1.7 DB=postgres
+
+#commands to install dependencies
+install:
+#- pip install -q Django==$DJANGO
+  - pip install -q -r requirements.txt
+
+before_script:
+  - psql -e 'create database travis_ci_db;'
+  - python manage.py migrate --noinput
+
+#command to run the test suite
+script:
+  - python manage.py test
