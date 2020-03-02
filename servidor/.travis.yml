@@ -28,4 +28,6 @@ before_script:
 
 #command to run the test suite
 script:
+  - pwd
+  - ls
   - python servidor/manage.py test
