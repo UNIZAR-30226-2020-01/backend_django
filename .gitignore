@@ -91,7 +91,7 @@ servidor/Scripts/
 
 *.cfg
 
-servidor/servidor/settings.py
+# servidor/servidor/settings.py
 
 servidor/musica/migrations/
 
