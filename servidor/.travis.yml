@@ -6,7 +6,7 @@ python:
   - "3.7"
 
 # usamos postgres
-services: psql
+services: postgresql
 
 env:
   global:
@@ -23,7 +23,7 @@ install:
   - pip install -q -r requirements.txt
 
 before_script:
-  - psql -e 'create database travis_ci_db;'
+  - psql -c 'create database travis_ci_test;' -U postgres
   - python manage.py migrate --noinput
 
 #command to run the test suite
