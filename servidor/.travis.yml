@@ -11,7 +11,7 @@ services: postgresql
 env:
   global:
     - DJANGO_SETTINGS_MODULE="servidor.settings"
-    - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django"
+    - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django/servidor"
     - PIP_USE_MIRRORS=true
     - BUILD_ON_TRAVIS=true
   matrix:
