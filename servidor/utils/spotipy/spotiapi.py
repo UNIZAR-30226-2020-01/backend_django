@@ -6,8 +6,9 @@ from spotipy.oauth2 import SpotifyClientCredentials
 
 # usamos spotipy, la librería que adapta la api de spotify a python: https://github.com/plamere/spotipy
 class Spotisearcher:
+    # necesitamos tener las credenciales en las variables de entorno antes de llamar a esta funcion (ejecutando set_credentials.py)
     def __init__(self):
-        the_secret_function() # credenciales
+        # the_secret_function() # credenciales
         # podriamos usar herencia, de momento asi vale:
         self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 

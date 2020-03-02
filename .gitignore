@@ -98,3 +98,5 @@ servidor/musica/migrations/
 servidor/utils/spotify_credentials.py
 
 servidor/utils/spotipy/spotify_credentials.py
+
+servidor/utils/secret/set_credentials.py

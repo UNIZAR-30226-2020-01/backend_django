@@ -2,9 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from utils.secret.set_credentials import the_secret_function
 
 def main():
+    the_secret_function() # sets our top secret environment variables
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'servidor.settings')
     try:
         from django.core.management import execute_from_command_line

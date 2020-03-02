@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'servidor.wsgi.application'
 # default-character-set = utf8
 
 
-# Para travis:
+# Para travis (cuando hace la build travis, pone la variable de entorno TRAVIS=true) y usamos una bd en localhost:
 if os.getenv('TRAVIS', None):
     DEBUG = False
     TEMPLATE_DEBUG = True
@@ -115,6 +115,7 @@ if os.getenv('TRAVIS', None):
         }
     }
 
+
 else:
     DATABASES = {
         'default': {
@@ -126,9 +127,6 @@ else:
             'USER' : 'ghjcpmoz',
             'PASSWORD' : PASSWORD_POSTGRESQL,
             'CHARSET' : 'utf8',
-            # 'OPTIONS': {
-            #     'read_default_file': os.path.join(BASE_DIR, r'servidor\postgresql.cnf'),
-            # },
         },
     }
 
