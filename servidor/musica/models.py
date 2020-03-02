@@ -42,7 +42,7 @@ class Audio(models.Model):
     titulo = models.CharField(max_length=100)
     archivo = models.FileField()
     pista = models.IntegerField()
-    letra = models.TextField(blank=True) 
+    letra = models.TextField(blank=True)
     album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album')
     tipo = models.ForeignKey('TipoAudio', models.DO_NOTHING, db_column='tipo')
 
@@ -52,10 +52,10 @@ class Audio(models.Model):
         if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
             api = Lyrics_api()
             letra = api.get_lyrics(self.titulo, self.artista)
-            print(letra)
+            #print(letra)
             if letra != '':
                 self.letra = letra
-            else:
+            else: # revisar
                 exit(1)
 
         # if self.initial.get('account', None):
@@ -63,12 +63,12 @@ class Audio(models.Model):
 
 
     def save(self, force_insert=False, force_update=False, commit=True):
-        m = super(Audio, self).save(commit=False)
+        m = super(Audio, self).save()#commit=False)
 
         # my custom code was here
 
-        if commit:
-            m.save()
+        # if commit:
+        #     m.save()
         return m
 
     # Version anterior, usando señales (la dejo por si nos es util mas tarde)

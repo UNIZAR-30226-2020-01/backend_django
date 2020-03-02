@@ -12,7 +12,7 @@ class Lyrics_api:
         # print(uri)
         response = requests.get(uri)
         if response.status_code != 200: # arreglar esto que esta feo
-            return 'error: ' + response.status_code
+            return 'These lyrics are not available (error: ' + str(response.status_code) + ')'
         #print(response.text)
         return response.json()[self.lyrics_key]
 
