@@ -5,7 +5,7 @@ import sys
 from utils.secret.set_credentials import the_secret_function
 
 def main():
-    if !os.getenv('TRAVIS', None):
+    if not os.getenv('TRAVIS', None):
         the_secret_function() # sets our top secret environment variables
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'servidor.settings')
     try:
