@@ -3,13 +3,18 @@ import sys
 from spotify_credentials import the_secret_function
 from spotipy.oauth2 import SpotifyClientCredentials
 
-the_secret_function()
 
+# usamos spotipy, la librería que adapta la api de spotify a python: https://github.com/plamere/spotipy
 class Spotisearcher:
     def __init__(self):
         the_secret_function() # credenciales
+        # podriamos usar herencia, de momento asi vale:
         self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
+    # las siguientes dos funciones estan basadas en ejemplos de la documentacion de spotipy:
+    # https://spotipy.readthedocs.io/en/2.9.0/
+
+    # devuelve la uri de spotify del artista de nombre 'name'
     def get_artist_uri(self, name):
         results = self.sp.search(q='artist:' + name, type='artist')
         items = results['artists']['items']
@@ -20,6 +25,7 @@ class Spotisearcher:
         else:
             return 'spotify uri unknown'
 
+    # devuelve la lista de albumes del artista con uri artist_uri
     def list_albums(self, artist_uri):
         results = self.sp.artist_albums(artist_uri, album_type='album')
         albums = results['items']
