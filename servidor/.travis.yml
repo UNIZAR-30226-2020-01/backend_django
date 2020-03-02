@@ -2,7 +2,7 @@
 language: python
 
 python:
-  - "3.4"
+  #- "3.4"
   - "3.7"
 
 # usamos postgres
@@ -28,4 +28,4 @@ before_script:
 
 #command to run the test suite
 script:
-  - python manage.py test
+  - python servidor/manage.py test
