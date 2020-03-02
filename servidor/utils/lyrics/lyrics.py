@@ -19,7 +19,6 @@ class Lyrics_api:
 
 
 
-
 if __name__ == '__main__': # para probarlo
     ly = Lyrics_api()
     #thelyrics = ly.get_lyrics('verguenza', 'ska-p')#'california dreamin', 'the mamas and the papas')
