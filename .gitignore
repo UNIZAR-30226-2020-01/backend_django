@@ -91,11 +91,16 @@ servidor/Scripts/
 
 *.cfg
 
-servidor/servidor/settings.py
+# servidor/servidor/settings.py
 
 servidor/musica/migrations/
 
 servidor/utils/spotify_credentials.py
+
 servidor/bin/
 servidor/share/
 servidor/lib64
+
+servidor/utils/spotipy/spotify_credentials.py
+
+servidor/utils/secret/set_credentials.py
