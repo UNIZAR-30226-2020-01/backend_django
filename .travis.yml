@@ -1,4 +1,19 @@
 # fuente original: https://www.lesinskis.com/travis_ci_django.html
+
+# De la documentacion: https://docs.travis-ci.com/user/notifications/#configuring-email-notifications
+# Para cambiar opciones de email:
+# notifications:
+#   email:
+#     recipients:
+#       - one@example.com
+#       - other@example.com
+#     on_success: never # default: change
+#     on_failure: always # default: always
+#
+# # O hacer que nunca envie mails:
+# notifications:
+#   email: false
+
 language: python
 
 python:
