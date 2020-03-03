@@ -96,3 +96,6 @@ servidor/servidor/settings.py
 servidor/musica/migrations/
 
 servidor/utils/spotify_credentials.py
+servidor/bin/
+servidor/share/
+servidor/lib64

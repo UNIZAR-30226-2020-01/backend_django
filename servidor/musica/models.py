@@ -46,9 +46,17 @@ class Audio(models.Model):
     album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album')
     tipo = models.ForeignKey('TipoAudio', models.DO_NOTHING, db_column='tipo')
 
+    def is_song(self):
+        is_song = False
+        try:
+            is_song = self.tipo.get_tipo() == 'Cancion'
+        except TipoAudio.DoesNotExist:
+            pass
+        return is_song
+
     def __init__(self, *args, **kwargs):
         super(Audio, self).__init__(*args, **kwargs)
-        es_cancion = True # esto habra que cambiarlo
+        es_cancion = self.is_song() # esto habra que cambiarlo
         if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
             api = Lyrics_api()
             letra = api.get_lyrics(self.titulo, self.artista)
@@ -165,6 +173,9 @@ class TipoAlbum(models.Model):
 class TipoAudio(models.Model):
     #id = models.IntegerField(primary_key=True)
     tipo = models.CharField(max_length=10)
+
+    def get_tipo(self):
+        return self.tipo
 
     class Meta:
         managed = True
