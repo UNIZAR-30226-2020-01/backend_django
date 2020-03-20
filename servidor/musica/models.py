@@ -16,36 +16,66 @@ from utils.lyrics.lyrics import Lyrics_api
 
 
 class Album(models.Model):
-    #id = models.IntegerField(primary_key=True)
+    TIPOS_ALBUM = (
+        ('N', 'Normal'),
+        ('EP', 'EP'),
+        ('S', 'Single'),
+    )
     titulo = models.CharField(max_length=100)
     fecha = models.DateField(db_column='Fecha')  # Field name made lowercase.
     icono = models.FileField()
-    tipo = models.ForeignKey('TipoAlbum', models.DO_NOTHING, db_column='tipo', default=0)
+    tipo = models.CharField(max_length=1, choices=TIPOS_ALBUM)
 
     class Meta:
         managed = True
         db_table = 'Album'
 
+    def __str__(self):
+        return self.titulo
 
-class Amigos(models.Model):
-    uno = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='uno', primary_key=True)
-    otro = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='otro', related_name='otro')
+class Artista(models.Model):
+    nombre = models.CharField(max_length=50)
+    correo = models.EmailField(max_length=50)
+    imagen = models.FileField()
+    biografia = models.CharField(max_length=256)
+    albumes = models.ManyToManyField(Album)
+
+    def __str__(self):
+        return self.nombre
 
     class Meta:
         managed = True
-        db_table = 'Amigos'
-        unique_together = (('uno', 'otro'),)
+        db_table = 'Artista'
 
 
+class Genero(models.Model):
+    nombre = CharField(max_length=50)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = True
+        db_table = 'Genero'
+
+class Podcast(models.Model):
+    titulo = models.CharField(max_length=50)
+    RSS = models.FileField()
+    genero = models.ForeignKey(Genero, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.titulo
+
+    class Meta:
+        managed = True
+        db_table = 'Podcast'
+
+#Clase padre de Cancion y Podcast. Es abstracta para evitar que se cree una tabla de este tipo.
 class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
-    artista = models.CharField(max_length=100)
     titulo = models.CharField(max_length=100)
-    archivo = models.FileField()
-    pista = models.IntegerField()
-    letra = models.TextField(blank=True)
+    archivo = models.FileField(blank=True)
     album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album')
-    tipo = models.ForeignKey('TipoAudio', models.DO_NOTHING, db_column='tipo')
 
     def is_song(self):
         is_song = False
@@ -54,6 +84,9 @@ class Audio(models.Model):
         except TipoAudio.DoesNotExist:
             pass
         return is_song
+
+    def __str__(self):
+        return self.titulo
 
     def __init__(self, *args, **kwargs):
         super(Audio, self).__init__(*args, **kwargs)
@@ -97,87 +130,58 @@ class Audio(models.Model):
     #     import musica.signals
 
     class Meta:
-        managed = True
-        db_table = 'Audio'
-
-
-class Cancionenlista(models.Model):
-    cancion = models.ForeignKey(Audio, models.DO_NOTHING, db_column='cancion', primary_key=True)
-    lista = models.ForeignKey('Lista', models.DO_NOTHING, db_column='lista')
-
-    class Meta:
-        managed = True
-        db_table = 'CancionEnLista'
-        unique_together = (('cancion', 'lista'),)
-
-
-class Carpeta(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    titulo = models.CharField(max_length=100)
-    usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='usuario')
-
-    class Meta:
-        managed = True
-        db_table = 'Carpeta'
-
-
-class Favoritos(models.Model):
-    audio = models.ForeignKey(Audio, models.DO_NOTHING, db_column='audio', primary_key=True)
-    usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='usuario')
-
-    class Meta:
-        managed = True
-        db_table = 'Favoritos'
-        unique_together = (('audio', 'usuario'),)
-
-
-class Lista(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    titulo = models.CharField(max_length=100)
-    usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='usuario')
-
-    class Meta:
-        managed = True
-        db_table = 'Lista'
-
-
-class Listaencarpeta(models.Model):
-    carpeta = models.ForeignKey(Carpeta, models.DO_NOTHING, db_column='carpeta', primary_key=True)
-    lista = models.ForeignKey(Lista, models.DO_NOTHING, db_column='lista')
-
-    class Meta:
-        managed = True
-        db_table = 'ListaEnCarpeta'
-        unique_together = (('carpeta', 'lista'),)
-
+        abstract = True
 
 class Usuario(models.Model):
     #id = models.IntegerField(primary_key=True)
+    nombre = models.CharField(max_length=50, unique=True)
     correo = models.CharField(max_length=50)
-    nombre = models.CharField(max_length=50)
     contraseña = models.CharField(max_length=100)
+    podcasts = models.ManyToManyField(Podcast)
+    siguiendo = models.ManyToManyField(self, related_name='seguidor')
+    seguido = models.ManyToManyField(self, related_name='seguido')
+    timestamp = models.ForeignKey(Audio, null=True)
+    favorito = models.ManyToManyField(Audio)
 
     class Meta:
         managed = True
         db_table = 'Usuario'
 
+    def __str__(self):
+        return self.nombre
 
-class TipoAlbum(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    tipo = models.CharField(max_length=10)
-
-    class Meta:
-        managed = True
-        db_table = 'tipo_album'
-
-
-class TipoAudio(models.Model):
-    #id = models.IntegerField(primary_key=True)
-    tipo = models.CharField(max_length=10)
-
-    def get_tipo(self):
-        return self.tipo
+class Carpeta(models.Model):
+    titulo = models.CharField(max_length=50, unique=True)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
-        db_table = 'tipo_audio'
+        db_table = 'Carpeta'
+    def __str__(self):
+        return self.titulo
+
+class Lista(models.Model):
+    titulo = models.CharField(max_length=50, unique=True)
+    carpetas = models.ManyToManyField(Carpeta)
+
+    def __str__(self):
+        return self.titulo
+
+class Cancion(Audio):
+    pista = models.IntegerField()
+    num_reproducciones = models.IntegerField()
+    letra = models.CharField(max_length=400, blank=True)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    listas = models.ManyToManyField(Lista)
+
+    class Meta:
+        managed = True
+        db_table = 'Cancion'
+
+class Episodio_podcast(Audio):
+    URI = models.FileField()
+    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE)
+
+    class Meta:
+        managed = True
+        db_table = 'Episodio_podcast'
