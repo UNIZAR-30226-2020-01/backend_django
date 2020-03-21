@@ -22,6 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '&af@4k@!tkthx2k_7g3j=cs_l%jf4x+&*6kqbpi6@&i+708v9!'
 
+# Contraseña de la bd en una variable de entorno:
+PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -95,21 +98,37 @@ WSGI_APPLICATION = 'servidor.wsgi.application'
 # password = lQ9n_mpqPGxX5TumMLOWA62notw2MmJB
 # default-character-set = utf8
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST' : 'kandula.db.elephantsql.com',
-        'NAME' : 'ghjcpmoz',
-        'DATABASE' : 'ghjcpmoz',
-        'PORT' : '5432',
-        'USER' : 'ghjcpmoz',
-        'PASSWORD' : 'lQ9n_mpqPGxX5TumMLOWA62notw2MmJB',
-        'CHARSET' : 'utf8',
-        # 'OPTIONS': {
-        #     'read_default_file': os.path.join(BASE_DIR, r'servidor\postgresql.cnf'),
-        # },
-    },
-}
+
+# Para travis (cuando hace la build travis, pone la variable de entorno TRAVIS=true) y usamos una bd en localhost:
+if os.getenv('TRAVIS', None):
+    DEBUG = False
+    TEMPLATE_DEBUG = True
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'travis_ci_test',
+            'USER': 'travis',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+            'CHARSET' : 'utf8',
+        }
+    }
+
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST' : 'kandula.db.elephantsql.com',
+            'NAME' : 'ghjcpmoz',
+            'DATABASE' : 'ghjcpmoz',
+            'PORT' : '5432',
+            'USER' : 'ghjcpmoz',
+            'PASSWORD' : PASSWORD_POSTGRESQL,
+            'CHARSET' : 'utf8',
+        },
+    }
 
 
 
