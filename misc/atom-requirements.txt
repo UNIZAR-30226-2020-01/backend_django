@@ -1,5 +1,4 @@
 ﻿auto-encoding@0.7.2
-deepcode@1.1.4
 emmet@2.4.3
 file-icons@2.1.39
 ide-vue@0.1.9
