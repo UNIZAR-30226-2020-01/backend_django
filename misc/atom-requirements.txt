@@ -5,4 +5,3 @@ file-icons@2.1.39
 ide-vue@0.1.9
 language-vue@0.26.0
 minimap@4.29.9
-

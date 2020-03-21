@@ -24,7 +24,7 @@ class Album(models.Model):
     titulo = models.CharField(max_length=100)
     fecha = models.DateField(db_column='Fecha')  # Field name made lowercase.
     icono = models.FileField()
-    tipo = models.CharField(max_length=1, choices=TIPOS_ALBUM)
+    tipo = models.CharField(max_length=2, choices=TIPOS_ALBUM)
 
     class Meta:
         managed = True
@@ -49,7 +49,7 @@ class Artista(models.Model):
 
 
 class Genero(models.Model):
-    nombre = CharField(max_length=50)
+    nombre = models.CharField(max_length=50)
 
     def __str__(self):
         return self.nombre
@@ -138,9 +138,10 @@ class Usuario(models.Model):
     correo = models.CharField(max_length=50)
     contraseña = models.CharField(max_length=100)
     podcasts = models.ManyToManyField(Podcast)
-    siguiendo = models.ManyToManyField(self, related_name='seguidor')
-    seguido = models.ManyToManyField(self, related_name='seguido')
-    timestamp = models.ForeignKey(Audio, null=True)
+    siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
+    #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
+    reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True)
+    segundos = models.IntegerField() # segundo de reproduccion del audio guardado
     favorito = models.ManyToManyField(Audio)
 
     class Meta:
