@@ -13,6 +13,22 @@ from utils.lyrics.lyrics import Lyrics_api
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
 
+class Artista(models.Model):
+    nombre = models.CharField(max_length=50)
+    correo = models.EmailField(max_length=50)
+    imagen = models.FileField(null=True, blank=True)
+    biografia = models.CharField(max_length=256, blank=True)
+    # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
+
+    #albumes = models.ManyToManyField(Album) # cambiado a album
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = True
+        db_table = 'Artista'
+
 
 
 class Album(models.Model):
@@ -23,8 +39,11 @@ class Album(models.Model):
     )
     titulo = models.CharField(max_length=100)
     fecha = models.DateField(db_column='Fecha')  # Field name made lowercase.
-    icono = models.FileField()
+    icono = models.FileField(blank=True)
     tipo = models.CharField(max_length=2, choices=TIPOS_ALBUM)
+
+    artistas = models.ManyToManyField(Artista)
+
 
     class Meta:
         managed = True
@@ -32,20 +51,6 @@ class Album(models.Model):
 
     def __str__(self):
         return self.titulo
-
-class Artista(models.Model):
-    nombre = models.CharField(max_length=50)
-    correo = models.EmailField(max_length=50)
-    imagen = models.FileField()
-    biografia = models.CharField(max_length=256)
-    albumes = models.ManyToManyField(Album)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        managed = True
-        db_table = 'Artista'
 
 
 class Genero(models.Model):
@@ -77,13 +82,15 @@ class Audio(models.Model):
     archivo = models.FileField(blank=True, null=True)
     # album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album') # los podcasts no tienen album
 
+
+    # Ahora esta funcion es inutil, la dejo por si acaso
     def is_song(self):
         #is_song = False
         #try:
         #is_song = self.tipo.get_tipo() == 'Cancion'
         #except tipoAudio.DoesNotExist:
         #    pass
-        
+
         # Pruebo con introspeccion mejor (ej en https://medium.com/better-programming/python-reflection-and-introspection-97b348be54d8):
         is_song = type(self) is Cancion
         return is_song
@@ -91,30 +98,6 @@ class Audio(models.Model):
     def __str__(self):
         return self.titulo
 
-    def __init__(self, *args, **kwargs):
-        super(Audio, self).__init__(*args, **kwargs)
-        es_cancion = self.is_song() # esto habra que cambiarlo
-        if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
-            api = Lyrics_api()
-            letra = api.get_lyrics(self.titulo, self.artista)
-            #print(letra)
-            if letra != '':
-                self.letra = letra
-            else: # revisar
-                exit(1)
-
-        # if self.initial.get('account', None):
-        #     self.fields['customer'].queryset = Customer.objects.filter(account=self.initial.get('account'))
-
-
-    def save(self, force_insert=False, force_update=False, commit=True):
-        m = super(Audio, self).save()#commit=False)
-
-        # my custom code was here
-
-        # if commit:
-        #     m.save()
-        return m
 
     # Version anterior, usando señales (la dejo por si nos es util mas tarde)
     # @receiver(post_save, sender=Audio)
@@ -174,14 +157,51 @@ class Lista(models.Model):
 
 class Cancion(Audio):
     pista = models.IntegerField()
-    num_reproducciones = models.IntegerField()
+    num_reproducciones = models.IntegerField(default=0)
     letra = models.CharField(max_length=400, blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    listas = models.ManyToManyField(Lista)
+    listas = models.ManyToManyField(Lista, blank=True)
 
     class Meta:
         managed = True
         db_table = 'Cancion'
+
+    def __init__(self, *args, **kwargs):
+        super(Cancion, self).__init__(*args, **kwargs)
+        # es_cancion = self.is_song() # obviamente las canciones son canciones
+        # if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
+        api = Lyrics_api()
+
+        letra= 'TEST' # TEMPORAL
+
+        try:
+            artistas = self.album.artistas.all() # queryset de artistas del album de esta cancion
+            artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
+            letra = api.get_lyrics(self.titulo, artistas_str)
+        except Album.DoesNotExist:
+            pass
+
+        #print(letra)
+        if letra != '':
+            self.letra = letra
+        else: # revisar
+            exit(1)
+
+        # if self.initial.get('account', None):
+        #     self.fields['customer'].queryset = Customer.objects.filter(account=self.initial.get('account'))
+
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        m = super(Cancion, self).save()#commit=False)
+
+        # my custom code was here
+
+        # if commit:
+        #     m.save()
+        return m
+
+
+
 
 class Episodio_podcast(Audio):
     URI = models.FileField()
