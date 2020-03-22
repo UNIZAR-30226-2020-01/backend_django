@@ -13,7 +13,7 @@ from utils.lyrics.lyrics import Lyrics_api
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
 
-class Artista(models.Model):
+class Artist(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
     image = models.FileField(null=True, blank=True)
@@ -27,7 +27,7 @@ class Artista(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'Artista'
+        db_table = 'Artist'
 
 
 
@@ -42,7 +42,7 @@ class Album(models.Model):
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
 
-    artists = models.ManyToManyField(Artista)
+    artists = models.ManyToManyField(Artist)
 
 
     class Meta:
@@ -53,7 +53,7 @@ class Album(models.Model):
         return self.titulo
 
 
-class Genero(models.Model):
+class Genre(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -61,12 +61,12 @@ class Genero(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'Genero'
+        db_table = 'Genre'
 
 class Podcast(models.Model):
     title = models.CharField(max_length=50)
     RSS = models.FileField()
-    genre = models.ForeignKey(Genero, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.titulo
@@ -75,7 +75,7 @@ class Podcast(models.Model):
         managed = True
         db_table = 'Podcast'
 
-#Clase padre de Cancion y Podcast. Es abstracta para evitar que se cree una tabla de este tipo.
+#Clase padre de Song y Podcast. Es abstracta para evitar que se cree una tabla de este tipo.
 class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
@@ -87,12 +87,12 @@ class Audio(models.Model):
     def is_song(self):
         #is_song = False
         #try:
-        #is_song = self.tipo.get_tipo() == 'Cancion'
+        #is_song = self.tipo.get_tipo() == 'Song'
         #except tipoAudio.DoesNotExist:
         #    pass
 
         # Pruebo con introspeccion mejor (ej en https://medium.com/better-programming/python-reflection-and-introspection-97b348be54d8):
-        is_song = type(self) is Cancion
+        is_song = type(self) is Song
         return is_song
 
     def __str__(self):
@@ -141,36 +141,36 @@ class Usuario(models.Model):
     def __str__(self):
         return self.name
 
-class Carpeta(models.Model):
+class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
-        db_table = 'Carpeta'
+        db_table = 'Folder'
     def __str__(self):
         return self.titulo
 
-class Lista(models.Model):
+class List(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    folders = models.ManyToManyField(Carpeta)
+    folders = models.ManyToManyField(Folder)
 
     def __str__(self):
         return self.titulo
 
-class Cancion(Audio):
+class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
     lyrics = models.CharField(max_length=400, blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    lists = models.ManyToManyField(Lista, blank=True)
+    lists = models.ManyToManyField(List, blank=True)
 
     class Meta:
         managed = True
-        db_table = 'Cancion'
+        db_table = 'Song'
 
     def __init__(self, *args, **kwargs):
-        super(Cancion, self).__init__(*args, **kwargs)
+        super(Song, self).__init__(*args, **kwargs)
         # es_cancion = self.is_song() # obviamente las canciones son canciones
         # if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
         api = Lyrics_api()
@@ -195,7 +195,7 @@ class Cancion(Audio):
 
 
     def save(self, force_insert=False, force_update=False, commit=True):
-        m = super(Cancion, self).save()#commit=False)
+        m = super(Song, self).save()#commit=False)
 
         # my custom code was here
 
@@ -206,10 +206,10 @@ class Cancion(Audio):
 
 
 
-class Episodio_podcast(Audio):
+class PodcastEpisode(Audio):
     URI = models.FileField()
     podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
-        db_table = 'Episodio_podcast'
+        db_table = 'PodcastEpisode'

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User, Group
-from musica.models import Cancion
+from musica.models import Song, Album, Artist
 from rest_framework import serializers
 
 
@@ -15,6 +15,16 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ['url', 'name']
 
+class ArtistSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist
+        fields = '__all__'
+
+class AlbumSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Album
+        fields = '__all__'
+
 
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
@@ -24,6 +34,8 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
     #
     #
 
+    #album =
     class Meta:
-        model = Cancion
-        fields = ['title', 'file']
+        model = Song
+        #album_detail = AlbumSerializer()
+        fields = '__all__'#['title', 'file', 'lyrics']

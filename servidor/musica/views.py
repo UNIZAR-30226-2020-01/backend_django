@@ -5,9 +5,9 @@ from django.shortcuts import render
 
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from musica.serializers import UserSerializer, GroupSerializer, SongSerializer
+from musica.serializers import UserSerializer, GroupSerializer, SongSerializer, ArtistSerializer, AlbumSerializer
 
-from musica.models import Cancion
+from musica.models import Song, Album, Artist
 
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
@@ -29,14 +29,37 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 # Nuevas:
+class ArtistViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows songs to be viewed.
+    """
+    queryset = Artist.objects.all()
+    serializer_class = ArtistSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+
+
+
+
+class AlbumViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows songs to be viewed.
+    """
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+
+
+
 
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
 class SongViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
     """
-    queryset = Cancion.objects.all()
+    queryset = Song.objects.all()
     serializer_class = SongSerializer
     # solo acepta GET:
-    http_method_names = ['get'] 
+    http_method_names = ['get']
     # fuente de la solución: https://stackoverflow.com/a/31450643
