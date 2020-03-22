@@ -29,8 +29,6 @@ class Artist(models.Model):
         managed = True
         db_table = 'Artist'
 
-
-
 class Album(models.Model):
     TIPOS_ALBUM = (
         ('N', 'Normal'),
@@ -52,7 +50,6 @@ class Album(models.Model):
     def __str__(self):
         return self.title
 
-
 class Genre(models.Model):
     name = models.CharField(max_length=50)
 
@@ -66,7 +63,7 @@ class Genre(models.Model):
 class Podcast(models.Model):
     title = models.CharField(max_length=50)
     RSS = models.FileField()
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, default='')
 
     def __str__(self):
         return self.title
@@ -98,7 +95,6 @@ class Audio(models.Model):
     def __str__(self):
         return self.title
 
-
     # Version anterior, usando señales (la dejo por si nos es util mas tarde)
     # @receiver(post_save, sender=Audio)
     # def buscar_letra(sender, **kwargs):
@@ -118,7 +114,6 @@ class Audio(models.Model):
     class Meta:
         managed = True
         db_table = 'Audio'
-
 
 ##### TODO: cambiar esta clase para usar la predefinida de django. Extenderla con herencia o sobreescribir sus campos,
 ##### no se que es mejor. Nos facilitara implementar la autentificacion y demas, creo.
@@ -151,12 +146,15 @@ class Folder(models.Model):
     def __str__(self):
         return self.title
 
-class Lista(models.Model):
+class List(models.Model):
     title = models.CharField(max_length=50, unique=True)
     folders = models.ManyToManyField(Folder)
 
     def __str__(self):
         return self.title
+    class Meta:
+        managed = True
+        db_table = 'List'
 
 class Song(Audio):
     track = models.IntegerField()
@@ -202,9 +200,6 @@ class Song(Audio):
         # if commit:
         #     m.save()
         return m
-
-
-
 
 class PodcastEpisode(Audio):
     URI = models.FileField()
