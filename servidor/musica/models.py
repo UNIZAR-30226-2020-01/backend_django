@@ -15,9 +15,9 @@ from utils.lyrics.lyrics import Lyrics_api
 
 class Artist(models.Model):
     name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50)
+    email = models.EmailField(max_length=50, blank=True)
     image = models.FileField(null=True, blank=True)
-    biography = models.TextField(blank=True, blank=True)
+    biography = models.TextField(blank=True)
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
     #albumes = models.ManyToManyField(Album) # cambiado a album
@@ -117,7 +117,7 @@ class Audio(models.Model):
 
 ##### TODO: cambiar esta clase para usar la predefinida de django. Extenderla con herencia o sobreescribir sus campos,
 ##### no se que es mejor. Nos facilitara implementar la autentificacion y demas, creo.
-class Usuario(User):
+class S7_user(User):
     podcasts = models.ManyToManyField(Podcast)
     siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
@@ -127,14 +127,14 @@ class Usuario(User):
 
     class Meta:
         managed = True
-        db_table = 'Usuario'
+        db_table = 'S7_user'
 
     def __str__(self):
         return self.name
 
 class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
