@@ -17,7 +17,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
     image = models.FileField(null=True, blank=True)
-    biography = models.CharField(max_length=256, blank=True)
+    biography = models.TextField(blank=True, blank=True)
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
     #albumes = models.ManyToManyField(Album) # cambiado a album
