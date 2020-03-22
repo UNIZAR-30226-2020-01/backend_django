@@ -74,15 +74,18 @@ class Podcast(models.Model):
 class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
     titulo = models.CharField(max_length=100)
-    archivo = models.FileField(blank=True)
+    archivo = models.FileField(blank=True, null=True)
     # album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album') # los podcasts no tienen album
 
     def is_song(self):
-        is_song = False
-        try:
-            is_song = self.tipo.get_tipo() == 'Cancion'
-        except TipoAudio.DoesNotExist:
-            pass
+        #is_song = False
+        #try:
+        #is_song = self.tipo.get_tipo() == 'Cancion'
+        #except tipoAudio.DoesNotExist:
+        #    pass
+        
+        # Pruebo con introspeccion mejor (ej en https://medium.com/better-programming/python-reflection-and-introspection-97b348be54d8):
+        is_song = type(self) is Cancion
         return is_song
 
     def __str__(self):
