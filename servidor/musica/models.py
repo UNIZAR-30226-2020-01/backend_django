@@ -75,7 +75,7 @@ class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
     titulo = models.CharField(max_length=100)
     archivo = models.FileField(blank=True)
-    album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album')
+    # album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album') # los podcasts no tienen album
 
     def is_song(self):
         is_song = False
@@ -130,7 +130,8 @@ class Audio(models.Model):
     #     import musica.signals
 
     class Meta:
-        abstract = True
+        managed = True
+        db_table = 'Audio'
 
 class Usuario(models.Model):
     #id = models.IntegerField(primary_key=True)
@@ -141,8 +142,8 @@ class Usuario(models.Model):
     siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
     reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True)
-    segundos = models.IntegerField() # segundo de reproduccion del audio guardado
-    favorito = models.ManyToManyField(Audio)
+    segundos = models.IntegerField(null=True) # segundo de reproduccion del audio guardado
+    favorito = models.ManyToManyField(Audio, related_name='favorito')
 
     class Meta:
         managed = True
