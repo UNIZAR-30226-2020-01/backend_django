@@ -50,7 +50,7 @@ class Album(models.Model):
         db_table = 'Album'
 
     def __str__(self):
-        return self.titulo
+        return self.title
 
 
 class Genre(models.Model):
@@ -69,7 +69,7 @@ class Podcast(models.Model):
     genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.titulo
+        return self.title
 
     class Meta:
         managed = True
@@ -96,7 +96,7 @@ class Audio(models.Model):
         return is_song
 
     def __str__(self):
-        return self.titulo
+        return self.title
 
 
     # Version anterior, usando señales (la dejo por si nos es util mas tarde)
@@ -149,14 +149,14 @@ class Folder(models.Model):
         managed = True
         db_table = 'Folder'
     def __str__(self):
-        return self.titulo
+        return self.title
 
-class List(models.Model):
+class Lista(models.Model):
     title = models.CharField(max_length=50, unique=True)
     folders = models.ManyToManyField(Folder)
 
     def __str__(self):
-        return self.titulo
+        return self.title
 
 class Song(Audio):
     track = models.IntegerField()
