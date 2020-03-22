@@ -18,8 +18,11 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
-    title = serializers.CharField(read_only=True, source="audio.titulo")
-    file = serializers.FileField(read_only=True, source="audio.archivo")
+    # todo esto solo es necesario para cambiarle el nombre de la bd
+    # title = serializers.CharField(read_only=True, source="cancion.titulo")
+    # file = serializers.FileField(read_only=True, source="cancion.archivo")
+    #
+    #
 
     class Meta:
         model = Cancion

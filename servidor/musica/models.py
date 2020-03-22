@@ -14,16 +14,16 @@ from utils.lyrics.lyrics import Lyrics_api
 # from django.dispatch import receiver
 
 class Artista(models.Model):
-    nombre = models.CharField(max_length=50)
-    correo = models.EmailField(max_length=50)
-    imagen = models.FileField(null=True, blank=True)
-    biografia = models.CharField(max_length=256, blank=True)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=50)
+    image = models.FileField(null=True, blank=True)
+    biography = models.CharField(max_length=256, blank=True)
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
     #albumes = models.ManyToManyField(Album) # cambiado a album
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
     class Meta:
         managed = True
@@ -37,12 +37,12 @@ class Album(models.Model):
         ('EP', 'EP'),
         ('S', 'Single'),
     )
-    titulo = models.CharField(max_length=100)
-    fecha = models.DateField(db_column='Fecha')  # Field name made lowercase.
-    icono = models.FileField(blank=True)
-    tipo = models.CharField(max_length=2, choices=TIPOS_ALBUM)
+    title = models.CharField(max_length=100)
+    date = models.DateField(db_column='Fecha')  # Field name made lowercase.
+    icon = models.FileField(blank=True)
+    type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
 
-    artistas = models.ManyToManyField(Artista)
+    artists = models.ManyToManyField(Artista)
 
 
     class Meta:
@@ -54,19 +54,19 @@ class Album(models.Model):
 
 
 class Genero(models.Model):
-    nombre = models.CharField(max_length=50)
+    name = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
     class Meta:
         managed = True
         db_table = 'Genero'
 
 class Podcast(models.Model):
-    titulo = models.CharField(max_length=50)
+    title = models.CharField(max_length=50)
     RSS = models.FileField()
-    genero = models.ForeignKey(Genero, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genero, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.titulo
@@ -78,8 +78,8 @@ class Podcast(models.Model):
 #Clase padre de Cancion y Podcast. Es abstracta para evitar que se cree una tabla de este tipo.
 class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
-    titulo = models.CharField(max_length=100)
-    archivo = models.FileField(blank=True, null=True)
+    title = models.CharField(max_length=100)
+    file = models.FileField(blank=True, null=True)
     # album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album') # los podcasts no tienen album
 
 
@@ -119,9 +119,12 @@ class Audio(models.Model):
         managed = True
         db_table = 'Audio'
 
+
+##### TODO: cambiar esta clase para usar la predefinida de django. Extenderla con herencia o sobreescribir sus campos,
+##### no se que es mejor. Nos facilitara implementar la autentificacion y demas, creo.
 class Usuario(models.Model):
     #id = models.IntegerField(primary_key=True)
-    nombre = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=True)
     correo = models.CharField(max_length=50)
     contraseña = models.CharField(max_length=100)
     podcasts = models.ManyToManyField(Podcast)
@@ -136,11 +139,11 @@ class Usuario(models.Model):
         db_table = 'Usuario'
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
 class Carpeta(models.Model):
-    titulo = models.CharField(max_length=50, unique=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE)
 
     class Meta:
         managed = True
@@ -149,18 +152,18 @@ class Carpeta(models.Model):
         return self.titulo
 
 class Lista(models.Model):
-    titulo = models.CharField(max_length=50, unique=True)
-    carpetas = models.ManyToManyField(Carpeta)
+    title = models.CharField(max_length=50, unique=True)
+    folders = models.ManyToManyField(Carpeta)
 
     def __str__(self):
         return self.titulo
 
 class Cancion(Audio):
-    pista = models.IntegerField()
-    num_reproducciones = models.IntegerField(default=0)
-    letra = models.CharField(max_length=400, blank=True)
+    track = models.IntegerField()
+    times_played = models.IntegerField(default=0)
+    lyrics = models.CharField(max_length=400, blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    listas = models.ManyToManyField(Lista, blank=True)
+    lists = models.ManyToManyField(Lista, blank=True)
 
     class Meta:
         managed = True
@@ -175,15 +178,15 @@ class Cancion(Audio):
         letra= 'TEST' # TEMPORAL
 
         try:
-            artistas = self.album.artistas.all() # queryset de artistas del album de esta cancion
+            artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
             artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
-            letra = api.get_lyrics(self.titulo, artistas_str)
-        except Album.DoesNotExist:
+            letra = api.get_lyrics(self.title, artistas_str)
+        except Album.DoesNotExist: # otro gestion de excepciones posible
             pass
 
         #print(letra)
         if letra != '':
-            self.letra = letra
+            self.lyrics = letra
         else: # revisar
             exit(1)
 
