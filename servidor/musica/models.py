@@ -172,6 +172,7 @@ class Song(Audio):
         letra= 'TEST' # TEMPORAL
 
         try:
+            # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
             artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
             artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
             letra = api.get_lyrics(self.title, artistas_str)
