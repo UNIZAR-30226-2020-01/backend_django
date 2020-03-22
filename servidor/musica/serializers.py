@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User, Group
-from musica.models import Song, Album, Artist
+#from musica.models import Song, Album, Artist, PodcastEpisode, Podcast
+from musica.models import *
 from rest_framework import serializers
 
 
@@ -19,12 +20,13 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
         fields = '__all__'
+        depth = 2
 
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         fields = '__all__'
-
+        depth = 2
 
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
@@ -35,7 +37,7 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
     #
 
     #album =
-    album = serializers.CharField(read_only=True, source="song.album.title")
+    #album = serializers.CharField(read_only=True, source="song.album.title")
     #CharField(read_only=True, source="song.album.artists")
     #serializers.CharField(read_only=True, source="song.album.artists.name")#
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
@@ -43,4 +45,17 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         model = Song
         #album_detail = AlbumSerializer()
         fields = '__all__'
+        depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+class PodcastSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = '__all__'
+        depth = 2
+
+class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PodcastEpisode
+        fields = '__all__'
+        depth = 2

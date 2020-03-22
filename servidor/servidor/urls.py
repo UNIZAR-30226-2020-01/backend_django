@@ -28,6 +28,8 @@ router.register(r'groups', views.GroupViewSet)
 router.register(r'artists', views.ArtistViewSet)
 router.register(r'albums', views.AlbumViewSet)
 router.register(r'songs', views.SongViewSet)
+router.register(r'podcast', views.PodcastViewSet)
+router.register(r'podcast-episode', views.PodcastEpisodeViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
