@@ -28,7 +28,7 @@ PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-DEBUG = !os.getenv('DEPLOYMENT', None) # True cuando no esté la var de entorno DEPLOYMENT
+DEBUG = not os.getenv('DEPLOYMENT', None) # True cuando no esté la var de entorno DEPLOYMENT
 
 ALLOWED_HOSTS = []
 
