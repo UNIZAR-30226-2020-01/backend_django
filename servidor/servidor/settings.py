@@ -26,7 +26,9 @@ SECRET_KEY = '&af@4k@!tkthx2k_7g3j=cs_l%jf4x+&*6kqbpi6@&i+708v9!'
 PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+
+
+DEBUG = !os.getenv('DEPLOYMENT', None) # True cuando no esté la var de entorno DEPLOYMENT
 
 ALLOWED_HOSTS = []
 
