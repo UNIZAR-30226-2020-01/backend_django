@@ -34,7 +34,7 @@ env:
 
 #commands to install dependencies
 install:
-#- pip install -q Django==$DJANGO
+#- pip install -q Django==$DJANGO # ahora en requirements
   - pip install -q -r servidor/requirements.txt
 
 before_script:
@@ -44,3 +44,8 @@ before_script:
 #command to run the test suite
 script:
   - python servidor/manage.py test
+
+
+# TODO: Integrar con la máquina de Azure
+# deploy:
+#   -
