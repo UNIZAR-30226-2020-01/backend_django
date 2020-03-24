@@ -144,6 +144,7 @@ class Folder(models.Model):
 
 class List(models.Model):
     title = models.CharField(max_length=50, unique=True)
+    icon = models.FileField(blank=True)
     folders = models.ManyToManyField(Folder)
 
     def __str__(self):
