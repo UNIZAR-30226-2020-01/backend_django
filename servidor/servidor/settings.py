@@ -13,9 +13,6 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 
-
-
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
@@ -36,7 +33,7 @@ DEPLOYMENT = os.getenv('DEPLOYMENT', None) # Tomamos la variable de entorno del 
 
 DEBUG = not DEPLOYMENT # True cuando no esté la var de entorno DEPLOYMENT
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 's7-rest.francecentral.cloudapp.azure.com']
 
 
 # Application definition
@@ -140,11 +137,6 @@ else:
 
 
 
-
-
-
-
-
  #'mysql.cnf',
 
 # Password validation
@@ -164,7 +156,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 
 # Internationalization
