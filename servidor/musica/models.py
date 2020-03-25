@@ -135,7 +135,9 @@ class S7_user(User):
 class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
+    icon = models.FileField(blank=True)
 
+    
     class Meta:
         managed = True
         db_table = 'Folder'
