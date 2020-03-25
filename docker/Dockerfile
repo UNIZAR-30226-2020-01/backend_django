@@ -36,8 +36,11 @@ RUN apk add --no-cache --virtual .build-deps \
 #RUN pip3 install -r requirements.txt
 
 
-# Exponemos el puerto 8000
+# Exponemos el puerto 8000 (http)
 EXPOSE 8000
+
+# Exponemos el puerto 443 (https)
+EXPOSE 443
 
 # Iniciamos la aplicacion
 ENTRYPOINT ["python3", "manage.py", "runserver"]

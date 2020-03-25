@@ -5,7 +5,7 @@
 docker='sudo docker'
 image='django_prod_image'
 name='django_prod'
-flags='-p 8000:8000 --name '$name
+flags='-p 8000:8000 -p 443:443/tcp --name '$name
 
 # Eliminamos el contenedor anterior
 $docker stop $name
