@@ -7,10 +7,11 @@ ENV PYTHONUNBUFFERED 1
 # Mantainer
 label MANTAINER='pedro.tamargo.allue@gmail.com'
 
-# Copiamos el repositorio al contenedor
+# Creamos el directorio de trabajos
 RUN mkdir servidor
 WORKDIR servidor
-COPY servidor .
+# Copiamos el repositorio al contenedor
+COPY ../servidor .
 
 # Instalamos dependencias
 RUN apk add --no-cache --virtual .build-deps \
