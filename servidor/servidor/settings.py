@@ -33,7 +33,7 @@ DEPLOYMENT = os.getenv('DEPLOYMENT', None) # Tomamos la variable de entorno del 
 
 DEBUG = not DEPLOYMENT # True cuando no esté la var de entorno DEPLOYMENT
 
-ALLOWED_HOSTS = ['localhost', 's7-rest.francecentral.cloudapp.azure.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure.com']
 
 
 # Application definition
