@@ -45,12 +45,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'musica',
+
     'rest_framework',
     ##Autentication
     'oauth2_provider',
     'social_django',
     'rest_framework_social_oauth2',
+
+    # puede que tenga que ir al final:
+    'musica',
 ]
 
 MIDDLEWARE = [
