@@ -36,5 +36,7 @@ router.register(r'podcast-episode', views.PodcastEpisodeViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    ##Comprobar que esto no falle
+    (r'^auth/', include('rest_framework_social_oauth2.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
