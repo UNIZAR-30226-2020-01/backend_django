@@ -84,9 +84,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'servidor.wsgi.application'
 
 REST_FRAMEWORK = {
-    ...
+
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        ...
+
         # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         'rest_framework_social_oauth2.authentication.SocialAuthentication',
@@ -109,8 +109,8 @@ AUTHENTICATION_BACKENDS = (
 
 # Google configuration
 ##Hay que conseguir estas cosas de la api de google
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = <your app id goes here>
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = <your app secret goes here>
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''#<your app id goes here>
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''#<your app secret goes here>
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [

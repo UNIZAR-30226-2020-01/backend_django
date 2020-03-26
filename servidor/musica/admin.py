@@ -1,6 +1,8 @@
 from django.contrib import admin
-from django.apps import apps
-
+try:
+    from django.apps import apps
+except admin.sites.AlreadyRegistered:
+    pass
 
 models = apps.get_models()
 
