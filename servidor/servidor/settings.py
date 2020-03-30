@@ -15,7 +15,7 @@ import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+#STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -224,8 +224,8 @@ STATIC_URL = '/static/'
 # Esto indica a django que debe incluir los ficheros estáticos de la carpeta /servidor/static, aunque no estén
 # incluidos en ninguna app.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(PROJECT_DIR, 'static'),
 )
 
 # Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
-STATIC_ROOT = os.path.join(BASE_DIR, '../../static_cdn')
+STATIC_ROOT = os.path.join(PROJECT_DIR, '../../static_cdn')
