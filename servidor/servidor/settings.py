@@ -228,4 +228,6 @@ STATICFILES_DIRS = (
 )
 
 # Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
-STATIC_ROOT = os.path.join(PROJECT_DIR, '../../static_cdn')
+STATIC_ROOT = os.getenv('STATIC_ROOT')
+print(STATIC_ROOT)
+#STATIC_ROOT = os.path.join(PROJECT_DIR, '../../static_cdn')
