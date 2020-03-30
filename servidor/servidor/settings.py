@@ -217,3 +217,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# lo siguiente basado en: https://scotch.io/tutorials/working-with-django-templates-static-files#toc-settings-for-managing-static-files
+
+# Esto indica a django que debe incluir los ficheros estáticos de la carpeta /servidor/static, aunque no estén
+# incluidos en ninguna app.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+# Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, '../../static_cdn')
