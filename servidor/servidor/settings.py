@@ -224,7 +224,7 @@ STATIC_URL = '/static/'
 # Esto indica a django que debe incluir los ficheros estáticos de la carpeta /servidor/static, aunque no estén
 # incluidos en ninguna app.
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_DIR, 'static'),
+    os.path.join(PROJECT_DIR, 'nuestros_static'),
 )
 
 # Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
