@@ -8,7 +8,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 from utils.lyrics.lyrics import Lyrics_api
-
 # para señales (ahora no las usamos):
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
