@@ -41,6 +41,7 @@ class Album(models.Model):
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
     number_songs = models.IntegerField(default=0)
     artists = models.ManyToManyField(Artist)
+    # TODO: artista principal
 
 
     class Meta:
