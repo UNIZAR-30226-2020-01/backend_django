@@ -12,6 +12,9 @@ from musica.models import *
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 # Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -19,14 +22,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-
 
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
