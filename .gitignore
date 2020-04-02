@@ -93,10 +93,10 @@ servidor/Scripts/
 
 # servidor/servidor/settings.py
 
-servidor/musica/migrations
+servidor/musica/migrations/__pycache__
 
 # negado hace que se vuelva a incluir (este es necesario para Travis):
-!servidor/musica/migrations/__init__.py
+# !servidor/musica/migrations/__init__.py
 
 servidor/utils/spotify_credentials.py
 
