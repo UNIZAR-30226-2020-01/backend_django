@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from musica.serializers import *
 
-from musica.models import Song, Album, Artist, Podcast, PodcastEpisode
+from musica.models import *
 
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
