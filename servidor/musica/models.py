@@ -137,7 +137,7 @@ class Folder(models.Model):
     user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
     icon = models.FileField(blank=True)
 
-    
+
     class Meta:
         managed = True
         db_table = 'Folder'
@@ -148,6 +148,7 @@ class List(models.Model):
     title = models.CharField(max_length=50, unique=True)
     icon = models.FileField(blank=True)
     folders = models.ManyToManyField(Folder)
+    duration = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
@@ -158,9 +159,10 @@ class List(models.Model):
 class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
-    lyrics = models.CharField(max_length=400, blank=True)
+    lyrics = models.TextField(blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
     lists = models.ManyToManyField(List, blank=True)
+    duration = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -194,7 +196,13 @@ class Song(Audio):
 
     def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Song, self).save()#commit=False)
+        #print("Listas: " + self.lists)
 
+        for lista in self.lists.all():
+            print("Duracion antes de actualizar: %s" % lista.duration)
+            lista.duration = lista.duration + self.duration
+            print("Duracion despues de actualizar: %s" % lista.duration)
+            lista.save()
         # my custom code was here
 
         # if commit:
