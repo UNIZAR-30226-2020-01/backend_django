@@ -20,7 +20,7 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-
+# TODO: AÒadir el artista directamente
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio as√≠: https://stackoverflow.com/a/27851778
     # todo esto solo es necesario para cambiarle el nombre de la bd

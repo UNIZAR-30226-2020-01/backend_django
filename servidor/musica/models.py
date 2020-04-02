@@ -38,10 +38,9 @@ class Album(models.Model):
     date = models.DateField(db_column='Fecha')  # Field name made lowercase.
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
-    number_songs = models.IntegerField(default=0)
+    number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en añadirlo a playlist
     artists = models.ManyToManyField(Artist)
     # TODO: artista principal
-
 
     class Meta:
         managed = True

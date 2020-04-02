@@ -43,24 +43,37 @@ class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = ArtistSerializer
     # solo acepta GET:
     http_method_names = ['get']
+    # TODO: Separamos detail y list:
+    # action_serializers = {
+    #     'retrieve': AlbumDetailSerializer,
+    #     'list': AlbumListSerializer,
+    #     #'create': MyModelCreateSerializer
+    # }
+    #
+    # def get_serializer_class(self):
+    #
+    #     if hasattr(self, 'action_serializers'):
+    #         return self.action_serializers.get(self.action, self.serializer_class)
+    #
+    #     return super(MyModelViewSet, self).get_serializer_class()
 
 
 
 # Para diferenciar de list y detail, basado en: https://stackoverflow.com/a/30670569
+# class AlbumViewSet(viewsets.ModelViewSet):
+#
+#     queryset = Album.objects.all()
+#     serializer_class = AlbumSerializer
+#     # solo acepta GET:
+#     http_method_names = ['get']
+
 class AlbumViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows albums to be viewed.
     """
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
-    # solo acepta GET:
     http_method_names = ['get']
-
-class AlbumViewSet(viewsets.ModelViewSet):
-
-    queryset = Album.objects.all()
-    serializer_class = AlbumSerializer
-
     action_serializers = {
         'retrieve': AlbumDetailSerializer,
         'list': AlbumListSerializer,
