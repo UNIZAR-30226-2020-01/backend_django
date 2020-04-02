@@ -17,12 +17,9 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
 
 
-# TODO: En detalles del album dar la lista de las canciones!!!!
-class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Album
-        fields = '__all__'
-        depth = 1
+
+
+
 
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
@@ -43,6 +40,30 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+# TODO: En detalles del album dar la lista de las canciones!!!!
+class AlbumSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Album
+        fields = '__all__'
+        depth = 1
+
+# TODO: En detalles del album dar la lista de las canciones!!!!
+class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Album
+        fields = '__all__'
+        depth = 1
+
+class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
+    #songs = SongSerializer(many=True) #source='album.song_set',
+    class Meta:
+        model = Album
+        fields = (*[f.name for f in Album._meta.get_fields()], 'songs')
+        depth = 1
+
+
+
 
 class PlayListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

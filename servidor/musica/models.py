@@ -147,7 +147,7 @@ class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
     lyrics = models.TextField(blank=True)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, related_name='songs', on_delete=models.CASCADE)
     duration = models.IntegerField(default=0)
 
     class Meta:

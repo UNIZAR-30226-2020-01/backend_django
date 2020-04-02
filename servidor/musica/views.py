@@ -44,14 +44,37 @@ class ArtistViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
 
+
+
+# Para diferenciar de list y detail, basado en: https://stackoverflow.com/a/30670569
 class AlbumViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows songs to be viewed.
+    API endpoint that allows albums to be viewed.
     """
     queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     # solo acepta GET:
     http_method_names = ['get']
+
+class AlbumViewSet(viewsets.ModelViewSet):
+
+    queryset = Album.objects.all()
+    serializer_class = AlbumSerializer
+
+    action_serializers = {
+        'retrieve': AlbumDetailSerializer,
+        'list': AlbumListSerializer,
+        #'create': MyModelCreateSerializer
+    }
+
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(MyModelViewSet, self).get_serializer_class()
+
+
 
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
 class SongViewSet(viewsets.ModelViewSet):
@@ -67,7 +90,7 @@ class SongViewSet(viewsets.ModelViewSet):
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
 class PlaylistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows songs to be viewed.
+    API endpoint that allows playlists to be viewed.
     """
     queryset = Playlist.objects.all()
     serializer_class = PlayListSerializer
