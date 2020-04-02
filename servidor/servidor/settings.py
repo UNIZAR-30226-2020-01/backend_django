@@ -20,7 +20,7 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&af@4k@!tkthx2k_7g3j=cs_l%jf4x+&*6kqbpi6@&i+708v9!'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Contraseña de la bd en una variable de entorno:
 PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
@@ -112,8 +112,8 @@ AUTHENTICATION_BACKENDS = (
 
 # Google configuration
 ##Hay que conseguir estas cosas de la api de google
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '968247949241-bu1gmcsukgvth00mq7haehpb57aujl17.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'XJuOonDd1AhsgLC8loUyQ0-_'#<your app secret goes here>
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')#<your app secret goes here>
 
 # Define SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE to get extra permissions from Google.
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
