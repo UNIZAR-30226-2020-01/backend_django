@@ -144,7 +144,7 @@ class Folder(models.Model):
     def __str__(self):
         return self.title
 
-class List(models.Model):
+class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
     icon = models.FileField(blank=True)
     folders = models.ManyToManyField(Folder)
@@ -154,14 +154,14 @@ class List(models.Model):
         return self.title
     class Meta:
         managed = True
-        db_table = 'List'
+        db_table = 'Playlist'
 
 class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
     lyrics = models.TextField(blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    lists = models.ManyToManyField(List, blank=True)
+    playlists = models.ManyToManyField(Playlist, blank=True)
     duration = models.IntegerField(default=0)
 
     class Meta:

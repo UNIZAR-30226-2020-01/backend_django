@@ -45,8 +45,15 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         model = Song
         #album_detail = AlbumSerializer()
         fields = '__all__'
-        depth = 2
+        depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+class PlayListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Playlist
+        fields = '__all__'
+        depth = 2
+
 
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
