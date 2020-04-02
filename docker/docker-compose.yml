@@ -1,0 +1,64 @@
+# Fuente: https://dev.to/lewiskori/deploying-a-python-django-application-using-docker-3d09
+# Sin acabar!!
+version: '3'
+services:
+  web:
+    restart: always
+    build: ./backend_django/
+    container_name: ps-rest
+    volumes:
+      - ./backend_django:/code
+      - ./backend_django/servidor/servidor/static:/servidor/servidor/static
+      - ./backend_django/servidor/servidor/media:/servidor/servidor/media
+      #depends_on:
+      #    - postgres
+    networks:
+      appDjango:
+        aliases:
+          - django
+    expose:
+      - "8000"
+    environment:
+      - PASSWORD_POSTGRESQL=lQ9n_mpqPGxX5TumMLOWA62notw2MmJB
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=968247949241-bu1gmcsukgvth00mq7haehpb57aujl17.apps.googleusercontent.com
+      - SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=XJuOonDd1AhsgLC8loUyQ0-_
+      - SECRET_KEY=algakbjdfsAWGEPIWN093562aversiahoranosequejatravisdecaracteresespeciales
+      #- STATIC_ROOT=/code/static_cdn # ya no es venv
+      - DEPLOYMENT=1
+    command: /bin/sh -c "python manage.py collectstatic --no-input && gunicorn --workers=3 servidor.wsgi -b 0.0.0.0:8000"
+
+  #postgres:
+  #    build: ./postgres
+  #    restart: unless-stopped
+  #    expose:
+  #      - "5432"
+  #    environment:   # will be used by the init script
+  #          LC_ALL: C.UTF-8
+  #          POSTGRES_USER: myuser
+  #          POSTGRES_PASSWORD: mypassowrd.
+  #          POSTGRES_DB: mydb
+  #    volumes:
+  #        - pgdata:/var/lib/postgresql/data/
+
+  nginx:
+    restart: always
+    image: nginx:1.15-alpine
+    volumes:
+      - ./nginx/data/nginx:/etc/nginx/conf.d
+      - ./nginx/data/certbot/conf:/etc/letsencrypt
+      - ./nginx/data/certbot/www:/var/www/certbot
+      - ./backend_django/servidor/servidor/static:/code/static_cdn
+      - ./backend_django/servidor/servidor/media:/code/media_cdn
+    networks:
+      appDjango:
+    ports:
+      - "80:80"
+      - "443:443"
+
+#volumes:
+#  pgdata:
+#  media:
+#  static:
+
+networks:
+  appDjango:

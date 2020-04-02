@@ -11,13 +11,14 @@ label MANTAINER='pedro.tamargo.allue@gmail.com'
 RUN mkdir servidor
 WORKDIR servidor
 # Copiamos el repositorio al contenedor
-COPY ../servidor .
+COPY servidor .
 
 # Instalamos dependencias
 RUN apk add --no-cache --virtual .build-deps \
     ca-certificates gcc postgresql-dev linux-headers musl-dev curl \
     libffi-dev jpeg-dev zlib-dev \
     && pip install -r requirements.txt \
+    && pip install gunicorn \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
@@ -36,11 +37,8 @@ RUN apk add --no-cache --virtual .build-deps \
 #RUN pip3 install -r requirements.txt
 
 
-# Exponemos el puerto 8000 (http)
+# Exponemos el puerto 8000 (conexion interna)
 EXPOSE 8000
 
-# Exponemos el puerto 443 (https)
-EXPOSE 443
-
 # Iniciamos la aplicacion
-ENTRYPOINT ["python3", "manage.py", "runserver"]
+#ENTRYPOINT ["python3", "manage.py", "runserver"]
