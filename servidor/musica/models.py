@@ -39,7 +39,7 @@ class Album(models.Model):
     date = models.DateField(db_column='Fecha')  # Field name made lowercase.
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
-
+    number_songs = models.IntegerField(default=0)
     artists = models.ManyToManyField(Artist)
 
 
@@ -144,24 +144,13 @@ class Folder(models.Model):
     def __str__(self):
         return self.title
 
-class Playlist(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    icon = models.FileField(blank=True)
-    folders = models.ManyToManyField(Folder)
-    duration = models.IntegerField(default=0)
 
-    def __str__(self):
-        return self.title
-    class Meta:
-        managed = True
-        db_table = 'Playlist'
 
 class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
     lyrics = models.TextField(blank=True)
     album = models.ForeignKey(Album, on_delete=models.CASCADE)
-    playlists = models.ManyToManyField(Playlist, blank=True)
     duration = models.IntegerField(default=0)
 
     class Meta:
@@ -198,7 +187,7 @@ class Song(Audio):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
-        for lista in self.lists.all():
+        for lista in self.playlist_set.all():
             print("Duracion antes de actualizar: %s" % lista.duration)
             lista.duration = lista.duration + self.duration
             print("Duracion despues de actualizar: %s" % lista.duration)
@@ -208,6 +197,19 @@ class Song(Audio):
         # if commit:
         #     m.save()
         return m
+
+class Playlist(models.Model):
+    title = models.CharField(max_length=50, unique=True)
+    icon = models.FileField(blank=True)
+    folders = models.ManyToManyField(Folder)
+    duration = models.IntegerField(default=0)
+    songs = models.ManyToManyField(Song, blank=True)
+
+    def __str__(self):
+        return self.title
+    class Meta:
+        managed = True
+        db_table = 'List'
 
 class PodcastEpisode(Audio):
     URI = models.FileField()

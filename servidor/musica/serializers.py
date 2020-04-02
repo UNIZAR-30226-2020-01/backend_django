@@ -22,11 +22,13 @@ class ArtistSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
+
+# TODO: En detalles del album dar la lista de las canciones!!!!
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         fields = '__all__'
-        depth = 2
+        depth = 1
 
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
