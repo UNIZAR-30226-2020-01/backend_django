@@ -9,19 +9,30 @@ from musica.serializers import *
 
 from musica.models import *
 
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
 # Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+
+    def get(self, request, format=None):
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+        }
+        return Response(content)
 
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -33,9 +44,6 @@ class ArtistViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
 
-
-
-
 class AlbumViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
@@ -44,9 +52,6 @@ class AlbumViewSet(viewsets.ModelViewSet):
     serializer_class = AlbumSerializer
     # solo acepta GET:
     http_method_names = ['get']
-
-
-
 
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
 class SongViewSet(viewsets.ModelViewSet):
@@ -70,9 +75,6 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la solución: https://stackoverflow.com/a/31450643
 
-
-
-
 class PodcastViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
@@ -82,8 +84,6 @@ class PodcastViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la solución: https://stackoverflow.com/a/31450643
-
-
 
 class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     """

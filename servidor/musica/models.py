@@ -115,8 +115,6 @@ class Audio(models.Model):
         managed = True
         db_table = 'Audio'
 
-##### TODO: cambiar esta clase para usar la predefinida de django. Extenderla con herencia o sobreescribir sus campos,
-##### no se que es mejor. Nos facilitara implementar la autentificacion y demas, creo.
 class S7_user(User):
     podcasts = models.ManyToManyField(Podcast)
     siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
@@ -136,7 +134,6 @@ class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
     icon = models.FileField(blank=True)
-
 
     class Meta:
         managed = True
@@ -197,7 +194,8 @@ class Song(Audio):
         # if commit:
         #     m.save()
         return m
-
+##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
+## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
     icon = models.FileField(blank=True)
