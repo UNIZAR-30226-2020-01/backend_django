@@ -26,11 +26,8 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
-        fields = (*todosloscampos(model), 'album_set', 'featured_in_album_set')
+        fields = (*todosloscampos(model), 'album_set', 'albums')
         depth = 2
-
-
-
 
 
 # TODO: Añadir el artista directamente

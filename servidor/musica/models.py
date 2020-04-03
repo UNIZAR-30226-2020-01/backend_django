@@ -39,7 +39,7 @@ class Album(models.Model):
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
     number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en añadirlo a playlist
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE) # principal
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='albums') # principal
     other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
 
 
@@ -140,7 +140,6 @@ class Folder(models.Model):
         db_table = 'Folder'
     def __str__(self):
         return self.title
-
 
 
 class Song(Audio):
