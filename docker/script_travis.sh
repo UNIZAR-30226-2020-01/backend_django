@@ -5,7 +5,7 @@
 USER='PS'
 IP='s7-rest.francecentral.cloudapp.azure.com'
 
-FILE="./travis_rsa.enc"
+FILE="../travis_rsa"
 
 #yes | ssh -i $FILE $USER@IP 'pwd'
 ssh -i $FILE -o 'StrictHostKeyChecking no' $USER@$IP << EOF
