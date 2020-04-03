@@ -167,7 +167,6 @@ class Song(Audio):
             # artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
             # artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
             artista = str(self.album.artist)
-            print(artista)
             letra = api.get_lyrics(self.title, artista)
         except Album.DoesNotExist: # otro gestion de excepciones posible
             pass
