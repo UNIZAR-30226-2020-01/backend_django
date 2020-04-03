@@ -1,51 +1,21 @@
-# fuente original: https://www.lesinskis.com/travis_ci_django.html
-
-# De la documentacion: https://docs.travis-ci.com/user/notifications/#configuring-email-notifications
-# Para cambiar opciones de email:
-# notifications:
-#   email:
-#     recipients:
-#       - one@example.com
-#       - other@example.com
-#     on_success: never # default: change
-#     on_failure: always # default: always
-#
-# # O hacer que nunca envie mails:
-# notifications:
-#   email: false
-
 language: python
-
 python:
-  #- "3.4"
-  - "3.7"
-
-# usamos postgres
+- '3.7'
 services: postgresql
-
 env:
   global:
-    - DJANGO_SETTINGS_MODULE="servidor.settings"
-    - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django/servidor"
-    - PIP_USE_MIRRORS=true
-    #- BUILD_ON_TRAVIS=true # ya no es necesaria, por defecto tenemos TRAVIS=true
+  - DJANGO_SETTINGS_MODULE="servidor.settings"
+  - PYTHONPATH="/home/travis/build/UNIZAR-30226-2020-01/backend_django/servidor"
+  - PIP_USE_MIRRORS=true
   matrix:
-    - DB=postgres
-
-#commands to install dependencies
+  - DB=postgres
 install:
-#- pip install -q Django==$DJANGO # ahora en requirements
-  - pip install -q -r servidor/requirements.txt
-
+- pip install -q -r servidor/requirements.txt
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
-  - python servidor/manage.py migrate --noinput
-
-#command to run the test suite
+- psql -c 'create database travis_ci_test;' -U postgres
+- python servidor/manage.py migrate --noinput
 script:
-  - python servidor/manage.py test
-
-
-# TODO: Integrar con la máquina de Azure
-# deploy:
-#   -
+- python servidor/manage.py test
+after_success:
+- openssl aes-256-cbc -K $encrypted_2c65ff4ef9b8_key -iv $encrypted_2c65ff4ef9b8_iv -in travis_rsa.enc -out ../travis_rsa -d
+- bash docker/script_travis.sh
