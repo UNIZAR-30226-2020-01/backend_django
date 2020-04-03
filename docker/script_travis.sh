@@ -11,9 +11,9 @@ chmod 0600 $FILE
 
 #yes | ssh -i $FILE $USER@IP 'pwd'
 ssh -i $FILE -o 'StrictHostKeyChecking no' $USER@$IP << EOF
-  cd ~ps/backend_django
+  cd ~PS/backend_django
   git pull origin master
-  cd ~ps
+  cd ~PS
   # Paramos el servicio
   sudo docker-compose down
   # Reconstruimos la imagen
