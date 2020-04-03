@@ -5,11 +5,10 @@
 USER='PS'
 IP='s7-rest.francecentral.cloudapp.azure.com'
 
-FILE=$(mktemp tmpXXX)
+FILE="./travis_rsa.enc"
 
-echo $TRAVIS_RSA > $FILE
-
-ssh -i $FILE $USER@$IP << EOF
+#yes | ssh -i $FILE $USER@IP 'pwd'
+ssh -i $FILE -o 'StrictHostKeyChecking no' $USER@$IP << EOF
   cd ~ps/backend_django
   git pull origin master
   cd ~ps
@@ -20,5 +19,3 @@ ssh -i $FILE $USER@$IP << EOF
   # Levantamos el servicio
   sudo docker-compose up -d
 EOF
-
-rm $FILE
