@@ -12,6 +12,7 @@ echo $TRAVIS_RSA > $FILE
 ssh -i $FILE $USER@$IP << EOF
   cd ~ps/backend_django
   git pull origin master
+  cd ~ps
   # Paramos el servicio
   sudo docker-compose down
   # Reconstruimos la imagen
