@@ -14,7 +14,7 @@ class Lyrics_api:
         response = requests.get(uri)
         if response.status_code != 200: # arreglar esto que esta feo
             # TODO: aquí se llamarí­a a otra API
-            return '' # de momento mejor la cadena vacia que lo de antes: These lyrics are not available (error: ' + str(response.status_code) + ')
+            return ' ' # de momento mejor la cadena vacia que lo de antes: These lyrics are not available (error: ' + str(response.status_code) + ')
         #print(response.text)
         return response.json()[self.lyrics_key] # devuelve la letra (el valor de la clave dada en el diccionario json)
 

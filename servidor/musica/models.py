@@ -35,12 +35,13 @@ class Album(models.Model):
         ('S', 'Single'),
     )
     title = models.CharField(max_length=100)
-    date = models.DateField(db_column='Fecha')  # Field name made lowercase.
+    date = models.DateField(db_column='fecha')  # Field name made lowercase.
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
     number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en añadirlo a playlist
-    artists = models.ManyToManyField(Artist)
-    # TODO: artista principal
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE) # principal
+    other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
+
 
     class Meta:
         managed = True
@@ -163,9 +164,12 @@ class Song(Audio):
 
         try:
             # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
-            artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
-            artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
-            letra = api.get_lyrics(self.title, artistas_str)
+            # Metodo antiguo: concatenar todos sus artistas:
+            # artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
+            # artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
+            artista = str(self.album.artist)
+            print(artista)
+            letra = api.get_lyrics(self.title, artista)
         except Album.DoesNotExist: # otro gestion de excepciones posible
             pass
 
@@ -206,7 +210,7 @@ class Playlist(models.Model):
         return self.title
     class Meta:
         managed = True
-        db_table = 'List'
+        db_table = 'Playlist'
 
 class PodcastEpisode(Audio):
     URI = models.FileField()

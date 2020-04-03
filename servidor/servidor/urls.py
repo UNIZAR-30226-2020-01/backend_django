@@ -30,9 +30,9 @@ router.register(r'users', views.UserViewSet)
 router.register(r'artists', views.ArtistViewSet)
 router.register(r'albums', views.AlbumViewSet)
 router.register(r'songs', views.SongViewSet)
-router.register(r'podcast', views.PodcastViewSet)
-router.register(r'podcast-episode', views.PodcastEpisodeViewSet)
-router.register(r'playlist', views.PlaylistViewSet)
+router.register(r'podcasts', views.PodcastViewSet)
+router.register(r'podcast-episodes', views.PodcastEpisodeViewSet)
+router.register(r'playlists', views.PlaylistViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
@@ -42,4 +42,4 @@ urlpatterns = [
     ##Comprobar que esto no falle
     path('auth/', include('rest_framework_social_oauth2.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # para los ficheros media (mp3)

@@ -4,16 +4,29 @@ from musica.models import *
 from rest_framework import serializers
 
 
+
+# Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
+# Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible
+def todosloscampos(modelo):
+    return [f.name for f in modelo._meta.get_fields()]
+
+
 # Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'email']
 
-class ArtistSerializer(serializers.HyperlinkedModelSerializer):
+class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
         fields = '__all__'
+        depth = 2
+
+class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist
+        fields = (*todosloscampos(model), 'album_set', 'featured_in_album_set')
         depth = 2
 
 
@@ -41,14 +54,17 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
-# TODO: En detalles del album dar la lista de las canciones!!!!
+
+
+
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         fields = '__all__'
         depth = 1
 
-# TODO: En detalles del album dar la lista de las canciones!!!!
+
+
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
@@ -59,7 +75,8 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     #songs = SongSerializer(many=True) #source='album.song_set',
     class Meta:
         model = Album
-        fields = (*[f.name for f in Album._meta.get_fields()], 'songs')
+        # * convierte la lista en iterable
+        fields = (*todosloscampos(model), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 1
 
 

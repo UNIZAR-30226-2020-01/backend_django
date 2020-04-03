@@ -40,16 +40,16 @@ class ArtistViewSet(viewsets.ModelViewSet):
     API endpoint that allows songs to be viewed.
     """
     queryset = Artist.objects.all()
-    serializer_class = ArtistSerializer
+    serializer_class = ArtistListSerializer # por defecto lista
     # solo acepta GET:
     http_method_names = ['get']
     # TODO: Separamos detail y list:
-    # action_serializers = {
-    #     'retrieve': AlbumDetailSerializer,
-    #     'list': AlbumListSerializer,
-    #     #'create': MyModelCreateSerializer
-    # }
-    #
+    action_serializers = {
+        'retrieve': ArtistDetailSerializer,
+        'list': ArtistListSerializer,
+        #'create': MyModelCreateSerializer
+    }
+
     # def get_serializer_class(self):
     #
     #     if hasattr(self, 'action_serializers'):
@@ -85,7 +85,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
         if hasattr(self, 'action_serializers'):
             return self.action_serializers.get(self.action, self.serializer_class)
 
-        return super(MyModelViewSet, self).get_serializer_class()
+        return super(AlbumViewSet, self).get_serializer_class()
 
 
 

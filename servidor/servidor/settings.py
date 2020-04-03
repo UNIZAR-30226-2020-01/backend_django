@@ -161,14 +161,28 @@ if os.getenv('TRAVIS', None):
         }
     }
 
+# Para deployment:
+elif DEPLOYMENT:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST' : 'database',
+            'NAME' : 'psdatabase',
+            #'DATABASE' : 'psdatabase',
+            'PORT' : '5432',
+            'USER' : 'ghjcpmoz',
+            'PASSWORD' : PASSWORD_POSTGRESQL,
+            'CHARSET' : 'utf8',
+        },
+    }
 
 else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST' : 'kandula.db.elephantsql.com',
-            'NAME' : 'ghjcpmoz',
-            'DATABASE' : 'ghjcpmoz',
+            'HOST' : 's7-rest.francecentral.cloudapp.azure.com',
+            'NAME' : 'psdatabase',
+            #'DATABASE' : 'psdatabase',
             'PORT' : '5432',
             'USER' : 'ghjcpmoz',
             'PASSWORD' : PASSWORD_POSTGRESQL,
