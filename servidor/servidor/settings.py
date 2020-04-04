@@ -44,8 +44,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.sites',
     'rest_framework',
+
+    #Nueva autenticacion
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     ##Autentication
     'oauth2_provider',
     'social_django',
@@ -95,9 +101,18 @@ REST_FRAMEWORK = {
     ),
 }
 
+SITE_ID = 1
+
+
 AUTHENTICATION_BACKENDS = (
     # Others auth providers (e.g. Facebook, OpenId, etc)
     ##Ya veremos a ver que hacemos
+
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
 
     # Google OAuth2
     'social_core.backends.google.GoogleOAuth2',

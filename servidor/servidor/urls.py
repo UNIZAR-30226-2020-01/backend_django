@@ -39,7 +39,8 @@ router.register(r'playlists', views.PlaylistViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
-    ##Comprobar que esto no falle
+    ##Comprobar que esto no falle, en la docu ponia que habia que poner url, no path
+    path(r'^accounts/', include('allauth.urls')),
     path('auth/', include('rest_framework_social_oauth2.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # para los ficheros media (mp3)
