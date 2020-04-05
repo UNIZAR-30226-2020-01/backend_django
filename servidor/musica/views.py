@@ -98,7 +98,7 @@ class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la solución: https://stackoverflow.com/a/31450643
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -109,7 +109,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlayListSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la solución: https://stackoverflow.com/a/31450643
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
 class PodcastViewSet(viewsets.ModelViewSet):
     """
@@ -119,7 +119,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
     serializer_class = PodcastSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la solución: https://stackoverflow.com/a/31450643
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
 class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     """
@@ -129,7 +129,7 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     serializer_class = PodcastEpisodeSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la solución: https://stackoverflow.com/a/31450643
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
 
 class SearchViewSet(viewsets.ModelViewSet):
@@ -137,7 +137,7 @@ class SearchViewSet(viewsets.ModelViewSet):
     API endpoint that allows to search stuff.
     """
     queryset = Song.objects.all()
-    serializer_class = SongSerializer
+    serializer_class = SearchSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la solución: https://stackoverflow.com/a/31450643
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643

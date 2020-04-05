@@ -46,7 +46,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = (*todosloscampos(model, ['artist']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
+        fields = (*todosloscampos(model, ['artist','songs']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 0
 
 
@@ -57,11 +57,11 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
-    album = AlbumReducedSerializer(many=True)
+    elalbum = AlbumReducedSerializer(many=True, source='albums')
     class Meta:
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
-        fields = (*todosloscampos(model), 'album')
+        fields = (*todosloscampos(model), 'elalbum')
         depth = 1
 
 # TODO: Añadir el artista directamente
@@ -105,9 +105,6 @@ class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
         model = PodcastEpisode
         fields = '__all__'
         depth = 2
-
-
-
 
 
 # TODO: Buena suerte
