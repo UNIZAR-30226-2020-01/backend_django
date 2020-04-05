@@ -6,10 +6,10 @@ from rest_framework import serializers
 
 
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
-# Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible
+# Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo):
-    # lista de los nombres (str) de los campos del modelo
-    return [f.name for f in modelo._meta.get_fields()]
+    # lista de los nombres (str) de los campos del modelo que no sean 'id'
+    return [f.name for f in modelo._meta.get_fields() if f.name != 'id']
 
 
 # Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
