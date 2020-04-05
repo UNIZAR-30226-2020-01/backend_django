@@ -57,14 +57,14 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
-    #albums = AlbumReducedSerializer(many=True)
+    album = AlbumReducedSerializer(many=True)
     class Meta:
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
-        fields = (*todosloscampos(model), 'albums')
+        fields = (*todosloscampos(model), 'album')
         depth = 1
 
-# TODO: AÒadir el artista directamente?? Igual no
+# TODO: AÒadir el artista directamente
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio as√≠: https://stackoverflow.com/a/27851778
     # todo esto solo es necesario para cambiarle el nombre de la bd
@@ -91,7 +91,7 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Playlist
         fields = '__all__'
-        depth = 2
+        depth = 3
 
 
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
@@ -108,7 +108,10 @@ class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-class SongSerializer(serializers.HyperlinkedModelSerializer):
+
+
+# TODO: Buena suerte
+class SearchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
