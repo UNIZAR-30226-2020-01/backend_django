@@ -44,7 +44,6 @@ class Album(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE) # principal
     other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
 
-
     class Meta:
         managed = True
         db_table = 'Album'
@@ -224,7 +223,6 @@ class Folder(models.Model):
         db_table = 'Folder'
     def __str__(self):
         return self.title
-
 
 
 class PodcastEpisode(Audio):

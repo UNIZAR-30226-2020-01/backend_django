@@ -43,7 +43,7 @@ class ArtistViewSet(viewsets.ModelViewSet):
     serializer_class = ArtistListSerializer # por defecto lista
     # solo acepta GET:
     http_method_names = ['get']
-    # TODO: Separamos detail y list:
+
     action_serializers = {
         'retrieve': ArtistDetailSerializer,
         'list': ArtistListSerializer,
@@ -127,6 +127,17 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     """
     queryset = PodcastEpisode.objects.all()
     serializer_class = PodcastEpisodeSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la solución: https://stackoverflow.com/a/31450643
+
+
+class SearchViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows to search stuff.
+    """
+    queryset = Song.objects.all()
+    serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la solución: https://stackoverflow.com/a/31450643
