@@ -132,16 +132,6 @@ class S7_user(User):
     def __str__(self):
         return self.name
 
-class Folder(models.Model):
-    title = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, blank=True) #TODO: quitar blank de aqui, es para una prueba
-    icon = models.FileField(blank=True)
-
-    class Meta:
-        managed = True
-        db_table = 'Folder'
-    def __str__(self):
-        return self.title
 
 
 class Song(Audio):
@@ -202,7 +192,6 @@ class Song(Audio):
 class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
     icon = models.FileField(blank=True)
-    folders = models.ManyToManyField(Folder)
     duration = models.IntegerField(default=0)
     songs = models.ManyToManyField(Song, blank=True)
 
@@ -211,6 +200,20 @@ class Playlist(models.Model):
     class Meta:
         managed = True
         db_table = 'Playlist'
+
+class Folder(models.Model):
+    title = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, blank=True) #TODO: quitar blank de aqui, es para una prueba
+    icon = models.FileField(blank=True)
+    playlists = models.ManyToManyField(Playlist)
+
+    class Meta:
+        managed = True
+        db_table = 'Folder'
+    def __str__(self):
+        return self.title
+
+
 
 class PodcastEpisode(Audio):
     URI = models.FileField()
