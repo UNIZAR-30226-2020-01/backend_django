@@ -17,6 +17,8 @@ class Artist(models.Model):
     email = models.EmailField(max_length=50, blank=True)
     image = models.FileField(null=True, blank=True)
     biography = models.TextField(blank=True)
+    number_albums = models.IntegerField(default=0) # TODO: Automatizar
+    number_songs = models.IntegerField(default=0) # TODO: Automatizar
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
     #albumes = models.ManyToManyField(Album) # cambiado a album

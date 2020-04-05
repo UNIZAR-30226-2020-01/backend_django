@@ -29,8 +29,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
         fields = (*todosloscampos(model), 'albums')
-        depth = 1
-
+        depth = 0
 
 # TODO: Añadir el artista directamente
 class SongSerializer(serializers.HyperlinkedModelSerializer):
