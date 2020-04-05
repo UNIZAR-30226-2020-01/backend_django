@@ -8,6 +8,7 @@ from rest_framework import serializers
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible
 def todosloscampos(modelo):
+    # lista de los nombres (str) de los campos del modelo
     return [f.name for f in modelo._meta.get_fields()]
 
 
@@ -26,8 +27,9 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
-        fields = (*todosloscampos(model), 'album_set', 'albums')
-        depth = 2
+        # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
+        fields = (*todosloscampos(model), 'albums')
+        depth = 1
 
 
 # TODO: Añadir el artista directamente
@@ -72,7 +74,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     #songs = SongSerializer(many=True) #source='album.song_set',
     class Meta:
         model = Album
-        # * convierte la lista en iterable
+        # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
         fields = (*todosloscampos(model), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 1
 
