@@ -40,8 +40,8 @@ class Album(models.Model):
     date = models.DateField(db_column='fecha')  # Field name made lowercase.
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
-    number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en a�adirlo a playlist
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='albums') # principal
+    number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en a�adirlo a playlist
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE) # principal
     other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
 
 
@@ -179,6 +179,7 @@ class Song(Audio):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
+        #Actualizamos duración de las listas a las que pertenece
         for lista in self.playlist_set.all():
             print("Duracion antes de actualizar: %s" % lista.duration)
             lista.duration = lista.duration + self.duration
@@ -186,9 +187,18 @@ class Song(Audio):
             lista.save()
         # my custom code was here
 
-        # if commit:
-        #     m.save()
+        #Se actualiza el numero de canciones del album al que pertenece(Si no es una actalización)
+        if not self.pk:
+            self.album.number_songs+=1
+            print("Creando cancion...")
+        else:
+            print("Modificando cancion...")
+
         return m
+
+    def delete(self):
+        # Hacemos que el numero de canciones del album disminuya
+        self.album.number_songs-=1
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
