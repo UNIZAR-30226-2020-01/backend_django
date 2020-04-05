@@ -49,6 +49,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
         fields = (*todosloscampos(model, ['artist']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 0
 
+
 class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
@@ -56,7 +57,7 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
-    albums = AlbumReducedSerializer(many=True)
+    #albums = AlbumReducedSerializer(many=True)
     class Meta:
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))

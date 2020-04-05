@@ -41,7 +41,7 @@ class Album(models.Model):
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
     number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en a�adirlo a playlist
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE) # principal
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='albums') # principal
     other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
 
     class Meta:
