@@ -2,9 +2,15 @@ from __future__ import print_function
 import sys
 import getpass
 
+from urllib.parse import urljoin, urlencode
+
 import mygpoclient
 
 from mygpoclient import simple
+from mygpoclient import public
+from mygpoclient import locator
+from mygpoclient import feeds
+from mygpoclient import json
 
 def usage():
     print("""
@@ -12,7 +18,7 @@ def usage():
     """ % (sys.argv[0],), file=sys.stderr)
     sys.exit(1)
 
-if __name__ == '__main__':
+def prueba():
     # Use the default url if not specified
     if len(sys.argv) == 4:
         sys.argv.append(mygpoclient.ROOT_URL)
@@ -46,7 +52,47 @@ if __name__ == '__main__':
         else:
             print('Could not upload list.', file=sys.stderr)
 
+def update_using_feedservice(podcasts):
+    urls = [podcast.url for podcast in podcasts]
 
+    client = feeds.FeedserviceClient()
+    # Last modified + logo/etc..
+    urls = client.encode(urls)
+
+    result = client.parse_feeds(urls)
+
+    for podcast in podcasts:
+        feed = result.get_feed(podcast.url)
+        if feed is None:
+            logger.info('Feed not updated: %s', podcast.url)
+            continue
+
+        # Handle permanent redirects
+        if feed.get('new_location', False):
+            new_url = feed['new_location']
+            logger.info('Redirect %s => %s', podcast.url, new_url)
+            podcast.url = new_url
+
+        # Error handling
+        if feed.get('errors', False):
+            logger.error('Error parsing feed: %s', repr(feed['errors']))
+            continue
+
+        # Update per-podcast metadata
+        podcast.title = feed.get('title', podcast.url)
+        podcast.link = feed.get('link', podcast.link)
+        podcast.description = feed.get('description', podcast.description)
+        podcast.cover_url = feed.get('logo', podcast.cover_url)
+        #podcast.http_etag = feed.get('http_etag', podcast.http_etag)
+        #podcast.http_last_modified = feed.get('http_last_modified', \
+        #        podcast.http_last_modified)
+        #podcast.save()
+
+        # Update episodes
+        parsed_episodes = [parse_entry(podcast, entry) for entry in feed['episodes']]
+
+if __name__ == '__main__':
+    
 #---------------------------------------------------#
 #-----Todo esto pertenece a la api listennotes------#
 #Para poder usarla debemos:

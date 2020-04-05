@@ -50,12 +50,12 @@ class ArtistViewSet(viewsets.ModelViewSet):
         #'create': MyModelCreateSerializer
     }
 
-    # def get_serializer_class(self):
-    #
-    #     if hasattr(self, 'action_serializers'):
-    #         return self.action_serializers.get(self.action, self.serializer_class)
-    #
-    #     return super(MyModelViewSet, self).get_serializer_class()
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(MyModelViewSet, self).get_serializer_class()
 
 
 
