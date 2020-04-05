@@ -3,6 +3,7 @@
 # import getpass
 import os
 import requests
+import json
 
 from set_credentials import the_secret_function # borrar esta linea, es solo para el hello world
 
@@ -22,24 +23,62 @@ class Podcasts_api:
         self.headers = {
             'X-ListenAPI-Key' : self.key
         }
-        self.querystring = {}   ## TODO: lo dejo porque pensaba hacer una cosa, pero se puede eliminar
+
 
     # Existen muchos parámetros, de momento creo que los más importantes son los siguientes
     #   -name: nombre del podcast (obligatorio)
     #   -type: episode, podcast, curated (default: episode)
     #   -language: lenguaje del podcast (default: all languages)
     #   -sort_by_date: indica si muestra los podcast ordenados por fecha (0 = NO y muestra por relevancia)
-    def get_podcast(self, nombre, type, language, sort_by_date ):
-        # TODO: arreglar esta, jeje
+    def search(self, nombre, type='episode', language='Spanish', sort_by_date=0):
+
         #Contiene los parámetros para la búsqueda de podcast
-        querystring = { "q": nombre, "type": type, "language": language,
-        "sort_by_date": sort_by_date
+        querystring = { 'q': nombre, 'type': type, 'language': language,
+        'sort_by_date': sort_by_date
         }
-        response = requests.request('GET', self.url, headers=self.headers, params=querystring)
+        #Se debe añadir /search para que la url sea correcta
+        response = requests.get(self.url + '/search', headers=self.headers, params=querystring)
+
         if response.status_code != 200:
             return 'No podcast found (error: ' + str(response.status_code) + ')'
 
-        return response.json()['took']#response.json() ## TODO: Cuando tenga la API KEY, se podrá terminar
+        return response.json()#response.json() ## TODO: Cuando tenga la API KEY, se podrá terminar
+
+    #Devuelve los mejores podcasts en funcion de los parámetros
+    #   -genre_id: genero de los podcast. Más info: get_genres()
+    #   -region: región del podcast. Más info: get_regions()
+    #   -
+    def get_bestpodcast(self, genre_id = None , region='es' ):
+        querystring = {
+            'genre_id': genre_id, 'region': region
+        }
+        response = requests.get(self.url + '/best_podcasts', headers=self.headers, params=querystring)
+
+        return response.json()
+
+    #Devuelve todos los géneros a los que puede pertenecer podcast
+    def get_genres(self):
+
+        response = requests.get(self.url + '/genres', headers=self.headers)
+        return response.json()
+
+    #Devuelve las posibles regiones de podcast en forma de json
+    def get_regions(self):
+        response = requests.get(self.url + '/regions', headers=self.headers)
+        return response.json()
+
+    #Devuleve un episodio de un podcast random
+    def get_randomEpisode(self):
+        response = requests.get(self.url + '/just_listen', headers=self.headers)
+        return response.json()
+
+    #Dada una lista de ids de episodios, devuelve sus links de audio
+    def get_audio(self, ids):
+        data = {
+            'ids': ids
+        }
+        response = requests.post(self.url + '/episodes', headers=self.headers, data = data)
+        print([l["audio"] for l in response.json()["episodes"]])
 
     # Copiada de https://www.listennotes.com/api/docs/ tal cual. Al menos confirma que la key funciona
     def helloWorld(self):
@@ -51,21 +90,16 @@ class Podcasts_api:
         response = requests.request('GET', url, headers=headers)
         print(response.json())
 
-
-
 # Para probar que funciona
 if __name__ == '__main__':
-    the_secret_function() # borrar esta linea, es solo para el hello world
+    the_secret_function()
     pd = Podcasts_api()
-    querystring = {"q":"Wismichu"}
-    headers = {
-      'X-ListenAPI-Key': '',
-    }
+    result = pd.get_audio(ids='c577d55b2b2b483c969fae3ceb58e362,0f34a9099579490993eec9e8c8cebb82')
 
-    nombre="Wismichu"
-    type="Podcast"
-    language="spanish"
+    # result = json.dumps(result)
+    # parsed = json.loads(result)
+    #
+    # print(json.dumps(parsed, indent=4, sort_keys=True))
     #response = pd.get_podcast(nombre, type, language, 0)
     # response = requests.request('GET', headers=headers, params=querystring)
-    response = pd.helloWorld()
-    print(response)
+    #response = pd.helloWorld()
