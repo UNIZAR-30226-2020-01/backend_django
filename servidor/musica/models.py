@@ -115,6 +115,8 @@ class Audio(models.Model):
         managed = True
         db_table = 'Audio'
 
+
+# TODO: mas blank=True pls
 class S7_user(User):
     podcasts = models.ManyToManyField(Podcast)
     siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
@@ -132,7 +134,7 @@ class S7_user(User):
 
 class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, blank=True) #TODO: quitar blank de aqui, es para una prueba
     icon = models.FileField(blank=True)
 
     class Meta:
