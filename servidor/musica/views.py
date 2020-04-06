@@ -100,16 +100,44 @@ class SongViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
-# No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
+
 class PlaylistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows playlists to be viewed.
+    API endpoint that allows all playlists to be viewed.
     """
     queryset = Playlist.objects.all()
     serializer_class = PlayListSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+
+
+class UserPlaylistViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows all playlists to be viewed.
+    """
+    #queryset = Playlist.objects.all()
+
+
+    serializer_class = PlayListSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    # Sobreescribimos el método que devuelve el queryset, para que de las
+    # playlists del usuario autentificado
+    #(basado en https://www.django-rest-framework.org/api-guide/filtering/#django-rest-framework-full-word-search-filter)
+    def get_queryset(self):
+        """
+        This view should return a list of all the playlists
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        print("El usuario ", user, " esta autentificado")
+        return Playlist.objects.filter(user=user)
+
+
 
 class PodcastViewSet(viewsets.ModelViewSet):
     """
