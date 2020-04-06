@@ -17,8 +17,15 @@ class Artist(models.Model):
     email = models.EmailField(max_length=50, blank=True)
     image = models.FileField(null=True, blank=True)
     biography = models.TextField(blank=True)
-    number_albums = models.IntegerField(default=0) # TODO: Automatizar
-    number_songs = models.IntegerField(default=0) # TODO: Automatizar
+
+    @property
+    def number_songs(self):
+        return sum([l.number_songs for l in self.albums.all()])
+
+    @property
+    def number_albums():
+        return self.albums.count()
+
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
     #albumes = models.ManyToManyField(Album) # cambiado a album
@@ -40,9 +47,12 @@ class Album(models.Model):
     date = models.DateField(db_column='fecha')  # Field name made lowercase.
     icon = models.FileField(blank=True)
     type = models.CharField(max_length=2, choices=TIPOS_ALBUM)
-    number_songs = models.IntegerField(default=0) # TODO: implementar actualizacion automatica, pensar en a�adirlo a playlist
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='albums') # principal
     other_artists = models.ManyToManyField(Artist, blank=True, related_name='featured_in_album') # otros
+
+    @property
+    def number_songs(self):
+        return self.songs.count()
 
     class Meta:
         managed = True
@@ -133,8 +143,6 @@ class S7_user(User):
     # def __str__(self):
     #     return self.name
 
-
-
 class Song(Audio):
     track = models.IntegerField()
     times_played = models.IntegerField(default=0)
@@ -178,23 +186,6 @@ class Song(Audio):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
-        #Actualizamos duración de las listas a las que pertenece
-        for lista in self.playlist_set.all():
-            print("Duracion antes de actualizar: %s" % lista.duration)
-            lista.duration = lista.duration + self.duration
-            print("Duracion despues de actualizar: %s" % lista.duration)
-            lista.save()
-        # my custom code was here
-
-        #Se actualiza el numero de canciones del album al que pertenece(Si no es una actalización)
-        if not self.pk:
-            self.album.number_songs+=1
-            print("Creando cancion...")
-        else:
-            print("Modificando cancion...")
-
-        return m
-
     def delete(self):
         # Hacemos que el numero de canciones del album disminuya
         self.album.number_songs-=1
@@ -204,11 +195,19 @@ class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
     icon = models.FileField(blank=True)
-    duration = models.IntegerField(default=0)
     songs = models.ManyToManyField(Song, blank=True)
+
+    @property
+    def duration(self):
+        return sum([s.duration for s in self.songs.all()])
+
+    @property
+    def number_songs(self):
+        return self.songs.count()
 
     def __str__(self):
         return self.title
+
     class Meta:
         managed = True
         db_table = 'Playlist'
@@ -224,7 +223,6 @@ class Folder(models.Model):
         db_table = 'Folder'
     def __str__(self):
         return self.title
-
 
 class PodcastEpisode(Audio):
     URI = models.FileField()
