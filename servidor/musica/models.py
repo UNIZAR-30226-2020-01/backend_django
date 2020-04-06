@@ -202,7 +202,7 @@ class Song(Audio):
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
     icon = models.FileField(blank=True)
     duration = models.IntegerField(default=0)
     songs = models.ManyToManyField(Song, blank=True)
