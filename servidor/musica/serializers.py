@@ -46,7 +46,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = (*todosloscampos(model, ['artist','songs']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
+        fields = (*todosloscampos(model, ['artist','song']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 0
 
 
@@ -86,12 +86,26 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
 
+class S7_userSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = S7_user
+        fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        depth = 0
+
+
+class otro(serializers.ModelSerializer):
+    class Meta:
+        model = S7_user
+        fields = ['username']
+
+
 
 class PlayListSerializer(serializers.HyperlinkedModelSerializer):
+    user = S7_userSerializer()#, source='user')
     class Meta:
         model = Playlist
-        fields = '__all__'
-        depth = 3
+        fields = '__all__' #(*todosloscampos(model))
+        depth = 1
 
 
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):

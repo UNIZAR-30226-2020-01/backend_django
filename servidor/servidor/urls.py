@@ -33,6 +33,7 @@ router.register(r'songs', views.SongViewSet)
 router.register(r'podcasts', views.PodcastViewSet)
 router.register(r'podcast-episodes', views.PodcastEpisodeViewSet)
 router.register(r'playlists', views.PlaylistViewSet)
+router.register(r's7_user', views.S7_userViewSet)
 
 # busqueda, se viene rayada:
 router.register(r'search', views.SearchViewSet)

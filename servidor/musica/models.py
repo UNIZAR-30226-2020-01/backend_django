@@ -119,19 +119,19 @@ class Audio(models.Model):
 
 # TODO: mas blank=True pls
 class S7_user(User):
-    podcasts = models.ManyToManyField(Podcast)
-    siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor')
+    podcasts = models.ManyToManyField(Podcast, blank=True)
+    siguiendo = models.ManyToManyField('self', symmetrical=False, related_name='seguidor', blank=True)
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
-    reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True)
-    segundos = models.IntegerField(null=True) # segundo de reproduccion del audio guardado
-    favorito = models.ManyToManyField(Audio, related_name='favorito')
+    reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True, blank=True)
+    segundos = models.IntegerField(null=True, default=0) # segundo de reproduccion del audio guardado
+    favorito = models.ManyToManyField(Audio, related_name='favorito', blank=True)
 
     class Meta:
         managed = True
         db_table = 'S7_user'
 
-    def __str__(self):
-        return self.name
+    # def __str__(self):
+    #     return self.name
 
 
 
@@ -202,6 +202,7 @@ class Song(Audio):
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, null=True, blank=True)
     icon = models.FileField(blank=True)
     duration = models.IntegerField(default=0)
     songs = models.ManyToManyField(Song, blank=True)
@@ -216,7 +217,7 @@ class Folder(models.Model):
     title = models.CharField(max_length=50, unique=True)
     user = models.ForeignKey(S7_user, on_delete=models.CASCADE, blank=True) #TODO: quitar blank de aqui, es para una prueba
     icon = models.FileField(blank=True)
-    playlists = models.ManyToManyField(Playlist)
+    playlists = models.ManyToManyField(Playlist, related_name='folder')
 
     class Meta:
         managed = True

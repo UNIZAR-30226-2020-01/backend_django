@@ -141,3 +141,15 @@ class SearchViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+
+###TODO: Revisar, seguramente habra que eliminar esto
+class S7_userViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows to search stuff.
+    """
+    queryset = S7_user.objects.all()
+    serializer_class = S7_userSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
