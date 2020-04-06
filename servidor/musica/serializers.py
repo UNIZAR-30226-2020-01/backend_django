@@ -101,11 +101,11 @@ class otro(serializers.ModelSerializer):
 
 
 class PlayListSerializer(serializers.HyperlinkedModelSerializer):
-    user = S7_userSerializer()#, source='user')
+    user = S7_userSerializer() # especificamos que use el serializador de lista, no hacen falta detalles
     class Meta:
         model = Playlist
         fields = '__all__' #(*todosloscampos(model))
-        depth = 1
+        depth = 3
 
 
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
