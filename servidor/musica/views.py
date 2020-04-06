@@ -119,6 +119,8 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
     #queryset = Playlist.objects.all()
 
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     serializer_class = PlayListSerializer
     # solo acepta GET:
@@ -134,7 +136,7 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
         for the currently authenticated user.
         """
         user = self.request.user
-        print("El usuario ", user, " esta autentificado")
+        print("Usuario en request: ", user)
         return Playlist.objects.filter(user=user)
 
 

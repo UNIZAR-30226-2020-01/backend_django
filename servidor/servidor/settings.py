@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure
 
 # Application definition
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,12 +51,17 @@ INSTALLED_APPS = [
     #Nueva autenticacion
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    # Nueva nueva autenticacion:
+    'rest_framework.authtoken',
+    'rest_auth',
+    'rest_auth.registration',
+    # Volveremos a estas para oauth2, de momento solo nuestros logins:
+    # 'allauth.socialaccount',
+    # 'allauth.socialaccount.providers.google',
     ##Autentication
     'oauth2_provider',
-    'social_django',
-    'rest_framework_social_oauth2',
+    # 'social_django',
+    # 'rest_framework_social_oauth2',
 
     # puede que tenga que ir al final:
     'musica',
