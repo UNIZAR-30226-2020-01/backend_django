@@ -23,7 +23,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = '__all__'
+        fields = ['__all__', model.number_songs]
         depth = 1
 
 
@@ -64,7 +64,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = (*todosloscampos(model), 'elalbum')
         depth = 1
 
-# TODO: Añadir el artista directamente
+# TODO: Aï¿½adir el artista directamente
 class SongSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio asÃ­: https://stackoverflow.com/a/27851778
     # todo esto solo es necesario para cambiarle el nombre de la bd
