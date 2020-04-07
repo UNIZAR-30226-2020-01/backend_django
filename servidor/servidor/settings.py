@@ -30,7 +30,7 @@ PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
 
 DEPLOYMENT = os.getenv('DEPLOYMENT', None) # Tomamos la variable de entorno del DEPLOYMENT
 
-DEBUG = not DEPLOYMENT # True cuando no esté la var de entorno DEPLOYMENT
+DEBUG = not DEPLOYMENT # True cuando no estï¿½ la var de entorno DEPLOYMENT
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure.com']
 
@@ -100,11 +100,15 @@ WSGI_APPLICATION = 'servidor.wsgi.application'
 REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-
+        # Autenticacion con tokens por defecto
+        'rest_framework.authentication.TokenAuthentication',
         # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
-        'rest_framework_social_oauth2.authentication.SocialAuthentication',
+        #'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        #'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        #'rest_framework.permissions.IsAuthenticated', # TODO: Descomentar cuando los clientes tengan los protocolos listos
+    )
 }
 
 SITE_ID = 1
@@ -121,10 +125,10 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 
     # Google OAuth2
-    'social_core.backends.google.GoogleOAuth2',
-
-    # django-rest-framework-social-oauth2
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    # 'social_core.backends.google.GoogleOAuth2',
+    #
+    # # django-rest-framework-social-oauth2
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
 
     # Django
     'django.contrib.auth.backends.ModelBackend',
@@ -256,13 +260,13 @@ STATIC_URL = '/static/'
 
 # lo siguiente basado en: https://scotch.io/tutorials/working-with-django-templates-static-files#toc-settings-for-managing-static-files
 
-# Esto indica a django que debe incluir los ficheros estáticos de la carpeta /servidor/static, aunque no estén
+# Esto indica a django que debe incluir los ficheros estï¿½ticos de la carpeta /servidor/static, aunque no estï¿½n
 # incluidos en ninguna app.
 STATICFILES_DIRS = (
     os.path.join(PROJECT_DIR, 'nuestros_static'),
 )
 
-# Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
+# Esto es solo para producciï¿½n, indica a django dï¿½nde copiar los estï¿½ticos al hacer collectstatic
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 
@@ -270,5 +274,5 @@ STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 MEDIA_URL = '/media/'
 
 
-# Esto es solo para producción, indica a django dónde copiar los estáticos al hacer collectstatic
+# Esto es solo para producciï¿½n, indica a django dï¿½nde copiar los estï¿½ticos al hacer collectstatic
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')

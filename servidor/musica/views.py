@@ -9,30 +9,13 @@ from musica.serializers import *
 
 from musica.models import *
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
-
-# Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-
-    def get(self, request, format=None):
-        content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-            'auth': unicode(request.auth),  # None
-        }
-        return Response(content)
 
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
@@ -119,7 +102,7 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
     #queryset = Playlist.objects.all()
 
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     serializer_class = PlayListSerializer
@@ -173,13 +156,64 @@ class SearchViewSet(viewsets.ModelViewSet):
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
 
-###TODO: Revisar, seguramente habra que eliminar esto
+
+
+# Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup
+# TODO: eliminar, la dejo por si es útil
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+    def get(self, request, format=None):
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+        }
+        return Response(content)
+
+
+
 class S7_userViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows to search stuff.
     """
-    queryset = S7_user.objects.all()
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    #permission_classes = [IsAuthenticated]
+    queryset = S7_user.objects.all().order_by('-date_joined')
     serializer_class = S7_userSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+    def get(self, request, format=None):
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+        }
+        return Response(content)
+
+
+
+
+
+
+class debugAuthViewSet(viewsets.ModelViewSet):
+    """
+    Endpoint provisional para debuguear auth (basicamente como s7-user pero requiere token)
+    """
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    queryset = S7_user.objects.all().order_by('-date_joined')
+    serializer_class = S7_userSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+    def get(self, request, format=None):
+        content = {
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
+            'auth': unicode(request.auth),  # None
+        }
+        return Response(content)
