@@ -5,9 +5,9 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('musica', '0003_auto_20200406_1509'),
-    ]
+    # dependencies = [
+    #     ('musica', '0003_auto_20200406_1509'),
+    # ]
 
     operations = [
         migrations.RemoveField(
