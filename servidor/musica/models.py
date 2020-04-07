@@ -186,9 +186,6 @@ class Song(Audio):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
-    def delete(self):
-        # Hacemos que el numero de canciones del album disminuya
-        self.album.number_songs-=1
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
