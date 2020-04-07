@@ -99,7 +99,6 @@ class otro(serializers.ModelSerializer):
         fields = ['username']
 
 
-
 class PlayListSerializer(serializers.HyperlinkedModelSerializer):
     user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     class Meta:
