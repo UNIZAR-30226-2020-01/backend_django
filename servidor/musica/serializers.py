@@ -9,7 +9,7 @@ from rest_framework import serializers
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
     # lista de los nombres (str) de los campos del modelo que no sean 'id' ni esten en exclude (lista de str)
-    return [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
+    return ['url'] + [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
 
 
 # Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
@@ -23,7 +23,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = ['__all__', model.number_songs]
+        fields = (*todosloscampos(model),'number_songs')
         depth = 1
 
 
@@ -31,7 +31,7 @@ class AlbumSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = '__all__'
+        fields = (*todosloscampos(model),'number_songs')
         depth = 1
 
 class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -39,7 +39,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
-        fields = (*todosloscampos(model), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
+        fields = (*todosloscampos(model), 'songs', 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 1
 
 # Serializador del album sin artista
@@ -53,7 +53,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
-        fields = ('name', 'email', 'image', 'biography', 'number_songs', 'number_albums')
+        fields =  (*todosloscampos(model), 'number_albums', 'number_songs')
         depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -61,7 +61,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
-        fields = (*todosloscampos(model), 'elalbum')
+        fields = (*todosloscampos(model), 'elalbum','number_albums', 'number_songs')
         depth = 1
 
 # TODO: A�adir el artista directamente
@@ -104,7 +104,7 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
     user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     class Meta:
         model = Playlist
-        fields = '__all__' #(*todosloscampos(model))
+        fields = (*todosloscampos(model), 'duration', 'number_songs')
         depth = 3
 
 
