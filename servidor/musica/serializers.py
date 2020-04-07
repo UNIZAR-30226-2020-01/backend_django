@@ -53,7 +53,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist
-        fields = '__all__'
+        fields = ('name', 'email', 'image', 'biography', 'number_songs', 'number_albums')
         depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
