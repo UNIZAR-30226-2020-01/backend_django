@@ -23,7 +23,7 @@ class Artist(models.Model):
         return sum([l.number_songs for l in self.albums.all()])
 
     @property
-    def number_albums():
+    def number_albums(self):
         return self.albums.count()
 
     # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
