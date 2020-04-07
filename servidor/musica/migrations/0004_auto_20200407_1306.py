@@ -5,25 +5,25 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    # dependencies = [
-    #     ('musica', '0003_auto_20200406_1509'),
-    # ]
+    dependencies = [
+        ('musica', '0003_auto_20200406_1509'),
+    ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='album',
-            name='number_songs',
-        ),
-        migrations.RemoveField(
-            model_name='artist',
-            name='number_albums',
-        ),
-        migrations.RemoveField(
-            model_name='artist',
-            name='number_songs',
-        ),
-        migrations.RemoveField(
-            model_name='playlist',
-            name='duration',
-        ),
+        # migrations.RemoveField(
+        #     model_name='album',
+        #     name='number_songs',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='artist',
+        #     name='number_albums',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='artist',
+        #     name='number_songs',
+        # ),
+        # migrations.RemoveField(
+        #     model_name='playlist',
+        #     name='duration',
+        # ),
     ]
