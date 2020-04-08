@@ -8,6 +8,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from utils.lyrics.lyrics import Lyrics_api
+from utils.spotipy.spotiapi import Spotisearcher
 # para señales (ahora no las usamos):
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
@@ -26,9 +27,18 @@ class Artist(models.Model):
     def number_albums(self):
         return self.albums.count()
 
-    # biografia no necesita null porque al ser texto en la bd sera '' ()https://stackoverflow.com/a/8609425
 
-    #albumes = models.ManyToManyField(Album) # cambiado a album
+    def __init__(self, *args, **kwargs):
+        super(Artist, self).__init__(*args, **kwargs)
+
+        #Comprobamos que no tenga una imagen asignada previamente.
+        if not self.image:
+            api = Spotisearcher()
+            self.image = api.get_artist_image(self.name)
+        #Buscamos la imagen si no tiene ninguna
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        m = super(Artist, self).save()
 
     def __str__(self):
         return self.name
