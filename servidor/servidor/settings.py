@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure
 
 
 INSTALLED_APPS = [
+    'corsheaders', # para headers CORS (app web) (doc: https://pypi.org/project/django-cors-headers/)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -68,6 +69,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    'corsheaders.middleware.CorsMiddleware', # CORS
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -78,6 +82,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'servidor.urls'
+
+CORS_ORIGIN_ALLOW_ALL=True # Permitimos todos los origines con CORS
 
 TEMPLATES = [
     {
