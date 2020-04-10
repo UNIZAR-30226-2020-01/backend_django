@@ -9,6 +9,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from utils.lyrics.lyrics import Lyrics_api
 from utils.spotipy.spotiapi import Spotisearcher
+from utils.biography.biography import LastfmSearcher
+import html2text
 # para señales (ahora no las usamos):
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
@@ -35,7 +37,13 @@ class Artist(models.Model):
         if not self.image:
             api = Spotisearcher()
             self.image = api.get_artist_image(self.name)
-        #Buscamos la imagen si no tiene ninguna
+
+        #Automatización de biografía (en caso de que no posea una)
+        if not self.biography:
+            api = LastfmSearcher()
+            result = api.get_biography(self.name)
+            #El resultado de la api es html, asi que lo conertimos a texto plano
+            self.biography = html2text.html2text(result)
 
     def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Artist, self).save()
