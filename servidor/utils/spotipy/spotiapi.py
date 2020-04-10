@@ -39,24 +39,26 @@ class Spotisearcher:
     # Además lo guarda en 'servidor/media'
     #Devulve el archivo guardado
     def get_artist_image(self, name):
-        artist_uri = self.get_artist_uri(name)
-        if artist_uri == 'spotify uri unknown':
-            return ''
+        if name:
+            artist_uri = self.get_artist_uri(name)
+            if artist_uri == 'spotify uri unknown':
+                return ''
 
-        artist = self.sp.artist(artist_uri)
+            artist = self.sp.artist(artist_uri)
 
-        imagenes = artist['images']
+            imagenes = artist['images']
 
-        if len(imagenes) > 1:
-            imagen_url = imagenes[0]['url']
-            imagen_name = name + '_artist_image.jpg'
-            destino = 'servidor/media/'+name+'_artist_image.jpg'
-            urllib.request.urlretrieve(imagen_url, destino)
-            return imagen_name
+            if len(imagenes) > 1:
+                imagen_url = imagenes[0]['url']
+                imagen_name = name + '_artist_image.jpg'
+                destino = 'servidor/media/'+name+'_artist_image.jpg'
+                urllib.request.urlretrieve(imagen_url, destino)
+                return imagen_name
 
+            else:
+                return ''
         else:
             return ''
-
 # programa de prueba:
 if __name__ == '__main__':
     if len(sys.argv) > 1:
