@@ -2,9 +2,9 @@ from django.contrib.auth.models import User
 #from musica.models import Song, Album, Artist, PodcastEpisode, Podcast
 from musica.models import *
 from rest_framework import serializers
-
-
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from utils.podcasts.podcasts import TrendingPodcasts
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -119,6 +119,24 @@ class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
+#Necesario para devolver los trending podcast dinámicos
+class TrendingPodcastsSerializer(serializers.Serializer):
+    id = serializers.CharField(max_length=100)
+    title = serializers.CharField(max_length=100)
+    publisher = serializers.CharField(max_length=100)
+    image = serializers.CharField(max_length=256)
+    total_episodes = serializers.IntegerField(read_only=True)
+    description = serializers.CharField(max_length=256)
+    rss = serializers.CharField(max_length=256)
+    language = serializers.CharField(max_length=100)
+
+    def create(self, validated_data):
+        return TrendingPodcasts(id=None,**validated_data)
+
+    def update(self, instance, validated_data):
+        for field, value in validated_data.items():
+            setattr(instance, field, value)
+        return instance
 
 # TODO: Buena suerte
 class SearchSerializer(serializers.HyperlinkedModelSerializer):

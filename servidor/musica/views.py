@@ -8,6 +8,7 @@ from rest_framework import viewsets
 from musica.serializers import *
 
 from musica.models import *
+from utils.podcasts.podcasts import Podcasts_api
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -195,9 +196,17 @@ class S7_userViewSet(viewsets.ModelViewSet):
         }
         return Response(content)
 
+#Para trending podcast mediante router
+class TrendingPodcastsViewSet(viewsets.ViewSet):
+    serializer_class = TrendingPodcastsSerializer
 
-
-
+    def list(self, request):
+        #Obtenemos los podcast recomendados dinámicamente
+        api = Podcasts_api()
+        result = api.get_bestpodcast()
+        serializer = TrendingPodcastsSerializer(
+            instance=result, many=True)
+        return Response(serializer.data)
 
 
 class debugAuthViewSet(viewsets.ModelViewSet):

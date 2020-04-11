@@ -37,13 +37,11 @@ router.register(r'podcast-episodes', views.PodcastEpisodeViewSet)
 router.register(r'playlists', views.PlaylistViewSet)
 router.register(r'user/playlists', views.UserPlaylistViewSet, basename='UserPlaylists') # Basename necesario si no hay queryset en el viewset
 router.register(r's7_user', views.S7_userViewSet)
-
 # debug de autorización, provisional:
 router.register(r'debug_auth', views.debugAuthViewSet, basename="debug-auth") # en este caso basename es necesario para diferenciarlo de s7-user
-
+router.register(r'trending-podcast', views.TrendingPodcastsViewSet, basename="TrendingPodcasts")
 # busqueda, se viene rayada:
 router.register(r'search', views.SearchViewSet)
-
 
 
 # Wire up our API using automatic URL routing.
