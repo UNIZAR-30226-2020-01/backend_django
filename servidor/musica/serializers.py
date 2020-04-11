@@ -120,6 +120,7 @@ class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
 
 #Necesario para devolver los trending podcast dinámicos
+# Link: https://medium.com/django-rest-framework/django-rest-framework-viewset-when-you-don-t-have-a-model-335a0490ba6f
 class TrendingPodcastsSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=100)
     title = serializers.CharField(max_length=100)

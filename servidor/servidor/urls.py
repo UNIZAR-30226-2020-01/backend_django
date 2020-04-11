@@ -49,6 +49,9 @@ router.register(r'search', views.SearchViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    #No las he sabido meter en el router. Aún así lo veo mejor así
+    path('podcast/<str:id>/', views.PodcastById.as_view()),
+    path('episode/<str:id>/', views.PodcastEpisodeById.as_view()),
     ##Comprobar que esto no falle, en la docu ponia que habia que poner url, no path
     #path(r'accounts/', include('allauth.urls')),
     #path('auth/', include('rest_framework_social_oauth2.urls')),

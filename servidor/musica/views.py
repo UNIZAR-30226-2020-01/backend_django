@@ -208,6 +208,21 @@ class TrendingPodcastsViewSet(viewsets.ViewSet):
             instance=result, many=True)
         return Response(serializer.data)
 
+# Vista que muestra información detallada de un podcast dado su id
+# Desde aquí se accederá a sus episodios
+class PodcastById(APIView):
+    def get(self, request, id):
+        api = Podcasts_api()
+        print(id)
+        result = api.get_detailedInfo_podcast(id)
+        return Response(result)
+
+class PodcastEpisodeById(APIView):
+    def get(self, request, id):
+        api = Podcasts_api()
+        print(id)
+        result = api.get_detailedInfo_episode(id)
+        return Response(result)
 
 class debugAuthViewSet(viewsets.ModelViewSet):
     """
