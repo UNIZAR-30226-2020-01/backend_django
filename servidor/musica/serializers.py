@@ -116,7 +116,7 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = S7_user.objects.create(
             username=validated_data['username'],
-            email=validated_data['email'],
+            #email=validated_data['email'],
             # first_name=validated_data['first_name'],
             # last_name=validated_data['last_name']
         )
