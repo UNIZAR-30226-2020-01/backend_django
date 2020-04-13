@@ -5,6 +5,11 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
+
+# Para validacion en posts (registros, etc...)
+from django.core.exceptions import ValidationError
+import django.contrib.auth.password_validation as validators
+
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -99,19 +104,27 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
         write_only_fields = ('password',)
         depth = 0
 
+    # Se pueden definir metodos validate_[nombre del campo] en los serializadores
+    def validate_password(self, value):
+        # try:
+        #     validators.validate_password(value)
+        # except ValidationError as exc:
+        #     raise serializers.exceptions.ValidationError(str(exc))
+        validators.validate_password(value)
+        return value
 
-        def create(self, validated_data):
-            user = S7_user.objects.create(
-                username=validated_data['username'],
-                email=validated_data['email'],
-                # first_name=validated_data['first_name'],
-                # last_name=validated_data['last_name']
-            )
-            user.set_password(validated_data['password']) # usamos set_password por seguridad (guarda un hash)
-            user.save()
+    def create(self, validated_data):
+        user = S7_user.objects.create(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            # first_name=validated_data['first_name'],
+            # last_name=validated_data['last_name']
+        )
+        user.set_password(validated_data['password']) # usamos set_password por seguridad (guarda un hash)
+        user.save()
 
-            return user
-            pass
+        return user
+
 
 
 
