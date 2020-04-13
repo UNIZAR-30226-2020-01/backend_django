@@ -5,6 +5,11 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
+
+# Para validacion en posts (registros, etc...)
+from django.core.exceptions import ValidationError
+import django.contrib.auth.password_validation as validators
+
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -65,7 +70,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
 # TODO: A�adir el artista directamente
-class SongSerializer(serializers.HyperlinkedModelSerializer):
+class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
     # todo esto solo es necesario para cambiarle el nombre de la bd
     # title = serializers.CharField(read_only=True, source="cancion.titulo")
@@ -82,8 +87,30 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         model = Song
         #album_detail = AlbumSerializer()
         fields = '__all__'
+        depth = 2
+        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+class SongListSerializer(serializers.HyperlinkedModelSerializer):
+    # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
+    # todo esto solo es necesario para cambiarle el nombre de la bd
+    # title = serializers.CharField(read_only=True, source="cancion.titulo")
+    # file = serializers.FileField(read_only=True, source="cancion.archivo")
+    #
+    #
+
+    #album =
+    #album = serializers.CharField(read_only=True, source="song.album.title")
+    #CharField(read_only=True, source="song.album.artists")
+    #serializers.CharField(read_only=True, source="song.album.artists.name")#
+    #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
+    class Meta:
+        model = Song
+        #album_detail = AlbumSerializer()
+        fields = ['url', 'title', 'file', 'duration', 'album']#todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+
 
 
 class S7_userSerializer(serializers.HyperlinkedModelSerializer):
@@ -91,6 +118,31 @@ class S7_userSerializer(serializers.HyperlinkedModelSerializer):
         model = S7_user
         fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
+
+# Para registrar usuarios, con ayuda de https://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
+class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = S7_user
+        fields = ['url', 'username', 'password'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        write_only_fields = ('password',)
+        depth = 0
+
+    # Se pueden definir metodos validate_[nombre del campo] en los serializadores
+    def validate_password(self, value):
+        validators.validate_password(value)
+        return value
+
+    def create(self, validated_data):
+        user = S7_user.objects.create(
+            username=validated_data['username'],
+            #email=validated_data['email'],
+            # first_name=validated_data['first_name'],
+            # last_name=validated_data['last_name']
+        )
+        user.set_password(validated_data['password']) # usamos set_password por seguridad (guarda un hash)
+        user.save()
+
+        return user
 
 
 class otro(serializers.ModelSerializer):

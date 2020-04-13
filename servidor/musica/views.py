@@ -15,13 +15,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework import permissions
+
+
+from rest_framework.generics import CreateAPIView # registros de usuarios
+
+from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework import filters
+
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
 
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows songs to be viewed.
+    API endpoint that allows artists to be viewed.
     """
     queryset = Artist.objects.all()
     serializer_class = ArtistListSerializer # por defecto lista
@@ -79,10 +88,27 @@ class SongViewSet(viewsets.ModelViewSet):
     API endpoint that allows songs to be viewed.
     """
     queryset = Song.objects.all()
-    serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+    # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+    action_serializers = {
+        'retrieve': SongDetailSerializer,
+        'list': SongListSerializer,
+        #'create': MyModelCreateSerializer
+    }
+
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(SongViewSet, self).get_serializer_class()
+
+
+
 
 
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -145,17 +171,35 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
-
-class SearchViewSet(viewsets.ModelViewSet):
+####################### Work in progress #######################
+class SearchAPIView(APIView):
     """
     API endpoint that allows to search stuff.
     """
-    queryset = Song.objects.all()
-    serializer_class = SearchSerializer
-    # solo acepta GET:
-    http_method_names = ['get']
+    #queryset = Song.objects.all()
+    #serializer_class = SongSerializer
+    # # solo acepta GET:
+    # http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Song.objects.all()
+        title = self.request.query_params.get('title', None)
+        if title is not None:
+            queryset = queryset.filter(title=title)
+        return queryset
+
+
+    def get(self, request, format=None, **kwargs):
+        songs = Song.objects.all()
+        serializer = SongSerializer(song)
+        # Can't I append anything to serializer class like below ??
+        # serializer.append(anotherserialzed_object) ??
+        return Response(serializer.data)
 
 
 
@@ -241,3 +285,12 @@ class debugAuthViewSet(viewsets.ModelViewSet):
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
+
+# Para registros de usuarios
+class RegisterUserView(CreateAPIView):
+    authentication_classes = [] # desactivar comprobacion de CSRF
+    model = S7_user
+    permission_classes = [
+        permissions.AllowAny # usuarios anónimos se tienen que poder registrar
+    ]
+    serializer_class = RegisterUserSerializer
