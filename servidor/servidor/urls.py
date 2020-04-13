@@ -34,7 +34,7 @@ router = routers.DefaultRouter()
 #router.register(r'users', views.UserViewSet)
 router.register(r'artists', views.ArtistViewSet)
 router.register(r'albums', views.AlbumViewSet)
-router.register(r'songs', views.SongViewSet)
+router.register(r'songs', views.SongViewSet, basename='song')
 router.register(r'podcasts', views.PodcastViewSet)
 router.register(r'podcast-episodes', views.PodcastEpisodeViewSet)
 router.register(r'playlists', views.PlaylistViewSet)
@@ -44,7 +44,7 @@ router.register(r's7_user', views.S7_userViewSet)
 router.register(r'debug_auth', views.debugAuthViewSet, basename="debug-auth") # en este caso basename es necesario para diferenciarlo de s7-user
 router.register(r'trending-podcast', views.TrendingPodcastsViewSet, basename="TrendingPodcasts")
 # busqueda, se viene rayada:
-router.register(r'search', views.SearchViewSet, basename='search')
+#router.register(r'search', views.SearchViewSet, basename='search')
 # Registros de ususarios:
 #router.register(r'register', views.RegisterUserView, basename="register")
 

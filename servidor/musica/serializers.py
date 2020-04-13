@@ -70,7 +70,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
 # TODO: A�adir el artista directamente
-class SongSerializer(serializers.HyperlinkedModelSerializer):
+class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
     # todo esto solo es necesario para cambiarle el nombre de la bd
     # title = serializers.CharField(read_only=True, source="cancion.titulo")
@@ -89,6 +89,29 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+class SongListSerializer(serializers.HyperlinkedModelSerializer):
+    # Obtenemos los datos del audio así: https://stackoverflow.com/a/27851778
+    # todo esto solo es necesario para cambiarle el nombre de la bd
+    # title = serializers.CharField(read_only=True, source="cancion.titulo")
+    # file = serializers.FileField(read_only=True, source="cancion.archivo")
+    #
+    #
+
+    #album =
+    #album = serializers.CharField(read_only=True, source="song.album.title")
+    #CharField(read_only=True, source="song.album.artists")
+    #serializers.CharField(read_only=True, source="song.album.artists.name")#
+    #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
+    class Meta:
+        model = Song
+        #album_detail = AlbumSerializer()
+        fields = ['url', 'title', 'file', 'duration', 'album']#todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+        depth = 1
+        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+
+
 
 class S7_userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

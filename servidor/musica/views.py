@@ -30,7 +30,7 @@ from rest_framework import filters
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows songs to be viewed.
+    API endpoint that allows artists to be viewed.
     """
     queryset = Artist.objects.all()
     serializer_class = ArtistListSerializer # por defecto lista
@@ -88,12 +88,27 @@ class SongViewSet(viewsets.ModelViewSet):
     API endpoint that allows songs to be viewed.
     """
     queryset = Song.objects.all()
-    serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
+
+    action_serializers = {
+        'retrieve': SongDetailSerializer,
+        'list': SongListSerializer,
+        #'create': MyModelCreateSerializer
+    }
+
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(SongViewSet, self).get_serializer_class()
+
+
+
 
 
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -156,15 +171,15 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
-
-class SearchViewSet(viewsets.ModelViewSet):
+####################### Work in progress #######################
+class SearchAPIView(APIView):
     """
     API endpoint that allows to search stuff.
     """
     #queryset = Song.objects.all()
-    serializer_class = SongSerializer
-    # solo acepta GET:
-    http_method_names = ['get']
+    #serializer_class = SongSerializer
+    # # solo acepta GET:
+    # http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
     def get_queryset(self):
@@ -177,6 +192,14 @@ class SearchViewSet(viewsets.ModelViewSet):
         if title is not None:
             queryset = queryset.filter(title=title)
         return queryset
+
+
+    def get(self, request, format=None, **kwargs):
+        songs = Song.objects.all()
+        serializer = SongSerializer(song)
+        # Can't I append anything to serializer class like below ??
+        # serializer.append(anotherserialzed_object) ??
+        return Response(serializer.data)
 
 
 
