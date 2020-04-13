@@ -66,4 +66,3 @@ urlpatterns = [
     path('api-token-auth/', DRF_views.obtain_auth_token, name='api-token-auth'),
 	path(r'register/', csrf_exempt(views.RegisterUserView.as_view()), name='register')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # para los ficheros media (mp3)
->>>>>>> Stashed changes

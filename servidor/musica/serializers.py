@@ -195,4 +195,3 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
->>>>>>> Stashed changes
