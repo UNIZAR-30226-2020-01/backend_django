@@ -22,7 +22,7 @@ from rest_framework.generics import CreateAPIView # registros de usuarios
 
 from django.views.decorators.csrf import csrf_exempt
 
-
+from rest_framework import filters
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
@@ -91,7 +91,9 @@ class SongViewSet(viewsets.ModelViewSet):
     serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
-    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+    # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
 
 class PlaylistViewSet(viewsets.ModelViewSet):
@@ -159,12 +161,22 @@ class SearchViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows to search stuff.
     """
-    queryset = Song.objects.all()
-    serializer_class = SearchSerializer
+    #queryset = Song.objects.all()
+    serializer_class = SongSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
+    def get_queryset(self):
+        """
+        Optionally restricts the returned purchases to a given user,
+        by filtering against a `username` query parameter in the URL.
+        """
+        queryset = Song.objects.all()
+        title = self.request.query_params.get('title', None)
+        if title is not None:
+            queryset = queryset.filter(title=title)
+        return queryset
 
 
 

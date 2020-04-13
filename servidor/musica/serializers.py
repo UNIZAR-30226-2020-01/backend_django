@@ -106,10 +106,6 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
 
     # Se pueden definir metodos validate_[nombre del campo] en los serializadores
     def validate_password(self, value):
-        # try:
-        #     validators.validate_password(value)
-        # except ValidationError as exc:
-        #     raise serializers.exceptions.ValidationError(str(exc))
         validators.validate_password(value)
         return value
 
@@ -124,20 +120,6 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
 
         return user
-
-
-
-
-
-# Para registros de usuarios:
-# class RegisterUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('username', 'password', 'email', 'first_name', 'last_name')
-#         write_only_fields = ('password',)
-#         read_only_fields = ('id',)
-
-
 
 
 
