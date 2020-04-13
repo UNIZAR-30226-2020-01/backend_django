@@ -22,6 +22,8 @@ from rest_framework.generics import CreateAPIView # registros de usuarios
 
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework.decorators import action
+
 from rest_framework import filters
 
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
@@ -30,7 +32,7 @@ from rest_framework import filters
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows artists to be viewed.
+    API endpoint that allows songs to be viewed.
     """
     queryset = Artist.objects.all()
     serializer_class = ArtistListSerializer # por defecto lista
@@ -108,9 +110,6 @@ class SongViewSet(viewsets.ModelViewSet):
         return super(SongViewSet, self).get_serializer_class()
 
 
-
-
-
 class PlaylistViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows all playlists to be viewed.
@@ -121,7 +120,11 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
 
+    http_method_names = ['get']
 
 class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
@@ -149,6 +152,27 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
         print("Usuario en request: ", user)
         return Playlist.objects.filter(user=user)
 
+class UserFavoritesViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows all playlists to be viewed.
+    """
+    #queryset = Playlist.objects.all()
+
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = SongSerializer
+    # solo acepta GET:
+    http_method_names = ['get', 'post']
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the playlists
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        print("Usuario en request: ", user)
+        return Song.objects.filter(favorito=user)
 
 
 class PodcastViewSet(viewsets.ModelViewSet):
@@ -170,6 +194,7 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
 
 ####################### Work in progress #######################
 class SearchAPIView(APIView):
@@ -200,7 +225,6 @@ class SearchAPIView(APIView):
         # Can't I append anything to serializer class like below ??
         # serializer.append(anotherserialzed_object) ??
         return Response(serializer.data)
-
 
 
 # Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup

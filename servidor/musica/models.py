@@ -9,6 +9,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from utils.lyrics.lyrics import Lyrics_api
 from utils.spotipy.spotiapi import Spotisearcher
+from utils.podcasts.podcasts import Podcasts_api
 from utils.biography.biography import LastfmSearcher
 import html2text
 # para señales (ahora no las usamos):
@@ -81,6 +82,7 @@ class Album(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
+    id_listenotes = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -90,9 +92,12 @@ class Genre(models.Model):
         db_table = 'Genre'
 
 class Podcast(models.Model):
-    title = models.CharField(max_length=50)
-    RSS = models.FileField()
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, default='')
+    title = models.CharField(max_length=100)
+    RSS = models.URLField()
+    genre = models.ManyToManyField(Genre, blank=True, related_name='podcasts')
+    id_listenotes = models.CharField(max_length=50, unique=True)
+    image = models.FileField(null=True, blank=True)
+    canal = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return self.title
@@ -106,6 +111,7 @@ class Audio(models.Model):
     ##id = models.IntegerField(primary_key=True)
     title = models.CharField(max_length=100)
     file = models.FileField(blank=True, null=True)
+    duration = models.IntegerField(default=0)
     # album = models.ForeignKey(Album, models.DO_NOTHING, db_column='album') # los podcasts no tienen album
 
 
@@ -158,6 +164,8 @@ class S7_user(User):
         managed = True
         db_table = 'S7_user'
 
+    def add_favorite(self, song):
+        self.favorito.add(song)
     # def __str__(self):
     #     return self.name
 
@@ -166,7 +174,6 @@ class Song(Audio):
     times_played = models.IntegerField(default=0)
     lyrics = models.TextField(blank=True)
     album = models.ForeignKey(Album, related_name='songs', on_delete=models.CASCADE)
-    duration = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -240,9 +247,10 @@ class Folder(models.Model):
         return self.title
 
 class PodcastEpisode(Audio):
-    URI = models.FileField()
+    URI = models.URLField()
     podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE)
-
+    id_listenotes = models.CharField(max_length=50, unique=True)
+    image = models.FileField(null=True, blank=True)
     class Meta:
         managed = True
         db_table = 'PodcastEpisode'

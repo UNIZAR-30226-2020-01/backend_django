@@ -42,9 +42,9 @@ class Podcasts_api:
         }
         #Se debe añadir /search para que la url sea correcta
         response = requests.get(self.url + '/search', headers=self.headers, params=querystring)
-
+        #print(response.headers['X-ListenAPI-Usage'])
         if response.status_code != 200:
-            return 'No podcast found (error: ' + str(response.status_code) + ')'
+            return 'ERROR'
 
         return response.json()#response.json() ## TODO: Cuando tenga la API KEY, se podrá terminar
 
@@ -82,7 +82,7 @@ class Podcasts_api:
     def get_genres(self):
 
         response = requests.get(self.url + '/genres', headers=self.headers)
-        return response.json()
+        return response.json()['genres']
 
     #Devuelve las posibles regiones de podcast en forma de json
     def get_regions(self):
@@ -117,16 +117,29 @@ class Podcasts_api:
 
         return response.json()
 
-    # Copiada de https://www.listennotes.com/api/docs/ tal cual. Al menos confirma que la key funciona
-    def helloWorld(self):
+    #Devuelve el podcast correspondiente y la lista de sus episodios
+    def get_by_name(self,name):
+        result = self.search(query=name, type='podcast', sort_by_date=1)
+        #'Results' es la lista de podcast devuelta en el JSON
 
-        url = 'https://listen-api.listennotes.com/api/v2/search?q=star%20wars&sort_by_date=0&type=episode&offset=0&len_min=10&len_max=30&genre_ids=68%2C82&published_before=1580172454000&published_after=0&only_in=title%2Cdescription&language=English&safe_mode=0'
-        headers = {
-          'X-ListenAPI-Key': self.key,
+        if result != 'ERROR':
+            pod_id = result["results"][0]["id"]
+            podcast = self.get_detailedInfo_podcast(id=pod_id)
+            episodes = podcast["episodes"]
+            #lista_final = [(l["title"], l["audio"]) for l in episodes]
+            return podcast , episodes
+        else:
+            print('ERROR: Podcast not found.')
+            return None, None
+
+    # Devuelve un lote de episodios, dado un string de ids separados por comas.
+    # Evita realizar varias llamadas a la api
+    def get_many_episodes(self, ids):
+        querystring = {
+            'ids': ids
         }
-        response = requests.request('GET', url, headers=headers)
-        print(response.json())
-
+        response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
+        return response.json()["episodes"]
 # Para probar que funciona
 if __name__ == '__main__':
     the_secret_function()

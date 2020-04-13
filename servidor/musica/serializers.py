@@ -5,11 +5,6 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
-
-# Para validacion en posts (registros, etc...)
-from django.core.exceptions import ValidationError
-import django.contrib.auth.password_validation as validators
-
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -24,13 +19,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'username', 'email']
 
 
-
 class AlbumSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         fields = (*todosloscampos(model),'number_songs')
         depth = 1
-
 
 
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
@@ -51,7 +44,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
 class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
-        fields = (*todosloscampos(model, ['artist','song']), 'songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
+        fields = (*todosloscampos(model, ['artist','song']), 'songs', 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 0
 
 
@@ -111,13 +104,12 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
 
-
-
 class S7_userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = S7_user
         fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
+
 
 # Para registrar usuarios, con ayuda de https://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
@@ -144,7 +136,6 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
 
         return user
 
-
 class otro(serializers.ModelSerializer):
     class Meta:
         model = S7_user
@@ -158,6 +149,11 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
         fields = (*todosloscampos(model), 'duration', 'number_songs')
         depth = 3
 
+class GenreSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Genre
+        fields = '__all__'
+        depth = 2
 
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -199,3 +195,4 @@ class SearchSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+>>>>>>> Stashed changes
