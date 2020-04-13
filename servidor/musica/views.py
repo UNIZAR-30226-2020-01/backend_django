@@ -14,7 +14,7 @@ from rest_framework.authentication import TokenAuthentication, BasicAuthenticati
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.decorators import action
 from rest_framework import permissions
 
 
@@ -139,6 +139,31 @@ class GenreViewSet(viewsets.ModelViewSet):
 
     http_method_names = ['get']
 
+class UserFavoritesViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows all playlists to be viewed.
+    """
+    #queryset = Playlist.objects.all()
+
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = SongDetailSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    # Sobreescribimos el método que devuelve el queryset, para que de las
+    # playlists del usuario autentificado
+    #(basado en https://www.django-rest-framework.org/api-guide/filtering/#django-rest-framework-full-word-search-filter)
+    def get_queryset(self):
+        """
+        This view should return a list of all the playlists
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        print("Usuario en request: ", user)
+        return user.favorito.all()
 
 class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
