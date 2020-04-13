@@ -87,7 +87,7 @@ class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = Song
         #album_detail = AlbumSerializer()
         fields = '__all__'
-        depth = 1
+        depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
 class SongListSerializer(serializers.HyperlinkedModelSerializer):
@@ -143,8 +143,6 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
         user.save()
 
         return user
-
-
 
 
 class otro(serializers.ModelSerializer):
