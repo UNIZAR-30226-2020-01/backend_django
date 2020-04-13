@@ -85,12 +85,48 @@ class SongSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
-
 class S7_userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = S7_user
         fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
+
+# Para registrar usuarios, con ayuda de https://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
+class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = S7_user
+        fields = ['url', 'username', 'password'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        write_only_fields = ('password',)
+        depth = 0
+
+
+        def create(self, validated_data):
+            user = S7_user.objects.create(
+                username=validated_data['username'],
+                email=validated_data['email'],
+                # first_name=validated_data['first_name'],
+                # last_name=validated_data['last_name']
+            )
+            user.set_password(validated_data['password']) # usamos set_password por seguridad (guarda un hash)
+            user.save()
+
+            return user
+            pass
+
+
+
+
+# Para registros de usuarios:
+# class RegisterUserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ('username', 'password', 'email', 'first_name', 'last_name')
+#         write_only_fields = ('password',)
+#         read_only_fields = ('id',)
+
+
+
+
 
 
 class otro(serializers.ModelSerializer):

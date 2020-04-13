@@ -15,6 +15,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from rest_framework import permissions
+
+
+from rest_framework.generics import CreateAPIView # registros de usuarios
+
+from django.views.decorators.csrf import csrf_exempt
+
+
+
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
 
@@ -241,3 +250,12 @@ class debugAuthViewSet(viewsets.ModelViewSet):
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
+
+# Para registros de usuarios
+class RegisterUserView(CreateAPIView):
+    authentication_classes = [] # desactivar comprobacion de CSRF
+    model = S7_user
+    permission_classes = [
+        permissions.AllowAny # usuarios anónimos se tienen que poder registrar
+    ]
+    serializer_class = RegisterUserSerializer
