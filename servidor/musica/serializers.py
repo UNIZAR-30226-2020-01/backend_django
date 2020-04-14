@@ -11,7 +11,6 @@ def todosloscampos(modelo, exclude=['']):
     # lista de los nombres (str) de los campos del modelo que no sean 'id' ni esten en exclude (lista de str)
     return ['url'] + [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
 
-
 # para obtener el usuario de la request, basado en: https://stackoverflow.com/a/30203950
 def get_user(serializador):
     user = None
@@ -87,7 +86,7 @@ class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
     #serializers.CharField(read_only=True, source="song.album.artists.name")#
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
 
-    user = get_user(self)
+    #user = get_user(self)
 
     # TODO: Me estoy rayando mucho con esto, igual renta ponerle una property a song (is_fav_of(user)):
     # is_favorite = is_favorite(song, user)
@@ -179,17 +178,32 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
+class PodcastEpisodeReducedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = PodcastEpisode
+        fields = todosloscampos(model,['podcast', 's7_user', 'audio_ptr'])
+        depth = 2
+
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
+    episodes = PodcastEpisodeReducedSerializer(many=True)
     class Meta:
         model = Podcast
-        fields = (*todosloscampos(model), 'number_episodes')
+        fields = (*todosloscampos(model,['s7_user','audio_ptr']), 'number_episodes')
+        depth = 2
+
+class PodcastReducedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = (*todosloscampos(model, ['episodes', 's7_user', 'audio_ptr']), 'number_episodes')
         depth = 2
 
 class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
+    podcast = PodcastReducedSerializer()
     class Meta:
         model = PodcastEpisode
-        fields = '__all__'
+        fields = todosloscampos(model,['s7_user', 'audio_ptr'])
         depth = 2
+
 
 #Necesario para devolver los trending podcast dinámicos
 # Link: https://medium.com/django-rest-framework/django-rest-framework-viewset-when-you-don-t-have-a-model-335a0490ba6f
