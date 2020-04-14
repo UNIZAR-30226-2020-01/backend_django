@@ -161,6 +161,12 @@ class GenreViewSet(viewsets.ModelViewSet):
 
     http_method_names = ['get']
 
+class ChannelViewSet(viewsets.ModelViewSet):
+    queryset = Channel.objects.all()
+    serializer_class = ChannelSerializer
+
+    http_method_names = ['get']
+
 class UserFavoritesViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows all playlists to be viewed.

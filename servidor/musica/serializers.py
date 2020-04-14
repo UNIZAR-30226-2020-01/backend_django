@@ -173,10 +173,16 @@ class GenreSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
+class ChannelSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Channel
+        fields = '__all__'
+        depth = 2
+
 class PodcastSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Podcast
-        fields = '__all__'
+        fields = (*todosloscampos(model), 'number_episodes')
         depth = 2
 
 class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):

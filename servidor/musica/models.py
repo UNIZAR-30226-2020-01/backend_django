@@ -91,13 +91,26 @@ class Genre(models.Model):
         managed = True
         db_table = 'Genre'
 
+class Channel(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    class Meta:
+        managed = True
+        db_table = 'Channel'
+
+    def __str__(self):
+        return self.name
+
 class Podcast(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=300)
     RSS = models.URLField()
     genre = models.ManyToManyField(Genre, blank=True, related_name='podcasts')
     id_listenotes = models.CharField(max_length=50, unique=True)
-    image = models.FileField(null=True, blank=True)
-    canal = models.CharField(max_length=100, blank=True)
+    image = models.URLField(null=True, blank=True)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, related_name='podcasts')
+
+    @property
+    def number_episodes(self):
+        return len(self.episodes)
 
     def __str__(self):
         return self.title
@@ -251,9 +264,11 @@ class Folder(models.Model):
 
 class PodcastEpisode(Audio):
     URI = models.URLField()
-    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE)
+    podcast = models.ForeignKey(Podcast, on_delete=models.CASCADE, related_name='episodes')
     id_listenotes = models.CharField(max_length=50, unique=True)
-    image = models.FileField(null=True, blank=True)
+    image = models.URLField(blank=True)
+    description = models.TextField(blank=True)
+
     class Meta:
         managed = True
         db_table = 'PodcastEpisode'
