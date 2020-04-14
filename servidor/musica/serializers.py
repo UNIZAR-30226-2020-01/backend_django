@@ -12,6 +12,16 @@ def todosloscampos(modelo, exclude=['']):
     return ['url'] + [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
 
 
+# para obtener el usuario de la request, basado en: https://stackoverflow.com/a/30203950
+def get_user(serializador):
+    user = None
+    request = serializador.context.get("request")
+    if request and hasattr(request, "user"):
+        user = request.user
+    return user
+
+
+
 # Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -76,10 +86,18 @@ class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
     #CharField(read_only=True, source="song.album.artists")
     #serializers.CharField(read_only=True, source="song.album.artists.name")#
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
+
+    user = get_user(self)
+
+    # TODO: Me estoy rayando mucho con esto, igual renta ponerle una property a song (is_fav_of(user)):
+    # is_favorite = is_favorite(song, user)
+
+
+
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = '__all__'
+        fields = (*todosloscampos(model), 'is_favorite')#'__all__'
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
