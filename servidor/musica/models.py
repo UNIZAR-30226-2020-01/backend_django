@@ -82,8 +82,8 @@ class Album(models.Model):
 
 class Genre(models.Model):
     name = models.CharField(max_length=50)
-    id_listenotes = models.IntegerField(default=0)
-
+    id_listenotes = models.IntegerField(default=0, unique=True)
+    
     def __str__(self):
         return self.name
 
