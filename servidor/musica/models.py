@@ -83,7 +83,7 @@ class Album(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=50)
     id_listenotes = models.IntegerField(default=0, unique=True)
-    
+
     def __str__(self):
         return self.name
 
@@ -166,6 +166,9 @@ class S7_user(User):
 
     def add_favorite(self, song):
         self.favorito.add(song)
+
+    def remove_favorite(self, song):
+        self.favorito.remove(song)
     # def __str__(self):
     #     return self.name
 
