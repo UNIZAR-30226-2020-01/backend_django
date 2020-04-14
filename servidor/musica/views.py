@@ -94,6 +94,8 @@ class SongViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
+    
+
     action_serializers = {
         'retrieve': SongDetailSerializer,
         'list': SongListSerializer,

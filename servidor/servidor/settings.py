@@ -114,7 +114,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         #'rest_framework.permissions.IsAuthenticated', # TODO: Descomentar cuando los clientes tengan los protocolos listos
-    )
+    ),
+    # Paginacion (para dividir los JSON en paginas si hay muchos resultados)
+    # TODO: Descomentar PAGE_SIZE cuando los clientes esten preparados:
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 10,
 }
 
 SITE_ID = 1
