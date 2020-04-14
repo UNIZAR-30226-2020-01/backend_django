@@ -25,9 +25,6 @@ def get_user(serializer):
     return user
 
 
-
-
-
 # Para campos mas complejos derivados de relaciones entre modelos:
 # https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields
 # Devuelve "True" o "False" en función de si la canción está entre las favoritas del usuario
@@ -37,7 +34,7 @@ class IsFavField(serializers.RelatedField):
         user = get_user(self)
         # print('Eres', user)
         # print(instance)
-        is_fav = str(instance.is_favorite_of(user))
+        is_fav = instance.is_favorite_of(user)
         # TODO: cambiar la busqueda de usuarios de la cancion a canciones del usuario (+ eficiente seguramente)
         #is_fav = 'dummy'
         return is_fav

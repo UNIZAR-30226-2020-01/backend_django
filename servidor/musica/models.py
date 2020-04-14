@@ -227,9 +227,11 @@ class Song(Audio):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
-    #@property
+
+    # TODO: EFICIENCIA, es muy lenta
     def is_favorite_of(self, user):
-        return user in self.user.all()
+        #return user in self.user.all() # ineficiente, se supone que exists es mejor (https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exists) :
+        return self.user.filter(id=user.id).exists()
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
