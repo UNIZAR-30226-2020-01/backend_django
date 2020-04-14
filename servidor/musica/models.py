@@ -171,7 +171,7 @@ class S7_user(User):
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
     reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True, blank=True)
     segundos = models.IntegerField(null=True, default=0) # segundo de reproduccion del audio guardado
-    favorito = models.ManyToManyField(Audio, related_name='favorito', blank=True)
+    favorito = models.ManyToManyField(Audio, related_name='user', blank=True)
 
     class Meta:
         managed = True
@@ -226,6 +226,10 @@ class Song(Audio):
     def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Song, self).save()#commit=False)
         #print("Listas: " + self.lists)
+
+    #@property
+    def is_favorite_of(self, user):
+        return user in self.user.all()
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/

@@ -5,16 +5,21 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
+
+
+from rest_framework.fields import CurrentUserDefault
+
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
     # lista de los nombres (str) de los campos del modelo que no sean 'id' ni esten en exclude (lista de str)
+
     return ['url'] + [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
 
 # para obtener el usuario de la request, basado en: https://stackoverflow.com/a/30203950
-def get_user(serializador):
+def get_user(serializer):
     user = None
-    request = serializador.context.get("request")
+    request = serializer.context.get("request")
     if request and hasattr(request, "user"):
         user = request.user
     return user
@@ -71,34 +76,39 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         fields = (*todosloscampos(model), 'elalbum','number_albums', 'number_songs')
         depth = 1
 
+
+# Para campos mas complejos derivados de relaciones entre modelos:
+# https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields
+# Devuelve "True" o "False" en función de si la canción está entre las favoritas del usuario
+class IsFavField(serializers.RelatedField):
+    # instance es la instancia de la cancion (modelo Song)
+    def to_representation(self, instance):
+        user = get_user(self)
+        # print('Eres', user)
+        # print(instance)
+        is_fav = str(instance.is_favorite_of(user))
+        # TODO: cambiar la busqueda de usuarios de la cancion a canciones del usuario (+ eficiente seguramente)
+        #is_fav = 'dummy'
+        return is_fav
+
 # TODO: Aï¿½adir el artista directamente
 class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
-    # Obtenemos los datos del audio asÃ­: https://stackoverflow.com/a/27851778
-    # todo esto solo es necesario para cambiarle el nombre de la bd
-    # title = serializers.CharField(read_only=True, source="cancion.titulo")
-    # file = serializers.FileField(read_only=True, source="cancion.archivo")
-    #
-    #
-
-    #album =
-    #album = serializers.CharField(read_only=True, source="song.album.title")
-    #CharField(read_only=True, source="song.album.artists")
-    #serializers.CharField(read_only=True, source="song.album.artists.name")#
-    #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
-
-    #user = get_user(self)
-
-    # TODO: Me estoy rayando mucho con esto, igual renta ponerle una property a song (is_fav_of(user)):
-    # is_favorite = is_favorite(song, user)
-
-
+    is_fav = IsFavField(source='song', many=False, read_only=True)
 
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = (*todosloscampos(model), 'is_favorite')#'__all__'
+        #fields = '__all__'# (*todosloscampos(model), 'is_favorite')#'__all__'
+        fields ='__all__'# ['is_fav']
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+    def save(self):
+        user = get_user(self)
+        print(user)
+
+    #def to_represetnation(self, value):
+
 
 class SongListSerializer(serializers.HyperlinkedModelSerializer):
     # Obtenemos los datos del audio asÃ­: https://stackoverflow.com/a/27851778
@@ -113,10 +123,12 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
     #CharField(read_only=True, source="song.album.artists")
     #serializers.CharField(read_only=True, source="song.album.artists.name")#
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
+
+    is_fav = IsFavField(source='song', many=False, read_only=True)
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'duration', 'album']#todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav']#todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 1
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
@@ -144,7 +156,7 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = S7_user.objects.create(
             username=validated_data['username'],
-            #email=validated_data['email'],
+            #email=validated_data['email'], # si añadimos mas
             # first_name=validated_data['first_name'],
             # last_name=validated_data['last_name']
         )
