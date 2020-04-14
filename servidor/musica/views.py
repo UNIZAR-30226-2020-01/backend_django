@@ -94,7 +94,7 @@ class SongViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-    
+
 
     action_serializers = {
         'retrieve': SongDetailSerializer,
@@ -109,18 +109,41 @@ class SongViewSet(viewsets.ModelViewSet):
 
         return super(SongViewSet, self).get_serializer_class()
 
-    @action (detail=True, methods=['post'])
-    def set_favorite(self, request):
-        user = models.S7_user.objects.first()
-        serializer = SongSerializer(data=request.data)
-        if serializer.is_valid():
-            user.add_favorite(serializer.data['song'])
-            user.save()
-        else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
+    # TODO: asegurar que add_favorite no duplique filas
+    @action (detail=True, methods=['get'])
+    def set_favorite(self, request, pk):
+        user = S7_user.objects.first()
+        print(str(user))
+        # user = self.request.user
+        song = self.get_object()
+        print(song)
+        # serializer = SongSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     user.add_favorite(serializer.data['song'])
+        #     user.save()
+        # else:
+        #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        user.add_favorite(song) # TODO: cambiar por toggle_favorite
         return Response({'status': 'Maracdo como favorito'})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    # TODO: terminar:
+    @action (detail=True, methods=['get'])
+    def remove_favorite(self, request, pk):
+        user = S7_user.objects.first()
+        print(str(user))
+        # user = self.request.user
+        song = self.get_object()
+        print(song)
+        # serializer = SongSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     user.add_favorite(serializer.data['song'])
+        #     user.save()
+        # else:
+        #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        user.add_favorite(song) # TODO: cambiar por toggle_favorite
+        return Response({'status': 'Maracdo como favorito'})
 
 
 

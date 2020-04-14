@@ -118,7 +118,7 @@ REST_FRAMEWORK = {
     # Paginacion (para dividir los JSON en paginas si hay muchos resultados)
     # TODO: Descomentar PAGE_SIZE cuando los clientes esten preparados:
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 10,
+    #'PAGE_SIZE': 2,
 }
 
 SITE_ID = 1
