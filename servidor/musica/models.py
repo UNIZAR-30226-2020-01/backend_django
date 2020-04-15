@@ -246,8 +246,8 @@ class Song(Audio):
         if user.is_anonymous:
             s7user = S7_user.objects.first()
         else:
-            s7_user = S7_user.objects.get(pk=user.pk)
-
+            s7user = S7_user.objects.get(pk=user.pk)
+            
         return self in s7user.favorito.songs.all() ## TODO: ¿alguna forma más eficiente?
 
 
