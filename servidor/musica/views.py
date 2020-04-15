@@ -113,9 +113,10 @@ class SongViewSet(viewsets.ModelViewSet):
     # TODO: asegurar que add_favorite no duplique filas
     @action (detail=True, methods=['get'])
     def set_favorite(self, request, pk):
-        #user = S7_user.objects.first()
-        # print(str(user))
-        user = self.request.user
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        user = self.request.user # Tipo User de Django!
+        s7_user = S7_user.objects.get(pk=user.pk) # TODO: ARREGLAR!!!!
+        print(user, '------------------', s7_user)
         song = self.get_object()
         # print(song)
         # serializer = SongSerializer(data=request.data)
@@ -124,22 +125,22 @@ class SongViewSet(viewsets.ModelViewSet):
         #     user.save()
         # else:
         #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-        user.add_favorite(song) # TODO: cambiar por toggle_favorite?
+        s7_user.add_favorite(song) # TODO: cambiar por toggle_favorite?
         return Response({'status': 'Maracdo como favorito'})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
     # TODO: terminar:
     @action (detail=True, methods=['get'])
     def remove_favorite(self, request, pk):
-        user = S7_user.objects.first()
-        # print(str(user))
-        user = self.request.user
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        user = self.request.user # Tipo User de Django!
+        s7_user = S7_user.objects.get(pk=user.pk) # TODO: ARREGLAR!!!!
         # TODO: borrar, es solo de prueba:
         if request.user.is_anonymous:
             user = S7_user.objects.first()
         ############## hasta aqui
         song = self.get_object()
-        user.remove_favorite(song) # TODO: cambiar por toggle_favorite?
+        s7_user.remove_favorite(song) # TODO: cambiar por toggle_favorite?
         return Response({'status': 'Eliminado de favoritos'})
 
 
@@ -151,8 +152,21 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all()
     serializer_class = PlayListSerializer
     # solo acepta GET:
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    action_serializers = {
+        'retrieve': PlayListSerializer,
+        'list': PlayListSerializer,
+        'create': PlaylistCreateSerializer
+    }
+
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(SongViewSet, self).get_serializer_class()
 
 
 class GenreViewSet(viewsets.ModelViewSet):

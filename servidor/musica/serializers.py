@@ -186,6 +186,21 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
         fields = (*todosloscampos(model), 'duration', 'number_songs')
         depth = 4
 
+class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Playlist
+        fields = ('title')
+        depth = 1
+
+    # def validate_title(self, title: str) -> str:
+    #     if bid > self.context['request'].user.available_balance:
+    #         raise serializers.ValidationError(
+    #             _('Bid is greater than your balance')
+    #         )
+    #     return bid
+
+
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Genre
