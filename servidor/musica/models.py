@@ -171,19 +171,30 @@ class S7_user(User):
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
     reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True, blank=True)
     segundos = models.IntegerField(null=True, default=0) # segundo de reproduccion del audio guardado
-    favorito = models.ManyToManyField(Audio, related_name='user', blank=True)
-
+    #favorito = models.ManyToManyField(Audio, related_name='user', blank=True)
     class Meta:
         managed = True
         db_table = 'S7_user'
 
     def add_favorite(self, song):
-        self.favorito.add(song)
+        favorite = self.playlists.filter(title='favorite_' + self.username)
+        favorite.songs.add(song)
+        #self.favorito.add(song)
 
     def remove_favorite(self, song):
-        self.favorito.remove(song)
+        ts.filter(title='favorite_' + self.username)
+        favorite.songs.remove(song)
     # def __str__(self):
     #     return self.name
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        if not self.pk: #Comprobamos que no exista: https://stackoverflow.com/questions/2307943/django-overriding-the-model-create-method
+            print('Creando user ...')
+            name = 'favorite_' + self.username
+            lista_fav = Playlist(title=name, user=self) #Creamos la playlist
+            lista_fav.save()
+        m = super(Song, self).save()#commit=False)
+        #print("Listas: " + self.lists)
 
 class Song(Audio):
     track = models.IntegerField()
@@ -229,20 +240,28 @@ class Song(Audio):
 
 
     # TODO: EFICIENCIA, es muy lenta
+    # Como ahora depende de la playlist, se busca si pertenece a la playlist favorita del user
     def is_favorite_of(self, user):
         #return user in self.user.all() # ineficiente, se supone que exists es mejor (https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exists) :
-        return self.user.filter(id=user.id).exists()
-
-
+        #return self.user.filter(id=user.id).exists()
+        s7user = S7_user.objects.filter(id=user.id)
+        print(s7user)
+        if not s7user:
+            return False
+        else:
+            s7user = s7user[0]
+            print(s7user)
+            favorita = s7user.playlists.filter(title='favorite_' + s7user.username)
+            return True#favorita == None
 
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
 class Playlist(models.Model):
     title = models.CharField(max_length=50, unique=True)
-    user = models.ForeignKey(S7_user, on_delete=models.CASCADE)
+    user = models.ForeignKey(S7_user, on_delete=models.CASCADE, related_name='playlists')
     icon = models.FileField(blank=True)
-    songs = models.ManyToManyField(Song, blank=True)
+    songs = models.ManyToManyField(Song, blank=True, related_name='playlists')
 
     @property
     def duration(self):

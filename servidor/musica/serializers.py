@@ -155,7 +155,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
 class S7_userSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = S7_user
-        fields = ['url', 'username','favorito'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        fields = ['url', 'username','playlists'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
 
 
