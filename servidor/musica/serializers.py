@@ -124,7 +124,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Album
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
-        fields = (*todosloscampos(model,['artist']), 'songs', 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
+        fields = (*todosloscampos(model), 'songs', 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 1
 
 # Serializador del album sin artista
@@ -203,7 +203,7 @@ class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Playlist
-        fields = ('title')
+        fields = ['title']
         depth = 1
 
     # def validate_title(self, title: str) -> str:
