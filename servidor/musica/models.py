@@ -171,19 +171,17 @@ class S7_user(User):
     #seguido = models.ManyToManyField('self', symmetrical=False, related_name='seguido')
     reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True, blank=True)
     segundos = models.IntegerField(null=True, default=0) # segundo de reproduccion del audio guardado
-    #favorito = models.ManyToManyField(Audio, related_name='user', blank=True)
+    favorito = models.ForeignKey('Playlist', on_delete=models.DO_NOTHING, null=True, blank=True, related_name='fav_user')
     class Meta:
         managed = True
         db_table = 'S7_user'
 
     def add_favorite(self, song):
-        favorite = self.playlists.filter(title='favorite_' + self.username)
-        favorite.songs.add(song)
+        favorito.songs.add(song)
         #self.favorito.add(song)
 
     def remove_favorite(self, song):
-        ts.filter(title='favorite_' + self.username)
-        favorite.songs.remove(song)
+        favorito.songs.remove(song)
     # def __str__(self):
     #     return self.name
 
@@ -193,7 +191,8 @@ class S7_user(User):
             name = 'favorite_' + self.username
             lista_fav = Playlist(title=name, user=self) #Creamos la playlist
             lista_fav.save()
-        m = super(Song, self).save()#commit=False)
+            self.favorito = lista_fav
+        super(S7_user, self).save()#commit=False)
         #print("Listas: " + self.lists)
 
 class Song(Audio):
@@ -244,15 +243,12 @@ class Song(Audio):
     def is_favorite_of(self, user):
         #return user in self.user.all() # ineficiente, se supone que exists es mejor (https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exists) :
         #return self.user.filter(id=user.id).exists()
-        s7user = S7_user.objects.filter(id=user.id)
-        print(s7user)
-        if not s7user:
-            return False
+        if user.is_anonymous:
+            s7user = S7_user.objects.first()
         else:
-            s7user = s7user[0]
-            print(s7user)
-            favorita = s7user.playlists.filter(title='favorite_' + s7user.username)
-            return True#favorita == None
+            s7_user = S7_user.objects.get(pk=user.pk)
+
+        return self in s7user.favorito.songs.all() ## TODO: ¿alguna forma más eficiente?
 
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
