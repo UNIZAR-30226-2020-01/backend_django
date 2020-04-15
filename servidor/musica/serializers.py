@@ -27,7 +27,7 @@ def get_user(serializer):
 
 # Para campos mas complejos derivados de relaciones entre modelos:
 # https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields
-# Devuelve "True" o "False" en función de si la canción está entre las favoritas del usuario
+# Devuelve "True" o "False" en funciï¿½n de si la canciï¿½n estï¿½ entre las favoritas del usuario
 class IsFavField(serializers.RelatedField):
     # instance es la instancia de la cancion (modelo Song)
     def to_representation(self, instance):
@@ -74,6 +74,19 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
+# TODO: Aï¿½adir el artista directamente
+class SongReducedSerializer(serializers.HyperlinkedModelSerializer):
+    is_fav = IsFavField(source='song', many=False, read_only=True)
+
+    class Meta:
+        model = Song
+        #album_detail = AlbumSerializer()
+        #fields = '__all__'# (*todosloscampos(model), 'is_favorite')#'__all__'
+        fields = ['url', 'title', 'file', 'duration', 'is_fav']# ['is_fav']
+        depth = 2
+        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+
 
 
 
@@ -99,7 +112,7 @@ class AlbumSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
-    songs = SongListSerializer(many=True)
+    songs = SongReducedSerializer(many=True)
     class Meta:
         model = Album
         fields = (*todosloscampos(model),'number_songs')
@@ -107,7 +120,7 @@ class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
 
 class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     #songs = SongSerializer(many=True) #source='album.song_set',
-    songs = SongListSerializer(many=True)
+    songs = SongReducedSerializer(many=True)
     class Meta:
         model = Album
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
@@ -116,7 +129,7 @@ class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 # Serializador del album sin artista
 class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
-    songs = SongListSerializer(many=True)
+    #songs = SongListSerializer(many=True)
     class Meta:
         model = Album
         fields = (*todosloscampos(model, ['artist','songs']), 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
@@ -162,7 +175,7 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
     def create(self, validated_data):
         user = S7_user.objects.create(
             username=validated_data['username'],
-            #email=validated_data['email'], # si añadimos mas
+            #email=validated_data['email'], # si aï¿½adimos mas
             # first_name=validated_data['first_name'],
             # last_name=validated_data['last_name']
         )

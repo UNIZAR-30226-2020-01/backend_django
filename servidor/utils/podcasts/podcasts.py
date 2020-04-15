@@ -61,7 +61,9 @@ class Podcasts_api:
         return response.json()['podcasts']
 
     # Dado un id, devuelve TODA información sobre un podcast, en formato JSON
-    def get_detailedInfo_podcast(self, id):
+    #   -id: Id del podcast a buscar
+    #   -sort: recent_first|| oldest_first (default: recent_first)
+    def get_detailedInfo_podcast(self, id, sort='recent_first'):
         querystring = {
             'id': id
         }
@@ -94,14 +96,6 @@ class Podcasts_api:
         response = requests.get(self.url + '/just_listen', headers=self.headers)
         return response.json()
 
-    #Dada una lista de ids de episodios(separadas por comas p.ej: 26326735763,823726372),
-    #devuelve sus links de audio.
-    def get_audio(self, ids):
-        data = {
-            'ids': ids
-        }
-        response = requests.post(self.url + '/episodes', headers=self.headers, data = data)
-        print([l["audio"] for l in response.json()["episodes"]])
 
     #Recomienda términos de búsqueda, géneros de podcasts y Podcasts_api
     #   -query: Término de búsqueda, p.ej: star wars. Si se pone con comillas ("star wars"), la búsqueda es literal
@@ -140,6 +134,7 @@ class Podcasts_api:
         }
         response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
         return response.json()["episodes"]
+        
 # Para probar que funciona
 if __name__ == '__main__':
     the_secret_function()
