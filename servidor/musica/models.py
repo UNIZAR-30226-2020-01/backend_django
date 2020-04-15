@@ -177,11 +177,11 @@ class S7_user(User):
         db_table = 'S7_user'
 
     def add_favorite(self, song):
-        favorito.songs.add(song)
+        self.favorito.songs.add(song)
         #self.favorito.add(song)
 
     def remove_favorite(self, song):
-        favorito.songs.remove(song)
+        self.favorito.songs.remove(song)
     # def __str__(self):
     #     return self.name
 
@@ -247,7 +247,7 @@ class Song(Audio):
             s7user = S7_user.objects.first()
         else:
             s7user = S7_user.objects.get(pk=user.pk)
-            
+
         return self in s7user.favorito.songs.all() ## TODO: ¿alguna forma más eficiente?
 
 
