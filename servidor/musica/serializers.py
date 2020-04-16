@@ -25,6 +25,23 @@ def get_user(serializer):
     return user
 
 
+# extendemos CurrentUserDefault para poder traducirlo a s7_user
+class OurCurrentUserDefault(serializers.CurrentUserDefault):
+    requires_context = True
+    def __call__(self, serializer_field):
+        user = get_user(serializer_field) # user el por defecto de django...............
+        return S7_user.objects.get(id=user.id)
+    # def toS7(self) -> S7_user:
+    #     return S7_user.objects.get(id=user.id)
+
+
+class S7_userDefault():
+    def __init__(self):
+        user
+
+
+
+
 # Para campos mas complejos derivados de relaciones entre modelos:
 # https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields
 # Devuelve "True" o "False" en funci�n de si la canci�n est� entre las favoritas del usuario
@@ -85,15 +102,6 @@ class SongReducedSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'title', 'file', 'duration', 'is_fav']# ['is_fav']
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
-
-
-
-
-
-
-
-
-
 
 
 # Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
@@ -200,18 +208,22 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 4
 
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
-
+    user = serializers.HiddenField(default=OurCurrentUserDefault())
     class Meta:
         model = Playlist
-        fields = ['title']
+        fields = ['title', 'user']
         depth = 1
 
-    # def validate_title(self, title: str) -> str:
-    #     if bid > self.context['request'].user.available_balance:
-    #         raise serializers.ValidationError(
-    #             _('Bid is greater than your balance')
-    #         )
-    #     return bid
+    # se llama automaticamente con el campo titulo, la usamos para validar el usuario:
+    def validate_title(self, title: str) -> str:
+        user = get_user(self)
+        print('añadiendo playlist a', user) # cuidado, igual es tipo User?
+        if user.is_anonymous:
+            raise serializers.ValidationError(
+                ('No estas autentificado!')
+            )
+        self.user = (user)
+        return title
 
 
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
