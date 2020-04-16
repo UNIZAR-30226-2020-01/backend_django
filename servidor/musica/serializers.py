@@ -22,6 +22,10 @@ def get_user(serializer):
     request = serializer.context.get("request")
     if request and hasattr(request, "user"):
         user = request.user
+        if user.is_anonymous:
+            raise serializers.ValidationError(
+                    ('No estas autentificado!')
+                )
     return user
 
 
@@ -208,21 +212,19 @@ class PlayListSerializer(serializers.HyperlinkedModelSerializer):
         depth = 4
 
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.HiddenField(default=OurCurrentUserDefault())
+    user = serializers.HiddenField(default=OurCurrentUserDefault()) # tomamos el s7_user (validacion incluida)
     class Meta:
         model = Playlist
         fields = ['title', 'user']
         depth = 1
 
+
     # se llama automaticamente con el campo titulo, la usamos para validar el usuario:
     def validate_title(self, title: str) -> str:
-        user = get_user(self)
-        print('añadiendo playlist a', user) # cuidado, igual es tipo User?
-        if user.is_anonymous:
-            raise serializers.ValidationError(
-                ('No estas autentificado!')
-            )
-        self.user = (user)
+        # if no_ok(title): # TODO: validacion de title? long maxima, cosas asi
+        #     raise serializers.ValidationError(
+        #         ('No estas autentificado!')
+        #     )
         return title
 
 
