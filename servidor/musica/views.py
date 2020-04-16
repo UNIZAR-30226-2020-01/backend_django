@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 
@@ -8,6 +8,9 @@ from rest_framework import viewsets
 from musica.serializers import *
 
 from musica.models import *
+
+from musica.permissions import IsOwnerOrIsAdmin
+
 from utils.podcasts.podcasts import Podcasts_api
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -94,8 +97,6 @@ class SongViewSet(viewsets.ModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ['title']
 
-
-
     action_serializers = {
         'retrieve': SongDetailSerializer,
         'list': SongListSerializer,
@@ -150,23 +151,45 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     API endpoint that allows all playlists to be viewed.
     """
     queryset = Playlist.objects.all()
-    serializer_class = PlayListSerializer
+    serializer_class = PlaylistSerializer # por defectp
     # solo acepta GET:
     http_method_names = ['get', 'post']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
     action_serializers = {
-        'retrieve': PlayListSerializer,
-        'list': PlayListSerializer,
+        'retrieve': PlaylistSerializer,
+        'list': PlaylistSerializer,
         'create': PlaylistCreateSerializer
     }
 
     def get_serializer_class(self):
-
+        print('accion:',self.action)
         if hasattr(self, 'action_serializers'):
-            return self.action_serializers.get(self.action, self.serializer_class)
+            #
+            # try:
+            serializador = self.action_serializers.get(self.action, self.serializer_class)
+            print('usando: ', serializador)
+            return serializador
+            # except KeyError, AttributeError:
+        return super(PlaylistViewSet, self).get_serializer_class()
 
-        return super(SongViewSet, self).get_serializer_class()
+
+    @action (detail=True, methods=['post'], permission_classes=[IsOwnerOrIsAdmin])
+    def add_song(self, request, pk):
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        # user = self.request.user # Tipo User de Django!
+        # s7_user = S7_user.objects.get(pk=user.pk) # TODO: ARREGLAR!!!!
+        # print(user, '------------------', s7_user)
+        playlist = self.get_object()
+
+        songpk = self.request.query_params.get('song_id', None)
+        song = get_object_or_404(Song, pk=1)#Song.objects.get_object_or_404(pk=songpk) # si no existe devuelve 404
+        print(playlist, '.....', songpk, song)
+        playlist.add_song(song)
+        estado = 'Añadida ' + str(song) + ' a ' + str(playlist)
+        return Response({'status': estado})
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
 
 
 class GenreViewSet(viewsets.ModelViewSet):
@@ -216,7 +239,7 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    serializer_class = PlayListSerializer
+    serializer_class = PlaylistSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643

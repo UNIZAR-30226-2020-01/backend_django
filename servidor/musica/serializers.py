@@ -17,12 +17,12 @@ def todosloscampos(modelo, exclude=['']):
     return ['url'] + [f.name for f in modelo._meta.get_fields() if f.name != 'id' and f.name not in exclude]
 
 # para obtener el usuario de la request, basado en: https://stackoverflow.com/a/30203950
-def get_user(serializer):
+def get_user(serializer, validate=False):
     user = None
     request = serializer.context.get("request")
     if request and hasattr(request, "user"):
         user = request.user
-        if user.is_anonymous:
+        if validate and user.is_anonymous:
             raise serializers.ValidationError(
                     ('No estas autentificado!')
                 )
@@ -33,7 +33,7 @@ def get_user(serializer):
 class OurCurrentUserDefault(serializers.CurrentUserDefault):
     requires_context = True
     def __call__(self, serializer_field):
-        user = get_user(serializer_field) # user el por defecto de django...............
+        user = get_user(serializer_field, validate=True) # user el por defecto de django...............
         return S7_user.objects.get(id=user.id)
     # def toS7(self) -> S7_user:
     #     return S7_user.objects.get(id=user.id)
@@ -202,13 +202,13 @@ class otro(serializers.ModelSerializer):
         fields = ['username']
 
 
-class PlayListSerializer(serializers.HyperlinkedModelSerializer):
+class PlaylistSerializer(serializers.HyperlinkedModelSerializer):
     user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
     songs = SongListSerializer(many=True)
     class Meta:
         model = Playlist
-        fields = ['title', 'user','icon', 'songs', 'duration', 'number_songs']
+        fields = ['url', 'title', 'user','icon', 'songs', 'duration', 'number_songs']
         depth = 4
 
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
@@ -217,7 +217,6 @@ class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
         model = Playlist
         fields = ['title', 'user']
         depth = 1
-
 
     # se llama automaticamente con el campo titulo, la usamos para validar el usuario:
     def validate_title(self, title: str) -> str:

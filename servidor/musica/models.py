@@ -238,6 +238,9 @@ class Song(Audio):
         #print("Listas: " + self.lists)
 
 
+    def __str__(self):
+        return self.title
+
     # TODO: EFICIENCIA, es muy lenta
     # Como ahora depende de la playlist, se busca si pertenece a la playlist favorita del user
     def is_favorite_of(self, user):
@@ -269,6 +272,11 @@ class Playlist(models.Model):
 
     def __str__(self):
         return self.title
+
+    # Añade la cancion song a la playlist
+    def add_song(self, song):
+        self.songs.add(song)
+
 
     class Meta:
         managed = True
