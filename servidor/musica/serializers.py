@@ -61,9 +61,55 @@ class IsFavField(serializers.RelatedField):
         return is_fav
 
 # TODO: A�adir el artista directamente
-class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
+class SongReducedSerializer(serializers.HyperlinkedModelSerializer):
     is_fav = IsFavField(source='song', many=False, read_only=True)
 
+    class Meta:
+        model = Song
+        #album_detail = AlbumSerializer()
+        #fields = '__all__'# (*todosloscampos(model), 'is_favorite')#'__all__'
+        fields = ['url', 'title', 'file', 'duration', 'is_fav']# ['is_fav']
+        depth = 2
+        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+
+# Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ['url', 'username', 'email', 'favorito']
+
+
+# class AlbumSerializer(serializers.HyperlinkedModelSerializer):
+#     songs = SongListSerializer(many=True)
+#     class Meta:
+#         model = Album
+#         fields = (*todosloscampos(model),'number_songs')
+#         depth = 1
+
+
+# TODO: MOVER ANTES DE ALBUM
+class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
+        fields =  ['url', 'name', 'image', 'number_albums', 'number_songs']#(*todosloscampos(model), 'number_albums', 'number_songs')
+        depth = 1
+
+# url, titulo, artista (lista), icono (), number_songs
+class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
+
+    artist = ArtistListSerializer()
+    class Meta:
+        model = Album
+        fields = ['url', 'title', 'artist', 'icon', 'number_songs']
+        (*todosloscampos(model),'number_songs')
+        depth = 1
+
+
+# TODO: A�adir el artista directamente
+class SongDetailSerializer(serializers.HyperlinkedModelSerializer):
+    is_fav = IsFavField(source='song', many=False, read_only=True)
+    album = AlbumListSerializer()
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
@@ -88,57 +134,15 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
 
     is_fav = IsFavField(source='song', many=False, read_only=True)
+    album = AlbumListSerializer()
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav']#todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
-        depth = 2
-        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
-
-# TODO: A�adir el artista directamente
-class SongReducedSerializer(serializers.HyperlinkedModelSerializer):
-    is_fav = IsFavField(source='song', many=False, read_only=True)
-
-    class Meta:
-        model = Song
-        #album_detail = AlbumSerializer()
-        #fields = '__all__'# (*todosloscampos(model), 'is_favorite')#'__all__'
-        fields = ['url', 'title', 'file', 'duration', 'is_fav']# ['is_fav']
+        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
 
-# Tambien copiado del tutorial https://www.django-rest-framework.org/tutorial/quickstart/#project-setup .........
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['url', 'username', 'email', 'favorito']
-
-
-class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-    songs = SongListSerializer(many=True)
-    class Meta:
-        model = Album
-        fields = (*todosloscampos(model),'number_songs')
-        depth = 1
-
-
-# TODO: MOVER ANTES DE ALBUM
-class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
-        fields =  ['url', 'name', 'image', 'number_albums', 'number_songs']#(*todosloscampos(model), 'number_albums', 'number_songs')
-        depth = 1
-
-# url, titulo, artista (lista), icono (), number_songs
-class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
-
-    artist = ArtistListSerializer()
-    class Meta:
-        model = Album
-        fields = ['url', 'title', 'artist', 'icon', 'number_songs']
-        (*todosloscampos(model),'number_songs')
-        depth = 1
 
 class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
     #songs = SongSerializer(many=True) #source='album.song_set',
@@ -156,6 +160,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
         model = Album
         fields = (*todosloscampos(model, ['artist','songs']), 'number_songs') # (*[f.name for f in Album._meta.get_fields()], 'songs')
         depth = 1
+
 
 
 

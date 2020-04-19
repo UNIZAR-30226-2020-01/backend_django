@@ -68,7 +68,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
     API endpoint that allows albums to be viewed.
     """
     queryset = Album.objects.all()
-    serializer_class = AlbumSerializer
+    serializer_class = AlbumListSerializer
     http_method_names = ['get']
     action_serializers = {
         'retrieve': AlbumDetailSerializer,
