@@ -123,11 +123,21 @@ class AlbumSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
 
+# TODO: MOVER ANTES DE ALBUM
+class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
+        fields =  ['url', 'name', 'image', 'number_albums', 'number_songs']#(*todosloscampos(model), 'number_albums', 'number_songs')
+        depth = 1
+
+# url, titulo, artista (lista), icono (), number_songs
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
-    songs = SongReducedSerializer(many=True)
+
+    artist = ArtistListSerializer()
     class Meta:
         model = Album
-        fields = (*todosloscampos(model),'number_songs')
+        fields = ['url', 'title', 'artist', 'icon', 'number_songs']
+        (*todosloscampos(model),'number_songs')
         depth = 1
 
 class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -148,12 +158,6 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
 
-class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
-    albums = AlbumReducedSerializer(many=True)
-    class Meta:
-        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
-        fields =  (*todosloscampos(model), 'number_albums', 'number_songs')
-        depth = 2
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
     albums = AlbumDetailSerializer(many=True)
