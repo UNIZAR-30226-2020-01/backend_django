@@ -151,14 +151,14 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     API endpoint that allows all playlists to be viewed.
     """
     queryset = Playlist.objects.all()
-    serializer_class = PlaylistSerializer # por defectp
+    serializer_class = PlaylistListSerializer # por defectp
     # solo acepta GET:
     http_method_names = ['get', 'post']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
     action_serializers = {
-        'retrieve': PlaylistSerializer,
-        'list': PlaylistSerializer,
+        'retrieve': PlaylistDetailSerializer,
+        'list': PlaylistListSerializer,
         'create': PlaylistCreateSerializer
     }
 
@@ -188,7 +188,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         song = get_object_or_404(Song, pk=songpk)#Song.objects.get_object_or_404(pk=songpk) # si no existe devuelve 404
         print(playlist, '.....', songpk, song)
         playlist.add_song(song)
-        estado = 'Añadida ' + str(song) + ' a ' + str(playlist)
+        estado = 'Añadida ' + str(song) + ' a ' + str(playlist) # TODO: que diga "ya estaba" si ya estaba
         return Response({'status': estado})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
@@ -241,7 +241,7 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
-    serializer_class = PlaylistSerializer
+    serializer_class = PlaylistListSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643

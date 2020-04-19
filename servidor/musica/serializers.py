@@ -202,15 +202,28 @@ class otro(serializers.ModelSerializer):
         fields = ['username']
 
 
-class PlaylistSerializer(serializers.HyperlinkedModelSerializer):
+# TODO: Reducir mucho los campos!
+class PlaylistListSerializer(serializers.HyperlinkedModelSerializer):
+    user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
+    #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
+
+    class Meta:
+        model = Playlist
+        fields = ['url', 'title', 'user', 'icon', 'number_songs']
+        depth = 2
+
+
+class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):
     user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
     songs = SongListSerializer(many=True)
     class Meta:
         model = Playlist
-        fields = ['url', 'title', 'user','icon', 'songs', 'duration', 'number_songs']
+        fields = ['url', 'title', 'user', 'icon', 'songs', 'duration', 'number_songs']
         depth = 4
 
+
+#TODO: devolver al menos la url al crear
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.HiddenField(default=OurCurrentUserDefault()) # tomamos el s7_user (validacion incluida)
     class Meta:
