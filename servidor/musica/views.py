@@ -331,6 +331,20 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
+class CurrentUserView(viewsets.ModelViewSet):
+    serializer_class = S7_userSerializer
+    authentication_classes = [TokenAuthentication]
+    # solo acepta GET:
+    http_method_names = ['get']
+    def get_queryset(self):
+        """
+        This view returns the currently authenticated user.
+        """
+        user = self.request.user
+        print("Usuario en request: ", user)
+        return S7_user.objects.filter(pk=user.pk)
+
+
 class S7_userViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows to search stuff.
