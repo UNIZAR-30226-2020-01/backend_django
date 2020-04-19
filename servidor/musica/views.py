@@ -182,8 +182,10 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         # print(user, '------------------', s7_user)
         playlist = self.get_object()
 
-        songpk = self.request.query_params.get('song_id', None)
-        song = get_object_or_404(Song, pk=1)#Song.objects.get_object_or_404(pk=songpk) # si no existe devuelve 404
+        songurl = self.request.query_params.get('song', None)
+        print(songurl)
+        songpk = songurl.split('/')[-2]
+        song = get_object_or_404(Song, pk=songpk)#Song.objects.get_object_or_404(pk=songpk) # si no existe devuelve 404
         print(playlist, '.....', songpk, song)
         playlist.add_song(song)
         estado = 'Añadida ' + str(song) + ' a ' + str(playlist)

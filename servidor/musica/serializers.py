@@ -151,7 +151,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     albums = AlbumReducedSerializer(many=True)
     class Meta:
-        model = Artist
+        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
         fields =  (*todosloscampos(model), 'number_albums', 'number_songs')
         depth = 2
 
