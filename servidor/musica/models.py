@@ -185,7 +185,11 @@ class S7_user(User):
     # def __str__(self):
     #     return self.name
 
-    def save(self, force_insert=False, force_update=False, commit=True):
+    # save debe conservar los pars originales, para no especificarlos explicitamente podemos usar
+    # args y kwargs (ej: https://stackoverflow.com/a/58157374):
+    def save(self, *args, **kwargs):# antiguos parametros: , force_insert=False, force_update=False, commit=True):
+
+        super(S7_user,self).save(*args, **kwargs)
         if not self.pk: #Comprobamos que no exista: https://stackoverflow.com/questions/2307943/django-overriding-the-model-create-method
             print('Creando user ...')
             name = 'favorite_' + self.username

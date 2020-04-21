@@ -6,6 +6,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
 
+# Para validacion en posts (registros, etc...)
+from django.core.exceptions import ValidationError
+import django.contrib.auth.password_validation as validators
+
 
 from rest_framework.fields import CurrentUserDefault
 
@@ -186,7 +190,7 @@ class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
         model = S7_user
         fields = ['url', 'username', 'password'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         write_only_fields = ('password',)
-        depth = 0
+        depth = 1
 
     # Se pueden definir metodos validate_[nombre del campo] en los serializadores
     def validate_password(self, value):
