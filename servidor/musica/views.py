@@ -156,6 +156,28 @@ class SongViewSet(viewsets.ModelViewSet):
         s7_user.remove_favorite(song) # TODO: cambiar por toggle_favorite?
         return Response({'status': 'Eliminado de favoritos'})
 
+    # Añade esta cancion a 'reproduciendo' del usuario actual
+    @action (detail=True, methods=['get'], permission_classes=[IsAuthenticated])
+    def set_playing(self, request, pk):
+        '''
+        Saves the song as the user's currently playing song with the timestamp in the
+        t queryparam (?t=123) in seconds
+        '''
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        user = self.request.user # Tipo User de Django!
+        s7_user = S7_user.objects.get(pk=user.pk)
+        print(user, '------------------', s7_user)
+        song = self.get_object()
+
+        timestamp = self.request.query_params.get('t', None) # en segundos!
+        if timestamp is None: # por defecto, 0
+            timestamp = 0
+        else: # si no, lo pasamos a entero
+            timestamp = int(timestamp)
+        s7_user.set_playing(song, timestamp)
+        return Response({'status': 'Saved as playing', 'user': str(s7_user), 'song': str(song), 'timestamp (s)': timestamp})
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     """

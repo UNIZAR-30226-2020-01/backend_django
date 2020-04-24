@@ -185,6 +185,12 @@ class S7_user(User):
     # def __str__(self):
     #     return self.name
 
+    # guarda la canción song y los segundos timestamp como los que está reproduciendo el usuario (para sincronización, etc)
+    def set_playing(self, song, timestamp):
+        self.reproduciendo = song
+        self.segundos = timestamp
+        self.save()
+
     # save debe conservar los pars originales, para no especificarlos explicitamente podemos usar
     # args y kwargs (ej: https://stackoverflow.com/a/58157374):
     def save(self, *args, **kwargs):# antiguos parametros: , force_insert=False, force_update=False, commit=True):
