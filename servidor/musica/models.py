@@ -193,10 +193,14 @@ class S7_user(User):
         if not self.pk: #Comprobamos que no exista: https://stackoverflow.com/questions/2307943/django-overriding-the-model-create-method
             print('Creando user ...')
             name = 'favorite_' + self.username
+            super(S7_user,self).save(*args, **kwargs)
             lista_fav = Playlist(title=name, user=self) #Creamos la playlist
             lista_fav.save()
             self.favorito = lista_fav
-        super(S7_user, self).save(*args, **kwargs)#commit=False)
+            self.save()
+        else:
+            super(S7_user, self).save(*args, **kwargs)
+
         #print("Listas: " + self.lists)
 
 class Song(Audio):

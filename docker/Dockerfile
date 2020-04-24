@@ -10,8 +10,9 @@ label MANTAINER='pedro.tamargo.allue@gmail.com'
 # Creamos el directorio de trabajos
 RUN mkdir servidor
 WORKDIR servidor
-# Copiamos el repositorio al contenedor
-COPY servidor .
+
+# Copiamos el requirements.txt al contenedor
+COPY servidor/requirements.txt .
 
 # Instalamos dependencias
 RUN apk add --no-cache --virtual .build-deps \
@@ -33,9 +34,8 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk add --virtual .rundeps $runDeps \
     && apk del .build-deps
 
-# Para instalar django
-#RUN pip3 install -r requirements.txt
-
+# Copiamos el repositorio al contenedor
+COPY servidor .
 
 # Exponemos el puerto 8000 (conexion interna)
 EXPOSE 8000
