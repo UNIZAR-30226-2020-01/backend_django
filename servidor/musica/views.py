@@ -34,11 +34,15 @@ from rest_framework import filters
 class ArtistViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows artists to be viewed.
+    Allows searches using the search queryparameter (/?search=something)
+    Retrieves artists with a substring of the parameter in the artist's name
     """
     queryset = Artist.objects.all()
     serializer_class = ArtistListSerializer # por defecto lista
     # solo acepta GET:
     http_method_names = ['get']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
     action_serializers = {
         'retrieve': ArtistDetailSerializer,
@@ -66,10 +70,15 @@ class ArtistViewSet(viewsets.ModelViewSet):
 class AlbumViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows albums to be viewed.
+    Allows searches using the search queryparameter (/?search=something)
+    Retrieves albums with a substring of the parameter in either the title
+    or the album's artist's name
     """
     queryset = Album.objects.all()
     serializer_class = AlbumListSerializer
     http_method_names = ['get']
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'artist__name']
     action_serializers = {
         'retrieve': AlbumDetailSerializer,
         'list': AlbumListSerializer,
@@ -89,13 +98,16 @@ class AlbumViewSet(viewsets.ModelViewSet):
 class SongViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
+    Allows searches using the search queryparameter (/?search=something)
+    Retrieves songs with a substring of the parameter in either the title
+    or the song's artist's name
     """
     queryset = Song.objects.all()
     # solo acepta GET:
     http_method_names = ['get']
     # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
+    search_fields = ['title', 'album__artist__name']
 
     action_serializers = {
         'retrieve': SongDetailSerializer,
@@ -145,16 +157,21 @@ class SongViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Eliminado de favoritos'})
 
 
-
 class PlaylistViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows all playlists to be viewed.
+    Allows searches using the search queryparameter (/?search=something)
+    Retrieves playlsits with a substring of the parameter in either the title
+    or the playlist's user's username
     """
     queryset = Playlist.objects.all()
     serializer_class = PlaylistListSerializer # por defectp
     # solo acepta GET:
     http_method_names = ['get', 'post']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'user__username']
 
     action_serializers = {
         'retrieve': PlaylistDetailSerializer,
@@ -235,11 +252,15 @@ class UserFavoritesViewSet(viewsets.ModelViewSet):
 class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows all playlists to be viewed.
+    Allows searches using the title queryparameter (/?title=something)
     """
     #queryset = Playlist.objects.all()
 
     authentication_classes = [TokenAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
 
     serializer_class = PlaylistListSerializer
     # solo acepta GET:
@@ -309,6 +330,8 @@ class SearchAPIView(APIView):
         # Can't I append anything to serializer class like below ??
         # serializer.append(anotherserialzed_object) ??
         return Response(serializer.data)
+
+
 
 
 
