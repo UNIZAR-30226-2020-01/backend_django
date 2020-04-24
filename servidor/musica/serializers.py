@@ -5,6 +5,8 @@ from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from utils.podcasts.podcasts import TrendingPodcasts
+from rest_framework.request import Request
+from rest_framework.test import APIRequestFactory
 
 # Para validacion en posts (registros, etc...)
 from django.core.exceptions import ValidationError
@@ -184,6 +186,8 @@ class S7_userSerializer(serializers.HyperlinkedModelSerializer):
         depth = 0
 
 
+
+
 # Para registrar usuarios, con ayuda de https://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -312,11 +316,33 @@ class TrendingPodcastsSerializer(serializers.Serializer):
             setattr(instance, field, value)
         return instance
 
-# TODO: Buena suerte
-class SearchSerializer(serializers.HyperlinkedModelSerializer):
+
+# Devuelve o el serializador de detalle de la canción del audio o el del episodio de podcast,
+# segun lo que sea el audio dado
+class AudioDetailSerializer(serializers.RelatedField):
+
+    # instance es la instancia de la cancion (modelo Song)
+    def to_representation(self, instance):
+        audio = Song.objects.get(pk=instance.pk)
+        is_podcast = audio is None
+        if is_podcast:
+            audio = PodcastEpisode.objects.get(pk=instance.pk)
+            audio = PodcastEpisodeSerializer(source=audio, context=self.context)
+            respuesta = {'podcast-ep:', audio.data}
+        else:
+            audio = SongDetailSerializer(audio, context=self.context)
+            respuesta = ('song:', audio.data)
+
+        # print(audio.data)
+        return audio.data # TODO: añadir el tipo, se queja de unhashable type: dict
+
+
+# Devuelve la cancion/podcast que esta reproduciendo (en vista de detalle) junto con su timestamp,
+# ademas del nombre de usuario y la url como el s7_userSerializer
+class S7_userDetailSerializer(serializers.HyperlinkedModelSerializer):
+    playing = AudioDetailSerializer(source='reproduciendo', read_only=True)
+    timestamp = serializers.IntegerField(source='segundos')
     class Meta:
-        model = Song
-        #album_detail = AlbumSerializer()
-        fields = '__all__'
-        depth = 1
-        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+        model = S7_user
+        fields = ['url', 'username', 'playing', 'timestamp'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        depth = 0

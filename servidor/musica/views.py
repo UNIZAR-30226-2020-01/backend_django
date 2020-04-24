@@ -377,7 +377,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CurrentUserView(viewsets.ModelViewSet):
-    serializer_class = S7_userSerializer
+    serializer_class = S7_userDetailSerializer 
     authentication_classes = [TokenAuthentication]
     # solo acepta GET:
     http_method_names = ['get']
