@@ -240,12 +240,13 @@ class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):
         depth = 4
 
 
+
 #TODO: devolver al menos la url al crear
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
     user = serializers.HiddenField(default=OurCurrentUserDefault()) # tomamos el s7_user (validacion incluida)
     class Meta:
         model = Playlist
-        fields = ['title', 'user']
+        fields = ['title', 'user', 'icon']
         depth = 1
 
     # se llama automaticamente con el campo titulo, la usamos para validar el usuario:
