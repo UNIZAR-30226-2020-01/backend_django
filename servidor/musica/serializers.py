@@ -171,7 +171,7 @@ class AlbumReducedSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
-    albums = AlbumDetailSerializer(many=True)
+    albums = AlbumReducedSerializer(many=True)
     class Meta:
         model = Artist
         # * convierte la lista en argumentos separados (ej: (*[a,b],c) es equivalente a (a,b,c))
