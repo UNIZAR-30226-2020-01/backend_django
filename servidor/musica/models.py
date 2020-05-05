@@ -191,6 +191,11 @@ class S7_user(User):
         self.segundos = timestamp
         self.save()
 
+    # Añade "other_user" a los seguidos por self
+    def follow(self, other_user):
+        assert(self!=other_user) # no te puedes seguir a ti mismo
+        self.siguiendo.add(other_user)
+
     # save debe conservar los pars originales, para no especificarlos explicitamente podemos usar
     # args y kwargs (ej: https://stackoverflow.com/a/58157374):
     def save(self, *args, **kwargs):# antiguos parametros: , force_insert=False, force_update=False, commit=True):

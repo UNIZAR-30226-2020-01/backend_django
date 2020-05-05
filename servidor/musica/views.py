@@ -377,7 +377,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CurrentUserView(viewsets.ModelViewSet):
-    serializer_class = S7_userDetailSerializer 
+    serializer_class = S7_userDetailSerializer
     authentication_classes = [TokenAuthentication]
     # solo acepta GET:
     http_method_names = ['get']
@@ -407,6 +407,20 @@ class S7_userViewSet(viewsets.ModelViewSet):
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
+
+    @action (detail=True, methods=['get'])
+    def follow(self, request, pk):
+        """
+        After executing, the currently authenticated user will follow this user
+        """
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        print(user, '------------------', authent_user)
+        this_user = self.get_object() # usuario a seguir
+        authent_user.follow(this_user)
+        return Response({'status': 'Ok'})
+
 
 #Para trending podcast mediante router
 class TrendingPodcastsViewSet(viewsets.ViewSet):
