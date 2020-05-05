@@ -278,6 +278,9 @@ class Song(Audio):
 
         return self in s7user.favorito.songs.all() ## TODO: ¿alguna forma más eficiente?
 
+    # Cuenta una reproduccion
+    def play(self):
+        self.times_played += 1 
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
