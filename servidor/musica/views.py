@@ -131,13 +131,6 @@ class SongViewSet(viewsets.ModelViewSet):
         s7_user = S7_user.objects.get(pk=user.pk) # TODO: ARREGLAR!!!!
         print(user, '------------------', s7_user)
         song = self.get_object()
-        # print(song)
-        # serializer = SongSerializer(data=request.data)
-        # if serializer.is_valid():
-        #     user.add_favorite(serializer.data['song'])
-        #     user.save()
-        # else:
-        #     return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         s7_user.add_favorite(song) # TODO: cambiar por toggle_favorite?
         return Response({'status': 'Maracdo como favorito'})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
@@ -273,7 +266,7 @@ class UserFavoritesViewSet(viewsets.ModelViewSet):
 
 class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows all playlists to be viewed.
+    API endpoint that allows the current user's playlists to be viewed.
     Allows searches using the title queryparameter (/?title=something)
     """
     #queryset = Playlist.objects.all()
@@ -301,11 +294,43 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
         print("Usuario en request: ", user)
         return Playlist.objects.filter(user=user)
 
+class FollowedPlaylistViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows the playlists of the users followed by the current
+    user to be viewed.
+    Allows searches using the title queryparameter (/?title=something)
+    """
+    #queryset = Playlist.objects.all()
+
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
+    serializer_class = PlaylistListSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    # Sobreescribimos el método que devuelve el queryset, para que de las
+    # playlists del usuario autentificado
+    #(basado en https://www.django-rest-framework.org/api-guide/filtering/#django-rest-framework-full-word-search-filter)
+    def get_queryset(self):
+        """
+        This view should return a list of all the playlists
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        print("Usuario en request: ", user)
+        user = S7_user.objects.get(pk=user.pk) # como s7_user
+        return Playlist.objects.filter(user__in=user.siguiendo.all()) # playlists cuyo user es uno de los que sigues
+
 
 
 class PodcastViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows songs to be viewed.
+    API endpoint that allows podcasts to be viewed.
     """
     queryset = Podcast.objects.all()
     serializer_class = PodcastSerializer
@@ -328,12 +353,6 @@ class SearchAPIView(APIView):
     """
     API endpoint that allows to search stuff.
     """
-    #queryset = Song.objects.all()
-    #serializer_class = SongSerializer
-    # # solo acepta GET:
-    # http_method_names = ['get']
-    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
-
     def get_queryset(self):
         """
         Optionally restricts the returned purchases to a given user,
@@ -352,9 +371,6 @@ class SearchAPIView(APIView):
         # Can't I append anything to serializer class like below ??
         # serializer.append(anotherserialzed_object) ??
         return Response(serializer.data)
-
-
-
 
 
 # Clases predefinidas del mismo tutorial: https://www.django-rest-framework.org/tutorial/quickstart/#project-setup
