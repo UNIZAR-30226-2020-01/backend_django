@@ -344,7 +344,9 @@ class AudioDetailSerializer(serializers.RelatedField):
 class S7_userDetailSerializer(serializers.HyperlinkedModelSerializer):
     playing = AudioDetailSerializer(source='reproduciendo', read_only=True)
     timestamp = serializers.IntegerField(source='segundos')
+    following = S7_userSerializer(source='siguiendo', many=True)
+    followers = S7_userSerializer(source='seguidor', many=True)
     class Meta:
         model = S7_user
-        fields = ['url', 'username', 'playing', 'timestamp'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
