@@ -421,6 +421,18 @@ class S7_userViewSet(viewsets.ModelViewSet):
         authent_user.follow(this_user)
         return Response({'status': 'Ok'})
 
+    @action (detail=True, methods=['get'])
+    def unfollow(self, request, pk):
+        """
+        After executing, the currently authenticated user will stop following this user
+        """
+        # Problema: User de Django es DEFAULT_AUTH_USER
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        print(user, '------------------', authent_user)
+        this_user = self.get_object() # usuario a seguir
+        authent_user.unfollow(this_user)
+        return Response({'status': 'Ok'})
 
 #Para trending podcast mediante router
 class TrendingPodcastsViewSet(viewsets.ViewSet):
