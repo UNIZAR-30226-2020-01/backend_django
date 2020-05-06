@@ -148,13 +148,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-
-
-
-
-
-
-
 # Google configuration
 ##Hay que conseguir estas cosas de la api de google
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
@@ -168,27 +161,6 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-## Pa mysql
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'OPTIONS': {
-#             'read_default_file': r'D:\Universidad\Proyecto Software\Django-REST-test\servidor\servidor\mysql.cnf',
-#         },
-#     }
-# }
-
-
-## postgre no tiene opcion read_default_file, se tiene que poner aqui:
-# HOST = postgres://ghjcpmoz:lQ9n_mpqPGxX5TumMLOWA62notw2MmJB@kandula.db.elephantsql.com
-# NAME = ghjcpmoz
-# database = ghjcpmoz
-# port = 5432
-# user = ghjcpmoz
-# password = lQ9n_mpqPGxX5TumMLOWA62notw2MmJB
-# default-character-set = utf8
-
 
 # Para travis (cuando hace la build travis, pone la variable de entorno TRAVIS=true) y usamos una bd en localhost:
 if os.getenv('TRAVIS', None):

@@ -5,7 +5,7 @@ import os
 import requests
 import json
 
-from set_credentials import the_secret_function # borrar esta linea, es solo para el hello world
+# from set_credentials import the_secret_function # borrar esta linea, es solo para el hello world
 
 #Clase necesaria para devolver por APIRest lo correspondiente a los trending podcast
 class TrendingPodcasts(object):
@@ -134,7 +134,7 @@ class Podcasts_api:
         }
         response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
         return response.json()["episodes"]
-        
+
 # Para probar que funciona
 if __name__ == '__main__':
     the_secret_function()

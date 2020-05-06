@@ -1,6 +1,6 @@
 import spotipy
 import sys
-from spotify_credentials import the_secret_function
+# from spotify_credentials import the_secret_function
 from spotipy.oauth2 import SpotifyClientCredentials
 import json
 import urllib.request
@@ -9,7 +9,7 @@ import urllib.request
 class Spotisearcher:
     # necesitamos tener las credenciales en las variables de entorno antes de llamar a esta funcion (ejecutando set_credentials.py)
     def __init__(self):
-        the_secret_function() # credenciales
+        # the_secret_function() # credenciales
         # podriamos usar herencia, de momento asi vale:
         self.sp = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 

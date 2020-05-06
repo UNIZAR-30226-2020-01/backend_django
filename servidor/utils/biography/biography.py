@@ -3,11 +3,11 @@ import sys
 import json
 import requests
 
-from set_credentials import the_secret_function
+# from set_credentials import the_secret_function
 
 class LastfmSearcher:
     def __init__(self):
-        the_secret_function()
+        # the_secret_function()
         self.url = 'http://ws.audioscrobbler.com/2.0/'
         self.key = os.getenv('lastfm_key')
 
