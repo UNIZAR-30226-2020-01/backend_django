@@ -59,10 +59,10 @@ INSTALLED_APPS = [
     # Volveremos a estas para oauth2, de momento solo nuestros logins:
     # 'allauth.socialaccount',
     # 'allauth.socialaccount.providers.google',
-    ##Autentication
+    ## oauth2 (de https://github.com/RealmTeam/django-rest-framework-social-oauth2)
     'oauth2_provider',
-    # 'social_django',
-    # 'rest_framework_social_oauth2',
+    'social_django',
+    'rest_framework_social_oauth2',
 
     # puede que tenga que ir al final:
     'musica',
@@ -96,10 +96,14 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Para oauth2:
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'servidor.wsgi.application'
 
@@ -135,14 +139,20 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 
     # Google OAuth2
-    # 'social_core.backends.google.GoogleOAuth2',
-    #
+    'social_core.backends.google.GoogleOAuth2',
+
     # # django-rest-framework-social-oauth2
-    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    'rest_framework_social_oauth2.backends.DjangoOAuth2',
 
     # Django
     'django.contrib.auth.backends.ModelBackend',
 )
+
+
+
+
+
+
 
 
 # Google configuration
