@@ -150,6 +150,8 @@ class SongViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Eliminado de favoritos'})
 
     # Añade esta cancion a 'reproduciendo' del usuario actual
+    # Ademas, si t=0 significa que el usuario ha pasado a la siguiente cancion, por lo
+    # que le contamos la reproduccion
     @action (detail=True, methods=['get'], permission_classes=[IsAuthenticated])
     def set_playing(self, request, pk):
         '''

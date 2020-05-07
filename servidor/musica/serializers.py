@@ -50,8 +50,6 @@ class S7_userDefault():
         user
 
 
-
-
 # Para campos mas complejos derivados de relaciones entre modelos:
 # https://www.django-rest-framework.org/api-guide/relations/#custom-relational-fields
 # Devuelve "True" o "False" en funci�n de si la canci�n est� entre las favoritas del usuario
@@ -144,7 +142,7 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav', 'times_played'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
@@ -184,8 +182,6 @@ class S7_userSerializer(serializers.HyperlinkedModelSerializer):
         model = S7_user
         fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
-
-
 
 
 # Para registrar usuarios, con ayuda de https://stackoverflow.com/questions/16857450/how-to-register-users-in-django-rest-framework

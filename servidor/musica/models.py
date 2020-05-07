@@ -186,9 +186,12 @@ class S7_user(User):
     #     return self.name
 
     # guarda la canción song y los segundos timestamp como los que está reproduciendo el usuario (para sincronización, etc)
+    # ademas, si el t=0, se cuenta una reproduccion de la cancion:
     def set_playing(self, song, timestamp):
         self.reproduciendo = song
         self.segundos = timestamp
+        if timestamp == 0: # si t=0, contamos una reproduccion
+            song.count_play()
         self.save()
 
     # Añade "other_user" a los seguidos por self
@@ -257,6 +260,9 @@ class Song(Audio):
         # if self.initial.get('account', None):
         #     self.fields['customer'].queryset = Customer.objects.filter(account=self.initial.get('account'))
 
+    # cuenta <play> reproducciones de la cancion:
+    def count_play(play=1):
+        self.times_played += 1
 
     def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Song, self).save()#commit=False)
@@ -280,7 +286,7 @@ class Song(Audio):
 
     # Cuenta una reproduccion
     def play(self):
-        self.times_played += 1 
+        self.times_played += 1
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
