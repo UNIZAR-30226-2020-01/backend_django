@@ -192,6 +192,7 @@ class S7_user(User):
         self.segundos = timestamp
         if timestamp == 0: # si t=0, contamos una reproduccion
             song.count_play()
+            song.save()
         self.save()
 
     # Añade "other_user" a los seguidos por self
@@ -262,7 +263,7 @@ class Song(Audio):
 
     # cuenta <play> reproducciones de la cancion:
     def count_play(self, play=1):
-        self.times_played += 1
+        self.times_played += play
 
     def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Song, self).save()#commit=False)
