@@ -326,8 +326,6 @@ class FollowedPlaylistViewSet(viewsets.ModelViewSet):
         user = S7_user.objects.get(pk=user.pk) # como s7_user
         return Playlist.objects.filter(user__in=user.siguiendo.all()) # playlists cuyo user es uno de los que sigues
 
-
-
 class PodcastViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows podcasts to be viewed.

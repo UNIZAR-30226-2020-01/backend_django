@@ -30,6 +30,8 @@ PASSWORD_POSTGRESQL = os.getenv('PASSWORD_POSTGRESQL')
 
 DEPLOYMENT = os.getenv('DEPLOYMENT', None) # Tomamos la variable de entorno del DEPLOYMENT
 
+print(DEPLOYMENT)
+
 DEBUG = not DEPLOYMENT # True cuando no est� la var de entorno DEPLOYMENT
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure.com']
@@ -206,8 +208,6 @@ else:
             'CHARSET' : 'utf8',
         },
     }
-
-
 
  #'mysql.cnf',
 
