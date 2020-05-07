@@ -408,12 +408,17 @@ class CurrentUserView(viewsets.ModelViewSet):
 
 class S7_userViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows to search stuff.
+    API endpoint that allows to see users and search them through
     """
     authentication_classes = [TokenAuthentication, BasicAuthentication]
     #permission_classes = [IsAuthenticated]
     queryset = S7_user.objects.all().order_by('-date_joined')
     serializer_class = S7_userSerializer
+
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['username', 'playlists__title']
+
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
