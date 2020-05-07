@@ -243,7 +243,7 @@ class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Playlist
         fields = ['url', 'title', 'user', 'icon']
-        read_only_fields = ('user')
+        read_only_fields = ('user',)
         depth = 1
 
     # se llama automaticamente con el campo titulo, la usamos para validar el usuario:
