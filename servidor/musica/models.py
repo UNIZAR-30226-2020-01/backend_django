@@ -261,7 +261,7 @@ class Song(Audio):
         #     self.fields['customer'].queryset = Customer.objects.filter(account=self.initial.get('account'))
 
     # cuenta <play> reproducciones de la cancion:
-    def count_play(play=1):
+    def count_play(self, play=1):
         self.times_played += 1
 
     def save(self, force_insert=False, force_update=False, commit=True):
