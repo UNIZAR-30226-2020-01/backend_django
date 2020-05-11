@@ -333,21 +333,41 @@ class PodcastViewSet(viewsets.ModelViewSet):
     API endpoint that allows podcasts to be viewed.
     """
     queryset = Podcast.objects.all()
-    serializer_class = PodcastSerializer
+    action_serializers = {
+        'retrieve': PodcastDetailSerializer,
+        'list': PodcastListSerializer,
+        #'create': MyModelCreateSerializer
+    }
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(PodcastViewSet, self).get_serializer_class()
 
 class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
     """
     queryset = PodcastEpisode.objects.all()
-    serializer_class = PodcastEpisodeSerializer
+    action_serializers = {
+        'retrieve': PodcastEpisodeDetailSerializer,
+        'list': PodcastEpisodeListSerializer,
+        #'create': MyModelCreateSerializer
+    }
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+    def get_serializer_class(self):
 
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(PodcastEpisodeViewSet, self).get_serializer_class()
 ####################### Work in progress #######################
 class SearchAPIView(APIView):
     """

@@ -267,27 +267,27 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
-class PodcastEpisodeReducedSerializer(serializers.HyperlinkedModelSerializer):
+class PodcastEpisodeListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PodcastEpisode
         fields = todosloscampos(model,['podcast', 's7_user', 'audio_ptr'])
         depth = 2
 
-class PodcastSerializer(serializers.HyperlinkedModelSerializer):
-    episodes = PodcastEpisodeReducedSerializer(many=True)
+class PodcastDetailSerializer(serializers.HyperlinkedModelSerializer):
+    episodes = PodcastEpisodeListSerializer(many=True)
     class Meta:
         model = Podcast
         fields = (*todosloscampos(model,['s7_user','audio_ptr']), 'number_episodes')
         depth = 2
 
-class PodcastReducedSerializer(serializers.HyperlinkedModelSerializer):
+class PodcastListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Podcast
         fields = (*todosloscampos(model, ['episodes', 's7_user', 'audio_ptr','genre']), 'number_episodes')
         depth = 2
 
-class PodcastEpisodeSerializer(serializers.HyperlinkedModelSerializer):
-    podcast = PodcastReducedSerializer()
+class PodcastEpisodeDetailSerializer(serializers.HyperlinkedModelSerializer):
+    podcast = PodcastListSerializer()
     class Meta:
         model = PodcastEpisode
         fields = todosloscampos(model,['s7_user', 'audio_ptr'])
