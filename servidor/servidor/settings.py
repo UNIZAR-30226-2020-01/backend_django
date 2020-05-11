@@ -70,6 +70,14 @@ INSTALLED_APPS = [
     'musica',
 ]
 
+
+
+OAUTH2_PROVIDER = {
+    # other OAUTH2 settings
+    'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore'
+}
+
+
 MIDDLEWARE = [
 
     'corsheaders.middleware.CorsMiddleware', # CORS
@@ -115,7 +123,7 @@ REST_FRAMEWORK = {
         # Autenticacion con tokens por defecto
         'rest_framework.authentication.TokenAuthentication',
         # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
-        #'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
         #'rest_framework_social_oauth2.authentication.SocialAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (

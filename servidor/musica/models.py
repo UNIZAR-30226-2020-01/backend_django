@@ -12,6 +12,9 @@ from utils.spotipy.spotiapi import Spotisearcher
 from utils.podcasts.podcasts import Podcasts_api
 from utils.biography.biography import LastfmSearcher
 import html2text
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 # para señales (ahora no las usamos):
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
@@ -220,9 +223,41 @@ class S7_user(User):
             self.favorito = lista_fav
             self.save()
         else:
+            print('pues si fijate que bien')
             super(S7_user, self).save(*args, **kwargs)
-
+            print('ah, no')
         #print("Listas: " + self.lists)
+
+    # inicializa el usuario en caso de que se creara antes User (no es lo habitual)
+    def create_from_user(self, user):
+        # self.pk = user.pk
+        # user.save()
+        print(user.username, user.pk)
+        self.pk = user.pk
+        print('Creando s7_user a partir de User:', user)
+        name = 'favorite_' + user.username
+        lista_fav = Playlist(title=name, user=self) #Creamos la playlist
+        lista_fav.save()
+        self.favorito = lista_fav
+        self.save()
+
+
+
+# Para aĂąadir un usuario a s7_user cada vez que se aĂąada a User de Django
+# (no podemos modificar su metodo save)
+# Fuente: https://books.agiliq.com/projects/django-orm-cookbook/en/latest/update_denormalized_fields.html
+@receiver(post_save, sender=User, dispatch_uid="add_s7_user")
+def add_s7_user(sender, **kwargs):
+    user = kwargs['instance']
+    # created = kwargs['created']
+    # print(S7_user.objects.filter(pk=user.pk).exists())
+    # print('created:', created)
+    if user.pk and not S7_user.objects.filter(pk=user.pk).exists(): # si existe el usuario pero no el s7_user
+        print('creating s7_user from', str(user))
+        # Category.objects.filter(pk=hero.category_id).update(hero_count=F('hero_count')+1)
+        s7_user = S7_user(pk=user.pk, username=user.username)
+        s7_user.create_from_user(user)
+        s7_user.save()
 
 class Song(Audio):
     track = models.IntegerField()
