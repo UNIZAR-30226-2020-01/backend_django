@@ -34,7 +34,7 @@ print(DEPLOYMENT)
 
 DEBUG = not DEPLOYMENT # True cuando no est� la var de entorno DEPLOYMENT
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 's7-rest.francecentral.cloudapp.azure.com', '52.143.149.183']
 
 
 # Application definition
