@@ -7,7 +7,6 @@ try:
 except ImportError: # Travis
     pass
 
-
 def main():
     if not os.getenv('TRAVIS', None):
         the_secret_function() # sets our top secret environment variables
