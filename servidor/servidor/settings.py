@@ -276,3 +276,8 @@ MEDIA_URL = '/media/'
 
 # Esto es solo para producci�n, indica a django d�nde copiar los est�ticos al hacer collectstatic
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
+
+
+
+DEBUG=False
+print('hey mira mi debug:', DEBUG)
