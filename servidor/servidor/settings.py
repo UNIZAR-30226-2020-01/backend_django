@@ -279,5 +279,5 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 
 
 
-DEBUG=False
+DEBUG=True
 print('hey mira mi debug:', DEBUG)
