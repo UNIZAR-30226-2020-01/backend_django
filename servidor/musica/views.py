@@ -14,6 +14,7 @@ from musica.permissions import IsOwnerOrIsAdmin
 from utils.podcasts.podcasts import Podcasts_api
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -246,7 +247,7 @@ class UserFavoritesViewSet(viewsets.ModelViewSet):
     """
     #queryset = Playlist.objects.all()
 
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated]
 
     serializer_class = SongDetailSerializer
@@ -273,7 +274,7 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
     #queryset = Playlist.objects.all()
 
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated]
 
     filter_backends = [filters.SearchFilter]
@@ -304,7 +305,7 @@ class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
     #queryset = Playlist.objects.all()
 
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated]
 
     filter_backends = [filters.SearchFilter]
@@ -414,7 +415,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class CurrentUserView(viewsets.ModelViewSet):
     serializer_class = S7_userDetailSerializer
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [TokenAuthentication, OAuth2Authentication]
     # solo acepta GET:
     http_method_names = ['get']
     def get_queryset(self):
@@ -430,7 +431,7 @@ class S7_userViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows to see users and search them through
     """
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     #permission_classes = [IsAuthenticated]
     queryset = S7_user.objects.all().order_by('-date_joined')
     serializer_class = S7_userSerializer
@@ -507,7 +508,7 @@ class debugAuthViewSet(viewsets.ModelViewSet):
     """
     Endpoint provisional para debuguear auth (basicamente como s7-user pero requiere token)
     """
-    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated]
     queryset = S7_user.objects.all().order_by('-date_joined')
     serializer_class = S7_userSerializer
