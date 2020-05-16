@@ -252,6 +252,7 @@ def add_s7_user(sender, **kwargs):
     # created = kwargs['created']
     # print(S7_user.objects.filter(pk=user.pk).exists())
     # print('created:', created)
+    print('superuser:', user.is_superuser)
     if user.pk and not S7_user.objects.filter(pk=user.pk).exists() and not user.is_superuser: # si existe el usuario pero no el s7_user
         print('creating s7_user from', str(user))
         # Category.objects.filter(pk=hero.category_id).update(hero_count=F('hero_count')+1)
