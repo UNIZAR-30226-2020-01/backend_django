@@ -221,7 +221,7 @@ class S7_user(User):
             print('Creando user ...')
             name = 'favorite_' + self.username
             super(S7_user,self).save(*args, **kwargs)
-            lista_fav = Playlist(title=name, user=self) #Creamos la playlist
+            lista_fav = Playlist(title=name, user=self, icon='../static/default-fav-image.jpg') #Creamos la playlist
             lista_fav.save()
             self.favorito = lista_fav
             self.save()
@@ -239,7 +239,7 @@ class S7_user(User):
         self.pk = user.pk
         print('Creando s7_user a partir de User:', user)
         name = 'favorite_' + user.username
-        lista_fav = Playlist(title=name, user=self) #Creamos la playlist
+        lista_fav = Playlist(title=name, user=self, icon='../static/default-fav-image.jpg') #Creamos la playlist
         lista_fav.save()
         self.favorito = lista_fav
         self.save()
