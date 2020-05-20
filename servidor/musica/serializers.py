@@ -163,8 +163,6 @@ class AlbumListMiniSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'title', 'artist', 'icon']
         depth = 1
 
-
-
 # Mini, para reducir carga de playlists
 class SongListMiniSerializer(serializers.HyperlinkedModelSerializer):
     is_fav = IsFavField(source='song', many=False, read_only=True)
@@ -178,38 +176,19 @@ class SongListMiniSerializer(serializers.HyperlinkedModelSerializer):
 
 
 
-# Mini, para reducir carga de playlists
-class ArtistListMiniSerializer_2(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
-        fields =  ['url', 'name']#(*todosloscampos(model), 'number_albums', 'number_songs')
-        depth = 1
-
-# Mini, para reducir carga de playlists
-class AlbumListMiniSerializer_2(serializers.HyperlinkedModelSerializer):
-
-    artist = ArtistListMiniSerializer()
-    class Meta:
-        model = Album
-        fields = ['url', 'title', 'artist', 'icon']
-        depth = 1
-
-
-
-# Mini, para reducir carga de playlists
-class SongListMiniSerializer_2(serializers.HyperlinkedModelSerializer):
-    is_fav = IsFavField(source='song', many=False, read_only=True)
-    album = serializers.CharField(source='album.title')
-    icon = serializers.FileField(source='album.icon')
-    artist = serializers.CharField(source='album.artist.name')
-    class Meta:
-        model = Song
-        #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'album', 'icon', 'artist', 'is_fav'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
-        depth = 0
-        #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
-
-
+# Intento fallido de mejorar eficiencia:
+# # Mini, para reducir carga de playlists
+# class SongListMiniSerializer_2(serializers.HyperlinkedModelSerializer):
+#     is_fav = IsFavField(source='song', many=False, read_only=True)
+#     album = serializers.CharField(source='album.title')
+#     icon = serializers.FileField(source='album.icon')
+#     artist = serializers.CharField(source='album.artist.name')
+#     class Meta:
+#         model = Song
+#         #album_detail = AlbumSerializer()
+#         fields = ['url', 'title', 'file', 'album', 'icon', 'artist', 'is_fav'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+#         depth = 0
+#         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 
 
 class AlbumDetailSerializer(serializers.HyperlinkedModelSerializer):
@@ -293,12 +272,12 @@ class PlaylistListSerializer(serializers.HyperlinkedModelSerializer):
 class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):
     user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
-    songs = SongListMiniSerializer_2(many=True)
+    songs = SongListMiniSerializer(many=True)
     class Meta:
         model = Playlist
         # artista y foto album y urls
         fields = ['url', 'title', 'user', 'icon', 'songs', 'duration', 'number_songs']
-        depth = 1
+        depth = 3
 
 
 # class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):

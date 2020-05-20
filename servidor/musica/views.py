@@ -199,12 +199,12 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     }
 
     def get_serializer_class(self):
-        print('accion:',self.action)
+        # print('accion:',self.action)
         if hasattr(self, 'action_serializers'):
             #
             # try:
             serializador = self.action_serializers.get(self.action, self.serializer_class)
-            print('usando: ', serializador)
+            # print('usando: ', serializador)
             return serializador
             # except KeyError, AttributeError:
         return super(PlaylistViewSet, self).get_serializer_class()
