@@ -107,9 +107,10 @@ class SongViewSet(viewsets.ModelViewSet):
     # solo acepta GET:
     http_method_names = ['get']
     # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['title', 'album__artist__name']
-
+    # filter_backends = []
+    ordering_fields = ['times_played', 'times_faved']
     action_serializers = {
         'retrieve': SongDetailSerializer,
         'list': SongListSerializer,

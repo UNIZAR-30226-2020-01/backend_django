@@ -142,7 +142,7 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav', 'times_played'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav', 'times_played', 'times_faved'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
 

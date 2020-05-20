@@ -180,7 +180,10 @@ class S7_user(User):
         db_table = 'S7_user'
 
     def add_favorite(self, song):
+        song.count_fav()
         self.favorito.songs.add(song)
+        song.save()
+
         #self.favorito.add(song)
 
     def remove_favorite(self, song):
@@ -252,8 +255,8 @@ def add_s7_user(sender, **kwargs):
     # created = kwargs['created']
     # print(S7_user.objects.filter(pk=user.pk).exists())
     # print('created:', created)
-    print('superuser:', user.is_superuser)
-    if user.pk and not S7_user.objects.filter(pk=user.pk).exists() and not user.is_superuser: # si existe el usuario pero no el s7_user
+    # print('superuser:', user.is_superuser)
+    if user.pk and not S7_user.objects.filter(pk=user.pk).exists() and not user.is_superuser: # si existe el usuario pero no el s7_user (y no es un admin)
         print('creating s7_user from', str(user))
         # Category.objects.filter(pk=hero.category_id).update(hero_count=F('hero_count')+1)
         s7_user = S7_user(pk=user.pk, username=user.username)
@@ -265,10 +268,20 @@ class Song(Audio):
     times_played = models.IntegerField(default=0)
     lyrics = models.TextField(blank=True)
     album = models.ForeignKey(Album, related_name='songs', on_delete=models.CASCADE)
+    times_faved = models.IntegerField(default=0)
 
     class Meta:
         managed = True
         db_table = 'Song'
+
+    # No se puede ordenar por propiedades en las views
+    # @property
+    # def times_faved(self):
+    #     print('veces fav:', S7_user.objects.favorito.songs.filter(pk=self.pk).count())
+    #     return S7_user.objects.favorito.songs.filter(pk=self.pk).count()# self.songs.count()
+
+    def count_fav(self):
+        self.times_faved += 1
 
     def __init__(self, *args, **kwargs):
         super(Song, self).__init__(*args, **kwargs)
