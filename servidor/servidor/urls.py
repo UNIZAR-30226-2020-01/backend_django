@@ -39,7 +39,7 @@ router.register(r'current-user', views.CurrentUserView, basename='current-user')
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     path('', include(router.urls)),
-    path('admin/', csrf_exempt(admin.site.urls)),
+    path('admin/', admin.site.urls),#csrf_exempt(admin.site.urls)),
     #No las he sabido meter en el router. Aún así lo veo mejor así
     path('podcast/<str:id>/', views.PodcastById.as_view()),
     path('episode/<str:id>/', views.PodcastEpisodeById.as_view()),
