@@ -50,5 +50,6 @@ urlpatterns = [
     # Autentificacion con tokens:
     path('api-token-auth/', DRF_views.obtain_auth_token, name='api-token-auth'),
 	path(r'register/', csrf_exempt(views.RegisterUserView.as_view()), name='register'),
+	path(r'update-user/', csrf_exempt(views.UpdateUserView.as_view()), name='update-user'),
     path('auth/', include('rest_framework_social_oauth2.urls')), # oauth2
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # para los ficheros media (mp3)

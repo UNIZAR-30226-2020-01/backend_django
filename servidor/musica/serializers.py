@@ -403,3 +403,10 @@ class S7_userDetailSerializer(serializers.HyperlinkedModelSerializer):
         model = S7_user
         fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers', 'icon'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
+
+
+class S7_userUpdateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = S7_user
+        fields = ['url', 'icon']
+        read_only_fields = ('url',)

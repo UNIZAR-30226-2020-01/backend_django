@@ -22,7 +22,7 @@ from rest_framework.decorators import action
 from rest_framework import permissions
 
 
-from rest_framework.generics import CreateAPIView # registros de usuarios
+from rest_framework.generics import CreateAPIView, UpdateAPIView # registros y updates de usuarios
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -203,7 +203,6 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         # print('accion:',self.action)
         if hasattr(self, 'action_serializers'):
-            #
             # try:
             serializador = self.action_serializers.get(self.action, self.serializer_class)
             # print('usando: ', serializador)
@@ -444,11 +443,12 @@ class S7_userViewSet(viewsets.ModelViewSet):
     search_fields = ['username', 'playlists__title']
 
     # solo acepta GET:
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
 
     action_serializers = {
         'retrieve': S7_userDetailSerializer,
         'list': S7_userListSerializer,
+        'update': S7_userUpdateSerializer,
         #'create': MyModelCreateSerializer
     }
 
@@ -550,3 +550,20 @@ class RegisterUserView(CreateAPIView):
         permissions.AllowAny # usuarios anónimos se tienen que poder registrar
     ]
     serializer_class = RegisterUserSerializer
+
+
+class UpdateUserView(UpdateAPIView):
+    authentication_classes = [TokenAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = S7_userUpdateSerializer
+
+    lookup_field = 'user'
+
+    # http_method_names = ['post']
+    def get_object(self): # get_object en lugar de queryset porque es un solo objeto
+        """
+        This view returns the currently authenticated user.
+        """
+        user = self.request.user # el de django
+        print("Usuario en request: ", user)
+        return S7_user.objects.filter(pk=user.pk).first() # el nuestro
