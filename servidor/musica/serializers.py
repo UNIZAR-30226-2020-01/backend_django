@@ -399,9 +399,10 @@ class S7_userDetailSerializer(serializers.HyperlinkedModelSerializer):
     timestamp = serializers.IntegerField(source='segundos')
     following = S7_userListSerializer(source='siguiendo', many=True)
     followers = S7_userListSerializer(source='seguidor', many=True)
+    playlists = PlaylistListSerializer(many=True)
     class Meta:
         model = S7_user
-        fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers', 'icon'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers', 'icon', 'playlists'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
 
 
