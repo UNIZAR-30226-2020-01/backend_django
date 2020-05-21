@@ -183,7 +183,9 @@ class PlaylistViewSet(viewsets.ModelViewSet):
     Retrieves playlsits with a substring of the parameter in either the title
     or the playlist's user's username
     """
-    queryset = Playlist.objects.all()
+    # TODO: arreglar esto de prefetch_related/select_related:
+    # el eager loading puede mejorar mucho la eficiencia reduciendo el numero de queries
+    queryset = Playlist.objects.all().prefetch_related('songs')#,'songs__audio__file')#, 'songs__file', 'songs__album__title', 'songs_album__icon')#.select_related('songs__album__artist__name')
     serializer_class = PlaylistListSerializer # por defectp
     # solo acepta GET:
     http_method_names = ['get', 'post']
@@ -435,7 +437,7 @@ class S7_userViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     #permission_classes = [IsAuthenticated]
     queryset = S7_user.objects.all().order_by('-date_joined')
-    serializer_class = S7_userSerializer
+    serializer_class = S7_userListSerializer
 
 
     filter_backends = [filters.SearchFilter]
@@ -443,6 +445,13 @@ class S7_userViewSet(viewsets.ModelViewSet):
 
     # solo acepta GET:
     http_method_names = ['get']
+
+    action_serializers = {
+        'retrieve': S7_userDetailSerializer,
+        'list': S7_userListSerializer,
+        #'create': MyModelCreateSerializer
+    }
+
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
     def get(self, request, format=None):
         content = {
@@ -450,6 +459,16 @@ class S7_userViewSet(viewsets.ModelViewSet):
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
+
+    # diferenciar retrieve y list
+    def get_serializer_class(self):
+
+        if hasattr(self, 'action_serializers'):
+            return self.action_serializers.get(self.action, self.serializer_class)
+
+        return super(S7_userViewSet, self).get_serializer_class()
+
+
 
     @action (detail=True, methods=['get'])
     def follow(self, request, pk):
@@ -512,7 +531,7 @@ class debugAuthViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
     permission_classes = [IsAuthenticated]
     queryset = S7_user.objects.all().order_by('-date_joined')
-    serializer_class = S7_userSerializer
+    serializer_class = S7_userListSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643

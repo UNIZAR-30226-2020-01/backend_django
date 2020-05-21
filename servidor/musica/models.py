@@ -175,6 +175,7 @@ class S7_user(User):
     reproduciendo = models.ForeignKey(Audio, on_delete=models.CASCADE, null=True, blank=True)
     segundos = models.IntegerField(null=True, default=0) # segundo de reproduccion del audio guardado
     favorito = models.ForeignKey('Playlist', on_delete=models.DO_NOTHING, null=True, blank=True, related_name='fav_user')
+    icon = models.FileField(default='../static/default-user-pic.png') # imagen por defecto de https://images.app.goo.gl/JR5TrAxvf8eLbbCx5
     class Meta:
         managed = True
         db_table = 'S7_user'

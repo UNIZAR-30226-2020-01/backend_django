@@ -15,6 +15,8 @@ import django.contrib.auth.password_validation as validators
 
 from rest_framework.fields import CurrentUserDefault
 
+
+
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -167,6 +169,7 @@ class AlbumListMiniSerializer(serializers.HyperlinkedModelSerializer):
 class SongListMiniSerializer(serializers.HyperlinkedModelSerializer):
     is_fav = IsFavField(source='song', many=False, read_only=True)
     album = AlbumListMiniSerializer()
+
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
@@ -220,7 +223,7 @@ class ArtistDetailSerializer(serializers.HyperlinkedModelSerializer):
         depth = 1
 
 
-class S7_userSerializer(serializers.HyperlinkedModelSerializer):
+class S7_userListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = S7_user
         fields = ['url', 'username'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
@@ -260,7 +263,7 @@ class otro(serializers.ModelSerializer):
 
 # TODO: Reducir mucho los campos!
 class PlaylistListSerializer(serializers.HyperlinkedModelSerializer):
-    user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
+    user = S7_userListSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
 
     class Meta:
@@ -270,7 +273,7 @@ class PlaylistListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):
-    user = S7_userSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
+    user = S7_userListSerializer() # especificamos que use el serializador de lista para user, no hacen falta detalles
     #the_songs = SongListSerializer(source='playlist.songs.all', many=True, read_only=True)
     songs = SongListMiniSerializer(many=True)
     class Meta:
@@ -293,7 +296,7 @@ class PlaylistDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 #TODO: devolver al menos la url al crear
 class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
-    user = S7_userSerializer(default=OurCurrentUserDefault()) # tomamos el s7_user (validacion incluida)
+    user = S7_userListSerializer(default=OurCurrentUserDefault()) # tomamos el s7_user (validacion incluida)
     class Meta:
         model = Playlist
         fields = ['url', 'title', 'user', 'icon']
@@ -394,9 +397,9 @@ class AudioDetailSerializer(serializers.RelatedField):
 class S7_userDetailSerializer(serializers.HyperlinkedModelSerializer):
     playing = AudioDetailSerializer(source='reproduciendo', read_only=True)
     timestamp = serializers.IntegerField(source='segundos')
-    following = S7_userSerializer(source='siguiendo', many=True)
-    followers = S7_userSerializer(source='seguidor', many=True)
+    following = S7_userListSerializer(source='siguiendo', many=True)
+    followers = S7_userListSerializer(source='seguidor', many=True)
     class Meta:
         model = S7_user
-        fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
+        fields = ['url', 'username', 'playing', 'timestamp', 'following', 'followers', 'icon'] #[*todosloscampos(model, ['group', 'groups'])]#'__all__'#(*todosloscampos(model))
         depth = 0
