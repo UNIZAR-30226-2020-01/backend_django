@@ -345,6 +345,10 @@ class PodcastViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title']
+
     def get_serializer_class(self):
 
         if hasattr(self, 'action_serializers'):
@@ -364,6 +368,10 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     }
     # solo acepta GET:
     http_method_names = ['get']
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'podcast__title']
+
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
     def get_serializer_class(self):
 
