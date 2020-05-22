@@ -235,6 +235,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
 
+
     http_method_names = ['get']
 
 class ChannelViewSet(viewsets.ModelViewSet):
@@ -347,7 +348,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
 
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title']
+    search_fields = ['title', 'genre']
 
     def get_serializer_class(self):
 
@@ -370,7 +371,7 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'podcast__title']
+    search_fields = ['title', 'podcast__title', 'podcast__genre']
 
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
     def get_serializer_class(self):
