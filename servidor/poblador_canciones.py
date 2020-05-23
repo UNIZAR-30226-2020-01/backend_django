@@ -59,50 +59,51 @@ print(albumes)
 
 #for alb in albumes: #Recorremos todos los albumes de la carpeta
 
-alb = albumes[0]
+for alb in albumes:
 
-alb = dir + alb #ruta completa
-alb_path = pathlib.Path(alb) #Para poder recorrerlo
-# Obtenemos el listado de caciones de un album
-canciones = [canc.name for canc in alb_path.iterdir() if canc.is_file() and canc.name.endswith('.mp3')]
+    alb_name = alb #Nombre del album
+    alb = dir + alb #ruta completa
+    alb_path = pathlib.Path(alb) #Para poder recorrerlo
+    # Obtenemos el listado de caciones de un album
+    canciones = [canc.name for canc in alb_path.iterdir() if canc.is_file() and canc.name.endswith('.mp3')]
 
-#Para obtener el artista, el album y el año en que se grabó, debemos obtener los metadatos de una cancion.
-can_metadata = eyed3.load(alb + '/' + canciones[0])
-artist = can_metadata.tag.artist
-album = can_metadata.tag.album
-# Tengo que hacer esto para que no de problema la BD
-recording_year = can_metadata.tag.recording_date
-valid_time= date.today()
-valid_time= valid_time.replace(year = recording_year.year)
+    #Para obtener el artista, el album y el año en que se grabó, debemos obtener los metadatos de una cancion.
+    can_metadata = eyed3.load(alb + '/' + canciones[0])
+    artist = can_metadata.tag.artist
+    album = can_metadata.tag.album
+    # Tengo que hacer esto para que no de problema la BD
+    recording_year = can_metadata.tag.recording_date
+    valid_time= date.today()
+    valid_time= valid_time.replace(year = recording_year.year)
 
-#Se obtiene la imagen del album a partir de el primero de los elementos en
-# formato .jpg que aparezcan en el directorio
-cover = [cov.name for cov in alb_path.iterdir() if cov.is_file() and cov.name.endswith('.jpg')]
+    #Se obtiene la imagen del album a partir de el primero de los elementos en
+    # formato .jpg que aparezcan en el directorio
+    cover = [cov.name for cov in alb_path.iterdir() if cov.is_file() and cov.name.endswith('.jpg')]
 
-# "Cover" es la ruta absoluta de la portada del album en cuestion
-cover_path = alb + '/' + cover[0]
-cover_name = albumes[0] + '/' + cover[0]
+    # "Cover" es la ruta absoluta de la portada del album en cuestion
+    cover_path = alb + '/' + cover[0]
+    cover_name = alb_name + '/' + cover[0]
 
-# Para hacerlo mas completo, dependiendo del numero de canciones
-# hago que sea de un tipo u otro
-if len(canciones) == 1:
-    tipo = 'S'
-elif len(canciones) > 4:
-    tipo = 'N'
-else:
-    tipo = 'EP'
+    # Para hacerlo mas completo, dependiendo del numero de canciones
+    # hago que sea de un tipo u otro
+    if len(canciones) == 1:
+        tipo = 'S'
+    elif len(canciones) > 4:
+        tipo = 'N'
+    else:
+        tipo = 'EP'
 
-#Inserción de artista en la BD
-new_artist = poblar_artista(artist)
-#Inserción del album en BD
-new_album = poblar_album(album, tipo, cover_path, cover_name, new_artist, valid_time)
+    #Inserción de artista en la BD
+    new_artist = poblar_artista(artist)
+    #Inserción del album en BD
+    new_album = poblar_album(album, tipo, cover_path, cover_name, new_artist, valid_time)
 
-#print('Album: ', album, ' Artist: ', artist, 'Tipo: ', tipo, 'Date: ', date)
+    #print('Album: ', album, ' Artist: ', artist, 'Tipo: ', tipo, 'Date: ', date)
 
-for can in canciones: #Para cada uno de esos albumes, recorremos sus canciones
-    song_path = alb + '/' + can #Ruta absoluta de cancion
-    song_name = albumes[0] + '/' + can
-    can_metadata = eyed3.load(song_path)
-    poblar_cancion(can_metadata, song_name, song_path, new_album)
+    for can in canciones: #Para cada uno de esos albumes, recorremos sus canciones
+        song_path = alb + '/' + can #Ruta absoluta de cancion
+        song_name = alb_name + '/' + can
+        can_metadata = eyed3.load(song_path)
+        poblar_cancion(can_metadata, song_name, song_path, new_album)
 
 #temporal = ["Boomer", "Hello World", "Rap", "Rock", "Reggae", "Pop", "Dubstep","With Deepest Regrets", "Viva la vida"]
