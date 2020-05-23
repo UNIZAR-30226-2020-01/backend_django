@@ -21,8 +21,11 @@ class LastfmSearcher:
         }
         if name:
             result =  requests.get(self.url, params=querystring)
-
-            return result.json()['artist']['bio']['content']
+            # Se supone que no ha devuelto error si es True
+            if result:
+                return result.json()['artist']['bio']['content']
+            else:
+                return ''
         else:
             return ''
 
