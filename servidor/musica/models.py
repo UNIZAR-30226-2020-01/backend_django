@@ -396,5 +396,5 @@ class PodcastEpisode(Audio):
     @property
     def real_uri(self):
         # algo como get_uri_real(self.URI)
-        real_uri = requests.get(sel.URI)
+        real_uri = requests.get(self.URI)
         return real_uri.url
