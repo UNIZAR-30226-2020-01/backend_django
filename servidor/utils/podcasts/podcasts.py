@@ -135,6 +135,15 @@ class Podcasts_api:
         response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
         return response.json()["episodes"]
 
+
+    # Al final la he puesto en models como una property
+    #  convierte la uri de listennotes de un audio a la uri del audio real al que redirige con un 302
+    # # se usara en el serializador, puede que la direccion final cambie en el tiempo
+    # def get_real_uri(self, uri):
+    #     return "WORK IN PROGRESS EN PODCASTS.PY"
+
+
+
 # Para probar que funciona
 if __name__ == '__main__':
     the_secret_function()

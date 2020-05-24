@@ -14,6 +14,7 @@ from musica.permissions import IsOwnerOrIsAdmin
 from utils.podcasts.podcasts import Podcasts_api
 
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
+from rest_framework import status # mas info en errores de http
 from oauth2_provider.contrib.rest_framework import OAuth2Authentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -489,8 +490,11 @@ class S7_userViewSet(viewsets.ModelViewSet):
         authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
         print(user, '------------------', authent_user)
         this_user = self.get_object() # usuario a seguir
-        authent_user.follow(this_user)
-        return Response({'status': 'Ok'})
+        if this_user == authent_user:
+            return Response({'silly request': "You can\'t follow yourself"}, status = status.HTTP_400_BAD_REQUEST)
+        else:
+            authent_user.follow(this_user)
+            return Response({'status': 'Ok'})
 
     @action (detail=True, methods=['get'])
     def unfollow(self, request, pk):
@@ -502,8 +506,11 @@ class S7_userViewSet(viewsets.ModelViewSet):
         authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
         print(user, '------------------', authent_user)
         this_user = self.get_object() # usuario a seguir
-        authent_user.unfollow(this_user)
-        return Response({'status': 'Ok'})
+        if this_user == authent_user:
+            return Response({'silly request': 'You can\'t unfollow yourself'}, status = status.HTTP_400_BAD_REQUEST)
+        else:
+            authent_user.unfollow(this_user)
+            return Response({'status': 'Ok'})
 
 #Para trending podcast mediante router
 class TrendingPodcastsViewSet(viewsets.ViewSet):

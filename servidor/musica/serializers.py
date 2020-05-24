@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 #from musica.models import Song, Album, Artist, PodcastEpisode, Podcast
 from musica.models import *
+from utils.podcasts.podcasts import Podcasts_api # para deshacer redirects
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -324,10 +325,13 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
+
+
 class PodcastEpisodeListSerializer(serializers.HyperlinkedModelSerializer):
+    # URI = FinalURIField(many=False)
     class Meta:
         model = PodcastEpisode
-        fields = todosloscampos(model,['podcast', 's7_user', 'audio_ptr'])
+        fields = (*todosloscampos(model,['podcast', 's7_user', 'audio_ptr']), 'real_uri')
         depth = 2
 
 class PodcastDetailSerializer(serializers.HyperlinkedModelSerializer):

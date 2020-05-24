@@ -389,3 +389,9 @@ class PodcastEpisode(Audio):
     class Meta:
         managed = True
         db_table = 'PodcastEpisode'
+
+    # TODO: Tiene que devolver la uri del recurso real al que lleva el 302 de listennotes
+    @property
+    def real_uri(self):
+        # algo como get_uri_real(self.URI)
+        return "Work in progress en models.PodcastEpisode"
