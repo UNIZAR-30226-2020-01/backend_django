@@ -379,7 +379,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
 
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'genre']
+    search_fields = ['title', 'genre__name']
 
     def get_serializer_class(self):
 
@@ -402,7 +402,7 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'podcast__title', 'podcast__genre']
+    search_fields = ['title', 'podcast__title', 'podcast__genre__name']
 
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
     def get_serializer_class(self):
