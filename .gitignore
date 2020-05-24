@@ -110,6 +110,6 @@ servidor/utils/secret/set_credentials.py
 
 servidor/servidor/static/
 
-servidor/servidor/media/
+#servidor/servidor/media/
 
 servidor/test/
