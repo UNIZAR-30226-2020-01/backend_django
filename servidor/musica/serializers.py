@@ -18,6 +18,7 @@ from rest_framework.fields import CurrentUserDefault
 
 
 
+
 # Esta cosa tan fea es la unica forma que he encontrado de poner todos los campos del modelo (__all__) mas uno externo:
 # Devuelve una lista, con funcionalidad equivalente a __all__, pero extensible (y sin incluir el identificador)
 def todosloscampos(modelo, exclude=['']):
@@ -147,6 +148,14 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav', 'times_played', 'times_faved'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
+
+
+
+    @staticmethod
+    def setup_eager_loading(queryset):
+        queryset = queryset.prefetch_related("title", 'file')
+
+        return queryset
 
 
 

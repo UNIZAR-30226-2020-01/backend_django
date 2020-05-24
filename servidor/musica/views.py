@@ -29,6 +29,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import filters
 
+
+from utils.debug.connections import num_queries
+
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
 
@@ -121,10 +124,30 @@ class SongViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
 
         if hasattr(self, 'action_serializers'):
-            return self.action_serializers.get(self.action, self.serializer_class)
-
+            print('eligiendo serializador... num_queries:')
+            serializador = self.action_serializers.get(self.action, self.serializer_class)
+            num_queries(False)
+            return serializador
         return super(SongViewSet, self).get_serializer_class()
 
+    # Test de velocidad
+    def list(self, request):
+        # global serializer_time
+        # global db_time
+        #
+        # db_start = time.time()
+        # users = list(User.objects.all())
+        # db_time = time.time() - db_start
+        #
+        # serializer_start = time.time()
+        # serializer = UserSerializer(users)
+        # data = serializer.data
+        # serializer_time = time.time() - serializer_start
+        serializer = SongListSerializer(self.queryset, context={'request': request}, many=True)
+        data = serializer.data
+        print('queries en get:')
+        num_queries()
+        return Response(data)
 
     # TODO: asegurar que add_favorite no duplique filas
     @action (detail=True, methods=['get'])
