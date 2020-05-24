@@ -347,7 +347,7 @@ class PodcastEpisodeDetailSerializer(serializers.HyperlinkedModelSerializer):
     podcast = PodcastListSerializer()
     class Meta:
         model = PodcastEpisode
-        fields = todosloscampos(model,['s7_user', 'audio_ptr'])
+        fields = (*todosloscampos(model,['podcast', 's7_user', 'audio_ptr']), 'real_uri') 
         depth = 2
 
 
