@@ -269,7 +269,7 @@ class UserFavoritesViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         print("Usuario en request: ", user)
-        return user.favorito.all()
+        return user.s7_user.favorito.songs.all()
 
 class UserPlaylistViewSet(viewsets.ModelViewSet):
     """
@@ -300,6 +300,37 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
         user = self.request.user
         print("Usuario en request: ", user)
         return Playlist.objects.filter(user=user)
+
+class UserPodcastsViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows the current user's podcasts to be viewed.
+    Allows searches using the title queryparameter (/?title=something)
+    And (/?genre=something)
+    """
+    #queryset = Playlist.objects.all()
+
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated]
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', 'genre']
+
+    serializer_class = PodcastListSerializer
+    # solo acepta GET:
+    http_method_names = ['get']
+    # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
+
+    # Sobreescribimos el método que devuelve el queryset, para que de las
+    # playlists del usuario autentificado
+    #(basado en https://www.django-rest-framework.org/api-guide/filtering/#django-rest-framework-full-word-search-filter)
+    def get_queryset(self):
+        """
+        This view should return a list of all the playlists
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        print("Usuario en request: ", user)
+        return user.s7_user.podcasts.all()
 
 class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
@@ -349,7 +380,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
 
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'genre']
+    search_fields = ['title', 'genre__name']
 
     def get_serializer_class(self):
 
@@ -372,7 +403,7 @@ class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get']
 
     filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'podcast__title', 'podcast__genre']
+    search_fields = ['title', 'podcast__title', 'podcast__genre__name']
 
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
     def get_serializer_class(self):

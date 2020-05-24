@@ -12,6 +12,7 @@ from utils.spotipy.spotiapi import Spotisearcher
 from utils.podcasts.podcasts import Podcasts_api
 from utils.biography.biography import LastfmSearcher
 import html2text
+import requests
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -390,8 +391,10 @@ class PodcastEpisode(Audio):
         managed = True
         db_table = 'PodcastEpisode'
 
+
     # TODO: Tiene que devolver la uri del recurso real al que lleva el 302 de listennotes
     @property
     def real_uri(self):
         # algo como get_uri_real(self.URI)
-        return "Work in progress en models.PodcastEpisode"
+        real_uri = requests.get(self.URI)
+        return real_uri.url
