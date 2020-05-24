@@ -61,7 +61,7 @@ print(albumes)
 
 for alb in albumes:
 
-    alb_name = alb #Nombre del album
+    #alb_name = alb #Nombre del album
     alb = dir + alb #ruta completa
     alb_path = pathlib.Path(alb) #Para poder recorrerlo
     # Obtenemos el listado de caciones de un album
@@ -82,7 +82,7 @@ for alb in albumes:
 
     # "Cover" es la ruta absoluta de la portada del album en cuestion
     cover_path = alb + '/' + cover[0]
-    cover_name = alb_name + '/' + cover[0]
+    cover_name = album + '/' + cover[0]
 
     # Para hacerlo mas completo, dependiendo del numero de canciones
     # hago que sea de un tipo u otro
@@ -102,7 +102,7 @@ for alb in albumes:
 
     for can in canciones: #Para cada uno de esos albumes, recorremos sus canciones
         song_path = alb + '/' + can #Ruta absoluta de cancion
-        song_name = alb_name + '/' + can
+        song_name = album + '/' + can
         can_metadata = eyed3.load(song_path)
         poblar_cancion(can_metadata, song_name, song_path, new_album)
 
