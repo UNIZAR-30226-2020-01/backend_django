@@ -79,7 +79,7 @@ class AlbumViewSet(viewsets.ModelViewSet):
     Retrieves albums with a substring of the parameter in either the title
     or the album's artist's name
     """
-    queryset = Album.objects.all()
+    queryset = Album.objects.all().select_related('artist').prefetch_related('songs')
     serializer_class = AlbumListSerializer
     http_method_names = ['get']
     filter_backends = [filters.SearchFilter]
@@ -107,7 +107,8 @@ class SongViewSet(viewsets.ModelViewSet):
     Retrieves songs with a substring of the parameter in either the title
     or the song's artist's name
     """
-    queryset = Song.objects.all()
+    queryset = Song.objects.select_related('album__artist').all()
+    serializer_class = SongListSerializer
     # solo acepta GET:
     http_method_names = ['get']
     # usamos SearchFilter para buscar (https://www.django-rest-framework.org/api-guide/filtering/#searchfilter)
@@ -122,7 +123,6 @@ class SongViewSet(viewsets.ModelViewSet):
     }
 
     def get_serializer_class(self):
-
         if hasattr(self, 'action_serializers'):
             print('eligiendo serializador... num_queries:')
             serializador = self.action_serializers.get(self.action, self.serializer_class)
@@ -130,22 +130,43 @@ class SongViewSet(viewsets.ModelViewSet):
             return serializador
         return super(SongViewSet, self).get_serializer_class()
 
+    # def get_queryset(self):
+    #     if self.action == 'retrieve':
+    #         queryset = Song.objects.all()
+    #         print('get_queryset')
+    #     return super(SongViewSet, self).get_serializer_class()
+
     # Test de velocidad
-    def list(self, request):
-        # global serializer_time
-        # global db_time
-        #
-        # db_start = time.time()
-        # users = list(User.objects.all())
-        # db_time = time.time() - db_start
-        #
-        # serializer_start = time.time()
-        # serializer = UserSerializer(users)
-        # data = serializer.data
-        # serializer_time = time.time() - serializer_start
-        serializer = SongListSerializer(self.queryset, context={'request': request}, many=True)
+    # def list(self, request):
+    #     # global serializer_time
+    #     # global db_time
+    #     #
+    #     # db_start = time.time()
+    #     # users = list(User.objects.all())
+    #     # db_time = time.time() - db_start
+    #     #
+    #     # serializer_start = time.time()
+    #     # serializer = UserSerializer(users)
+    #     # data = serializer.data
+    #     # serializer_time = time.time() - serializer_start
+    #     self.queryset = Song.objects.all().select_related('album__artist')
+    #     print('antes del serializador:')
+    #     page = self.paginate_queryset(self.queryset)
+    #     num_queries(False)
+    #     serializer = SongListSerializer(page, context={'request': request}, many=True)
+    #     data = serializer.data
+    #     print('queries en get:')
+    #     num_queries()
+    #     return Response(data)
+
+    def retrieve(self, request, pk=None):
+        song = self.queryset.select_related('album', 'album__artist', 'audio_ptr').get(pk=pk)
+        # Song.objects.prefetch_related('album__artist').get(pk=pk)#.prefetch_related('album__artist')
+        print('antes del serializador:')
+        num_queries(False)
+        serializer = SongDetailSerializer(song, context={'request': request})
         data = serializer.data
-        print('queries en get:')
+        print('retrieve:')
         num_queries()
         return Response(data)
 
@@ -252,8 +273,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         estado = 'Añadida ' + str(song) + ' a ' + str(playlist) # TODO: que diga "ya estaba" si ya estaba
         return Response({'status': estado})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
-
-
+    
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
