@@ -2,6 +2,7 @@ from musica.models import *
 from utils.podcasts.podcasts import Podcasts_api
 import urllib.request
 import sys
+import numpy as np
 
 # Para poblar generos de podcast
 # api = Podcasts_api()
@@ -26,7 +27,8 @@ def save_image(pod_imag, pod_id, type):
 
 #Para poblar podcast y sus episodios
 api = Podcasts_api()
-podcast, episodes = api.get_by_name('cronocine')
+# podcast, episodes = api.get_by_name('cronocine')
+episodes = api.get_allEpisodes('d844c50b6b864fca8effc6088c8162ce')
 pod_tit = podcast['title']
 pod_rss = podcast['rss']
 genres = podcast['genre_ids']
@@ -53,31 +55,39 @@ pod.save()
 print('Podcast almacenado')
 
 print('-'*20)
-#Si tiene mas de 10 episodios, a chupar que es una prueba xd
-print("Episodios: " + str(len(episodes)))
+
+# print('All episodes')
+# titles = [ep['id'] for ep in episodes]
+# print(titles)
+
+print('Total epiosdes: ', len(episodes) )
+
+lista_separada = [episodes]
 if len(episodes) > 10:
-    episodes = episodes[:10]
+    i = len(episodes) // 10
+    lista_separada = np.array_split(episodes, i+1)
 
-ids = []
-for epi in episodes:
-    ids.append(epi['id'])
+for episodes in lista_separada:
+    ids = []
+    for epi in episodes:
+        ids.append(epi['id'])
 
-ids = ','.join(ids)
-print('IDS' + ids)
+    ids = ','.join(ids)
+    print('IDS' + ids)
 
-episodes = api.get_many_episodes(ids)
+    episodes = api.get_many_episodes(ids)
 
-#print(episodes)
+    #print(episodes)
 
-for epi in episodes:
-    ep_audio = epi['audio']
-    ep_id = epi['id']
-    ep_title = epi['title']
-    ep_duration = epi['audio_length_sec']
-    ep_image = epi['image']
-    ep_description = epi['description']
-    # saved_imag = save_image(ep_image, ep_id, 'episode')
-    epi = PodcastEpisode(title=ep_title, duration = ep_duration,
-        URI = ep_audio, id_listenotes=ep_id, podcast=pod, image=ep_image, description=ep_description)
-    epi.save()
-    print('Episodio almacenado: ' + ep_title)
+    for epi in episodes:
+        ep_audio = epi['audio']
+        ep_id = epi['id']
+        ep_title = epi['title']
+        ep_duration = epi['audio_length_sec']
+        ep_image = epi['image']
+        ep_description = epi['description']
+        # saved_imag = save_image(ep_image, ep_id, 'episode')
+        epi = PodcastEpisode(title=ep_title, duration = ep_duration,
+            URI = ep_audio, id_listenotes=ep_id, podcast=pod, image=ep_image, description=ep_description)
+        epi.save()
+        print('Episodio almacenado: ' + ep_title)

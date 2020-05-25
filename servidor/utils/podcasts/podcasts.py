@@ -45,7 +45,7 @@ class Podcasts_api:
         #print(response.headers['X-ListenAPI-Usage'])
         if response.status_code != 200:
             return 'ERROR'
-
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()#response.json() ## TODO: Cuando tenga la API KEY, se podrá terminar
 
     #Devuelve los mejores podcasts en funcion de los parámetros
@@ -57,10 +57,11 @@ class Podcasts_api:
         }
         response = requests.get(self.url + '/best_podcasts', headers=self.headers, params=querystring)
         #Mostramos las peticiones restantes
-        print(response.headers['X-ListenAPI-Usage'])
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()['podcasts']
 
     # Dado un id, devuelve TODA información sobre un podcast, en formato JSON
+    # Solo puede devolver 10 episodios
     #   -id: Id del podcast a buscar
     #   -sort: recent_first|| oldest_first (default: recent_first)
     def get_detailedInfo_podcast(self, id, sort='recent_first'):
@@ -68,8 +69,36 @@ class Podcasts_api:
             'id': id
         }
         response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
-
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
+
+    # Devuelve TODOS los episodios de un podcast
+    #   -id: Id del podcast a buscar
+    #   -sort: recent_first|| oldest_first (default: recent_first)
+    def get_allEpisodes(self, id, sort='oldest_first'):
+        querystring = {
+            'id': id,
+            'sort': sort
+        }
+        response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
+        result = episodes = response.json()["episodes"]
+        veces = 0
+        while (len(episodes) in range(1,11)) and veces in range(0,3):
+            veces+=1
+            pub_date = response.json()["next_episode_pub_date"]
+            querystring = {
+                'id': id,
+                'next_episode_pub_date': pub_date,
+                'sort': sort
+            }
+            response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
+            episodes = response.json()["episodes"]
+            result += episodes
+            # print(episodes)
+            # print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+        return result
 
     # Dado un id, devuelve TODA información sobre un episodio, en formato JSON
     def get_detailedInfo_episode(self, id):
@@ -77,23 +106,26 @@ class Podcasts_api:
             'id': id
         }
         response = requests.get(self.url + '/episodes/'+id, headers=self.headers, params=querystring)
-
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
     #Devuelve todos los géneros a los que puede pertenecer podcast
     def get_genres(self):
 
         response = requests.get(self.url + '/genres', headers=self.headers)
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()['genres']
 
     #Devuelve las posibles regiones de podcast en forma de json
     def get_regions(self):
         response = requests.get(self.url + '/regions', headers=self.headers)
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
     #Devuleve un episodio de un podcast random. No necesita parámetros
     def get_randomEpisode(self):
         response = requests.get(self.url + '/just_listen', headers=self.headers)
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
 
@@ -108,7 +140,7 @@ class Podcasts_api:
             'show_genres' : show_genres
         }
         response = requests.get(self.url + '/typeahead', headers=self.headers, params=querystring)
-
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
     #Devuelve el podcast correspondiente y la lista de sus episodios
@@ -135,6 +167,13 @@ class Podcasts_api:
         response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
         return response.json()["episodes"]
 
+    def get_podcast_recommendation(self, id):
+        # querystring = {
+        #     'id': id
+        # }
+        response = requests.get(self.url + '/podcasts/' + id + '/recommendations', headers=self.headers)
+        print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+        return response.json()["recommendations"]
 
     # Al final la he puesto en models como una property
     #  convierte la uri de listennotes de un audio a la uri del audio real al que redirige con un 302

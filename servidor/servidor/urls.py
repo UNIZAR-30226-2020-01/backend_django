@@ -24,6 +24,7 @@ router.register(r'playlists', views.PlaylistViewSet)
 router.register(r'user/playlists', views.UserPlaylistViewSet, basename='UserPlaylists') # Basename necesario si no hay queryset en el viewset
 router.register(r'user/followed/playlists', views.FollowedPlaylistViewSet, basename='FollowedPlaylists') # Basename necesario si no hay queryset en el viewset
 router.register(r'user/favorites', views.UserFavoritesViewSet, basename='UserFavorites')
+router.register(r'user/recomendedPodcast', views.UserRecomendedPodcast, basename='UserRecomendations')
 router.register(r'user/podcasts', views.UserPodcastsViewSet, basename='UserPodcasts')
 router.register(r's7_user', views.S7_userViewSet, basename='s7_user')
 # debug de autorización, provisional:
@@ -44,6 +45,7 @@ urlpatterns = [
     #No las he sabido meter en el router. Aún así lo veo mejor así
     path('podcast/<str:id>/', views.PodcastById.as_view()),
     path('episode/<str:id>/', views.PodcastEpisodeById.as_view()),
+    path('addPodcast/', views.AddPodcastViewSet.as_view()),
     ##Comprobar que esto no falle, en la docu ponia que habia que poner url, no path
     #path(r'accounts/', include('allauth.urls')),
 

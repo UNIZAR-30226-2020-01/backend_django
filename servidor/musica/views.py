@@ -32,6 +32,8 @@ from rest_framework import filters
 
 from utils.debug.connections import num_queries
 
+import numpy as np
+import html2text
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
 
@@ -96,7 +98,6 @@ class AlbumViewSet(viewsets.ModelViewSet):
             return self.action_serializers.get(self.action, self.serializer_class)
 
         return super(AlbumViewSet, self).get_serializer_class()
-
 
 
 # No tendremos endpoint para los audios, desde el punto de vista del cliente las canciones y los podcasts no tienen nada que ver:
@@ -368,12 +369,13 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
     #(basado en https://www.django-rest-framework.org/api-guide/filtering/#django-rest-framework-full-word-search-filter)
     def get_queryset(self):
         """
-        This view should return a list of all the playlists
+        This view should return a list of all the podcats
         for the currently authenticated user.
         """
         user = self.request.user
         print("Usuario en request: ", user)
         return user.s7_user.podcasts.all()
+
 
 class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
@@ -586,6 +588,22 @@ class S7_userViewSet(viewsets.ModelViewSet):
             authent_user.unfollow(this_user)
             return Response({'status': 'Ok'})
 
+#Para obtener los podcast recomendados dado un usuario
+class UserRecomendedPodcast(viewsets.GenericViewSet):
+    def list(self, request):
+        user =  S7_user.objects.get(username='P.Rueba')
+        podcast = user.podcasts.all()
+        try:
+            to_recommend = podcast[0]
+            api = Podcasts_api()
+            result = api.get_podcast_recommendation(to_recommend.id_listenotes)
+            return Response(result)
+        except Exception as e:
+            return Response({'ERROR': 'El usuario no está suscrito a ningún podcast', 'User': user.username})
+
+        # return Response([prueba1, prueba2])
+        return Response({'Hola': 'funciona', 'User': user.username})
+
 #Para trending podcast mediante router
 class TrendingPodcastsViewSet(viewsets.ViewSet):
     serializer_class = TrendingPodcastsSerializer
@@ -597,6 +615,7 @@ class TrendingPodcastsViewSet(viewsets.ViewSet):
         serializer = TrendingPodcastsSerializer(
             instance=result, many=True)
         return Response(serializer.data)
+
 
 # Vista que muestra información detallada de un podcast dado su id
 # Desde aquí se accederá a sus episodios
@@ -613,6 +632,102 @@ class PodcastEpisodeById(APIView):
         print(id)
         result = api.get_detailedInfo_episode(id)
         return Response(result)
+
+class AddPodcastViewSet(APIView):
+
+    def post(self, request):
+        """
+        This view save the Podcast indicated on the request and its episodes
+        and add the podcast to the podcast list of the user.
+        """
+
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        print('USER:', authent_user)
+
+        pod_rss = request.data['rss']
+        pod_id = request.data['id']
+        pod_genres = request.data['genre_ids']
+        pod_title = request.data['title']
+        pod_image = request.data['image']
+        pod_channel = request.data['publisher']
+        api = Podcasts_api()
+        episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
+        # titles = [ep['title'] for ep in episodes]
+        print("Num. Episodios: ", len(episodes))
+
+
+        #Ahora se comprueba si el podcast pertenece a la base de datos
+        pod_object = Podcast.objects.filter(id_listenotes = pod_id)
+
+        #No existe, así que se introduce el podcast y sus episodios
+        if not pod_object:
+            #Primero se almacena el canal (en caso de que no exista con anterioridad)
+            new_chan = Channel.objects.filter(name = pod_channel)
+            if not new_chan:
+                new_chan = Channel(name=pod_channel)
+                new_chan.save()
+                print('Canal almacenado')
+            else:
+                new_chan=new_chan[0] #Filter devuelve una lista
+
+            #Ahora creamos un nuevo objeto de Podcast
+            pod = Podcast(title=pod_title, RSS=pod_rss, id_listenotes=pod_id,
+                image=pod_image, channel=new_chan)
+
+            pod.save()
+
+            #Recorremos los generos y se los introducimos al podcast
+            for gen in pod_genres:
+                # Esto ha sido error de inserción. Hay varios generos iguales(mismo id)
+                found = Genre.objects.get(id_listenotes=gen)
+                pod.genre.add(found)
+
+            pod.save()
+
+            authent_user.podcasts.add(pod)
+            authent_user.save()
+
+            print('Podcast almacenado')
+
+            # Esto se hace porque
+            lista_separada = [episodes]
+            if len(episodes) > 10:
+                i = len(episodes) // 10
+                lista_separada = np.array_split(episodes, i+1)
+
+            for episodes in lista_separada:
+                ids = [ep['id'] for ep in episodes]
+                # print('IDS:', ids)
+
+                ids = ','.join(ids)
+                episodes = api.get_many_episodes(ids)
+
+                #print(episodes)
+
+                for epi in episodes:
+                    ep_audio = epi['audio']
+                    ep_id = epi['id']
+                    ep_title = epi['title']
+                    ep_duration = epi['audio_length_sec']
+                    ep_image = epi['image']
+                    ep_description = epi['description']
+
+                    #Se debe convertir el HTML a texto
+                    parsed_description = html2text.html2text(ep_description)
+                    # saved_imag = save_image(ep_image, ep_id, 'episode')
+                    epi = PodcastEpisode(title=ep_title, duration = ep_duration,
+                        URI = ep_audio, id_listenotes=ep_id, podcast=pod, image=ep_image, description=parsed_description)
+                    epi.save()
+                    print('Episodio almacenado: ' + ep_title)
+
+        else:
+            pod_object = pod_object[0]
+            authent_user.podcast.add(pod_object)
+            authent_user.save()
+
+        estado = 'Añadido ' + pod_title+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
+        return Response({'status': estado})
 
 class debugAuthViewSet(viewsets.ModelViewSet):
     """
