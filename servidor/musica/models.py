@@ -20,6 +20,8 @@ from django.dispatch import receiver
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
 
+import os.path
+
 class Artist(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50, blank=True)
@@ -396,5 +398,13 @@ class PodcastEpisode(Audio):
     @property
     def real_uri(self):
         # algo como get_uri_real(self.URI)
-        real_uri = requests.get(self.URI)
-        return real_uri.url
+        extensiones = ['.m4a', '.mp3'] # extensiones que aceptamos
+        extension = os.path.splitext(self.URI)[1] # obtenemos la extension
+        if extension in extensiones:
+            print(extension, 'esta en ', extensiones)
+            url = self.URI # ya tiene formato ok
+        else: # no lo tiene
+            print('busco', extension)
+            real_uri = requests.get(self.URI)
+            url = real_uri.url
+        return url
