@@ -273,7 +273,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
         estado = 'Añadida ' + str(song) + ' a ' + str(playlist) # TODO: que diga "ya estaba" si ya estaba
         return Response({'status': estado})
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
-    
+
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
