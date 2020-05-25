@@ -274,9 +274,112 @@ class Song(Audio):
     album = models.ForeignKey(Album, related_name='songs', on_delete=models.CASCADE)
     times_faved = models.IntegerField(default=0)
 
+    # audio = models.ForeignKey(default=pk)
+
     class Meta:
         managed = True
         db_table = 'Song'
+
+    # No se puede ordenar por propiedades en las views
+    # @property
+    # def times_faved(self):
+    #     print('veces fav:', S7_user.objects.favorito.songs.filter(pk=self.pk).count())
+    #     return S7_user.objects.favorito.songs.filter(pk=self.pk).count()# self.songs.count()
+
+    def count_fav(self):
+        self.times_faved += 1
+
+    # def __init__(self, *args, **kwargs):
+    #     super(Song, self).__init__(*args, **kwargs)
+    #     # es_cancion = self.is_song() # obviamente las canciones son canciones
+    #     # if es_cancion: # que solo ponga letras a las canciones, no a los podcasts
+    #     api = Lyrics_api()
+    #
+    #     letra= 'TEST' # TEMPORAL
+    #     print('\n\n\n\n\n\n\n\n\n\n\n\nEH\n\n\n\n\n\n\n\n\n\n')
+    #     try:
+    #         # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
+    #         # Metodo antiguo: concatenar todos sus artistas:
+    #         # artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
+    #         # artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
+    #         artista = str(self.album.artist)
+    #         letra = api.get_lyrics(self.title, artista)
+    #     except Album.DoesNotExist: # otro gestion de excepciones posible
+    #         pass
+    #
+    #     #print(letra)
+    #     if letra != '':
+    #         self.lyrics = letra
+    #     else: # revisar
+    #         exit(1)
+
+        # if self.initial.get('account', None):
+        #     self.fields['customer'].queryset = Customer.objects.filter(account=self.initial.get('account'))
+
+    # cuenta <play> reproducciones de la cancion:
+    def count_play(self, play=1):
+        self.times_played += play
+
+    def save(self, force_insert=False, force_update=False, commit=True):
+        api = Lyrics_api()
+
+        letra= 'TEST' # TEMPORAL
+        print('\n\n\n\n\n\n\n\n\n\n\n\nEH\n\n\n\n\n\n\n\n\n\n')
+        try:
+            # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
+            # Metodo antiguo: concatenar todos sus artistas:
+            # artistas = self.album.artists.all() # queryset de artistas del album de esta cancion
+            # artistas_str = ' '.join([str(artista) for artista in artistas]) # en string, sus nombres separados por espacios
+            artista = str(self.album.artist)
+            letra = api.get_lyrics(self.title, artista)
+        except Album.DoesNotExist: # otro gestion de excepciones posible
+            pass
+
+        #print(letra)
+        if letra != '':
+            self.lyrics = letra
+        else: # revisar
+            exit(1)
+
+        m = super(Song, self).save()#commit=False)
+        #print("Listas: " + self.lists)
+
+
+    def __str__(self):
+        return self.title
+
+    # TODO: EFICIENCIA, es muy lenta
+    # Como ahora depende de la playlist, se busca si pertenece a la playlist favorita del user
+    def is_favorite_of(self, user):
+        #return user in self.user.all() # ineficiente, se supone que exists es mejor (https://docs.djangoproject.com/en/3.0/ref/models/querysets/#exists) :
+        #return self.user.filter(id=user.id).exists()
+        if user.is_anonymous:
+            s7user = S7_user.objects.first()
+        else:
+            s7user = S7_user.objects.get(pk=user.pk)
+
+        return self in s7user.favorito.songs.all() ## TODO: ¿alguna forma más eficiente?
+
+    # Cuenta una reproduccion
+    def play(self):
+        self.times_played += 1
+
+class Song_v2(models.Model):
+    title = models.CharField(max_length=100)
+    file = models.FileField(blank=True, null=True)
+    duration = models.IntegerField(default=0)
+
+    track = models.IntegerField()
+    times_played = models.IntegerField(default=0)
+    lyrics = models.TextField(blank=True)
+    album = models.ForeignKey(Album, related_name='songs', on_delete=models.CASCADE)
+    times_faved = models.IntegerField(default=0)
+
+    # audio = models.ForeignKey(default=pk)
+
+    class Meta:
+        managed = True
+        db_table = 'Song_v2'
 
     # No se puede ordenar por propiedades en las views
     # @property
@@ -294,7 +397,7 @@ class Song(Audio):
         api = Lyrics_api()
 
         letra= 'TEST' # TEMPORAL
-
+        # print('\n\n\n\n\n\n\n\n\n\n\n\nEH\n\n\n\n\n\n\n\n\n\n')
         try:
             # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
             # Metodo antiguo: concatenar todos sus artistas:
@@ -341,6 +444,9 @@ class Song(Audio):
     # Cuenta una reproduccion
     def play(self):
         self.times_played += 1
+
+
+
 
 ##TODO: hay que hacer que las playlist tenga owner, tuto de autenticacion
 ## de django como referencia https://www.django-rest-framework.org/tutorial/4-authentication-and-permissions/
