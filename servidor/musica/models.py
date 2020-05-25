@@ -356,9 +356,9 @@ class Song(Audio):
         if user.is_anonymous:
             return False
         else:
-            s7user = S7_user.objects.get(pk=user.pk).prefetch_related('favorito__songs')
+            s7user = S7_user.objects.prefetch_related('favorito__songs').get(pk=user.pk)
 
-        return s7user.favorito.songs.filter(id=self.id).exists() 
+        return s7user.favorito.songs.filter(id=self.id).exists()
 
     # Cuenta una reproduccion
     def play(self):
