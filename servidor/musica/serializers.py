@@ -140,23 +140,14 @@ class SongListSerializer(serializers.HyperlinkedModelSerializer):
     #serializers.CharField(read_only=True, source="song.album.artists.name")#
     #artists = serializers.CharField(read_only=True, source="song.album.artists.name", many=True)#ArtistSerializer(source='song.album.artists', many=True)
 
-    # is_fav = IsFavField(source='song', many=False, read_only=True)
+    is_fav = IsFavField(source='song', many=False, read_only=True)
     album = AlbumListSerializer()
     class Meta:
         model = Song
         #album_detail = AlbumSerializer()
-        fields = ['url', 'title', 'file', 'duration', 'album']#, 'is_fav', 'times_played', 'times_faved'] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
+        fields = ['url', 'title', 'file', 'duration', 'album', 'is_fav', 'times_played', 'times_faved']#,] # todosloscampos(model, ['lyrics', 's7_user', 'playlist'])
         depth = 2
         #fields = ['url', 'title', 'artists', 'album', 'file'] #'__all__'#
-
-
-
-    @staticmethod
-    def setup_eager_loading(queryset):
-        queryset = queryset.prefetch_related("title", 'file')
-
-        return queryset
-
 
 
 # Mini, para reducir carga de playlists
