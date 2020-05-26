@@ -37,9 +37,22 @@ class Artist(models.Model):
         return self.albums.count()
 
 
-    def __init__(self, *args, **kwargs):
-        super(Artist, self).__init__(*args, **kwargs)
+    # def __init__(self, *args, **kwargs):
+    #     super(Artist, self).__init__(*args, **kwargs)
+    #
+    #     #Comprobamos que no tenga una imagen asignada previamente.
+    #     if not self.image:
+    #         api = Spotisearcher()
+    #         self.image = api.get_artist_image(self.name)
+    #
+    #     #Automatización de biografía (en caso de que no posea una)
+    #     if not self.biography:
+    #         api = LastfmSearcher()
+    #         result = api.get_biography(self.name)
+    #         #El resultado de la api es html, asi que lo conertimos a texto plano
+    #         self.biography = html2text.html2text(result)
 
+    def save(self, force_insert=False, force_update=False, commit=True):
         #Comprobamos que no tenga una imagen asignada previamente.
         if not self.image:
             api = Spotisearcher()
@@ -52,7 +65,6 @@ class Artist(models.Model):
             #El resultado de la api es html, asi que lo conertimos a texto plano
             self.biography = html2text.html2text(result)
 
-    def save(self, force_insert=False, force_update=False, commit=True):
         m = super(Artist, self).save()
 
     def __str__(self):

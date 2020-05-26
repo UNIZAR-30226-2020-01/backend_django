@@ -101,7 +101,7 @@ class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
         fields =  ['url', 'name', 'image']#(*todosloscampos(model), 'number_albums', 'number_songs')
-        depth = 1
+        depth = 0
 
 # url, titulo, artista (lista), icono (), number_songs
 class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
