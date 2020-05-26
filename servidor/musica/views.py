@@ -377,7 +377,7 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
         return user.s7_user.podcasts.all()
 
     @action (detail=False, methods=['post'])
-    def addPodcast(self, request):
+    def followPodcast(self, request):
         """
         This view save the Podcast indicated on the request and its episodes
         and add the podcast to the podcast list of the user.
@@ -470,6 +470,13 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
         estado = 'Añadido ' + pod_title+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
         return Response({'status': estado})
 
+
+
+    # @action (detail=False, methods=['post'])
+    # def followPodcast(self, request):
+    #     user = self.request.user
+    #     authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+    #
 
 class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
