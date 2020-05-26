@@ -81,6 +81,7 @@ class Podcasts_api:
             'sort': sort
         }
         response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
+        podcast = response.json()
         result = episodes = response.json()["episodes"]
         veces = 0
         while (len(episodes) in range(1,11)) and veces in range(0,3):
@@ -98,7 +99,7 @@ class Podcasts_api:
             # print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
 
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
-        return result
+        return podcast, result
 
     # Dado un id, devuelve TODA información sobre un episodio, en formato JSON
     def get_detailedInfo_episode(self, id):

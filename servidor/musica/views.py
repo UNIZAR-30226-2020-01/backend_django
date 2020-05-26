@@ -361,7 +361,7 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
 
     serializer_class = PodcastListSerializer
     # solo acepta GET:
-    http_method_names = ['get']
+    http_method_names = ['get','post']
     # fuente de la soluci贸n: https://stackoverflow.com/a/31450643
 
     # Sobreescribimos el método que devuelve el queryset, para que de las
@@ -386,23 +386,24 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
         authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
         print('USER:', authent_user)
 
-        pod_rss = request.data['rss']
-        pod_id = request.data['id']
-        pod_genres = request.data['genre_ids']
-        pod_title = request.data['title']
-        pod_image = request.data['image']
-        pod_channel = request.data['publisher']
-        api = Podcasts_api()
-        episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
-        # titles = [ep['title'] for ep in episodes]
-        print("Num. Episodios: ", len(episodes))
-
+        pod_id = self.request.query_params.get('id', None)
 
         #Ahora se comprueba si el podcast pertenece a la base de datos
         pod_object = Podcast.objects.filter(id_listenotes = pod_id)
 
         #No existe, así que se introduce el podcast y sus episodios
         if not pod_object:
+            #Si no aparece en la BD, se busca con la api
+            api = Podcasts_api()
+            podcast, episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
+            pod_rss = podcast['rss']
+            pod_genres =  podcast['genre_ids']
+            pod_title = podcast['title']
+            pod_image = podcast['image']
+            pod_channel = podcast['publisher']
+            # titles = [ep['title'] for ep in episodes]
+            print("Num. Episodios: ", len(episodes))
+
             #Primero se almacena el canal (en caso de que no exista con anterioridad)
             new_chan = Channel.objects.filter(name = pod_channel)
             if not new_chan:
@@ -463,20 +464,36 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
                     print('Episodio almacenado: ' + ep_title)
 
         else:
-            pod_object = pod_object[0]
-            authent_user.podcast.add(pod_object)
-            authent_user.save()
+            podcast = authent_user.podcasts.filter(id_listenotes = pod_id)
+            if podcast:
+                print("El user ya sigue a este podcast")
+                return Response({'Bad request': "This podcast is already followed by the user"}, status = status.HTTP_400_BAD_REQUEST)
+            else:
+                pod_object = pod_object[0]
+                authent_user.podcasts.add(pod_object)
+                authent_user.save()
+                print("Ahora se sigue al podcast")
 
-        estado = 'Añadido ' + pod_title+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
+        estado = 'Añadido ' + pod_id+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
         return Response({'status': estado})
 
+    @action (detail=False, methods=['post'])
+    def unfollowPodcast(self, request):
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        print('USER:', authent_user)
+        pod_id = self.request.query_params.get('id', None)
+        podcast = authent_user.podcasts.filter(id_listenotes = pod_id)
+        if podcast:
+            podcast = podcast[0]
+            authent_user.podcasts.remove(podcast)
+            authent_user.save()
+            print("El usuario ya no sigue el podcast")
+            return Response({'status': 'Ok'})
+        else:
+            print("El usuario no esta suscrito al podcast")
+            return Response({'Bad request': "The user isn't subscribed to this podcast"}, status = status.HTTP_400_BAD_REQUEST)
 
-
-    # @action (detail=False, methods=['post'])
-    # def followPodcast(self, request):
-    #     user = self.request.user
-    #     authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
-    #
 
 class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
