@@ -325,14 +325,19 @@ class ChannelSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         depth = 2
 
-
+class PodcastUrlSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Podcast
+        fields = ['url']
+        depth = 2
 
 class PodcastEpisodeListSerializer(serializers.HyperlinkedModelSerializer):
     # URI = FinalURIField(many=False)
+    podcast = PodcastUrlSerializer()
     class Meta:
         model = PodcastEpisode
         # fields = (*todosloscampos(model,['podcast', 's7_user', 'audio_ptr']), 'real_uri')
-        fields = todosloscampos(model,['podcast', 's7_user', 'audio_ptr'])
+        fields = todosloscampos(model,['s7_user', 'audio_ptr'])
         depth = 2
 
 class PodcastDetailSerializer(serializers.HyperlinkedModelSerializer):

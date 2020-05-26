@@ -324,7 +324,6 @@ class Song(Audio):
         api = Lyrics_api()
 
         letra= 'TEST' # TEMPORAL
-        print('\n\n\n\n\n\n\n\n\n\n\n\nEH\n\n\n\n\n\n\n\n\n\n')
         try:
             # TODO: planificar otra busqueda si la primera falla y/o probar otra(s) API(s)
             # Metodo antiguo: concatenar todos sus artistas:
