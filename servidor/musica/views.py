@@ -376,6 +376,100 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
         print("Usuario en request: ", user)
         return user.s7_user.podcasts.all()
 
+    @action (detail=False, methods=['post'])
+    def addPodcast(self, request):
+        """
+        This view save the Podcast indicated on the request and its episodes
+        and add the podcast to the podcast list of the user.
+        """
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        print('USER:', authent_user)
+
+        pod_rss = request.data['rss']
+        pod_id = request.data['id']
+        pod_genres = request.data['genre_ids']
+        pod_title = request.data['title']
+        pod_image = request.data['image']
+        pod_channel = request.data['publisher']
+        api = Podcasts_api()
+        episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
+        # titles = [ep['title'] for ep in episodes]
+        print("Num. Episodios: ", len(episodes))
+
+
+        #Ahora se comprueba si el podcast pertenece a la base de datos
+        pod_object = Podcast.objects.filter(id_listenotes = pod_id)
+
+        #No existe, así que se introduce el podcast y sus episodios
+        if not pod_object:
+            #Primero se almacena el canal (en caso de que no exista con anterioridad)
+            new_chan = Channel.objects.filter(name = pod_channel)
+            if not new_chan:
+                new_chan = Channel(name=pod_channel)
+                new_chan.save()
+                print('Canal almacenado')
+            else:
+                new_chan=new_chan[0] #Filter devuelve una lista
+
+            #Ahora creamos un nuevo objeto de Podcast
+            pod = Podcast(title=pod_title, RSS=pod_rss, id_listenotes=pod_id,
+                image=pod_image, channel=new_chan)
+
+            pod.save()
+
+            #Recorremos los generos y se los introducimos al podcast
+            for gen in pod_genres:
+                # Esto ha sido error de inserción. Hay varios generos iguales(mismo id)
+                found = Genre.objects.get(id_listenotes=gen)
+                pod.genre.add(found)
+
+            pod.save()
+
+            authent_user.podcasts.add(pod)
+            authent_user.save()
+
+            print('Podcast almacenado')
+
+            # Esto se hace porque
+            lista_separada = [episodes]
+            if len(episodes) > 10:
+                i = len(episodes) // 10
+                lista_separada = np.array_split(episodes, i+1)
+
+            for episodes in lista_separada:
+                ids = [ep['id'] for ep in episodes]
+                # print('IDS:', ids)
+
+                ids = ','.join(ids)
+                episodes = api.get_many_episodes(ids)
+
+                #print(episodes)
+
+                for epi in episodes:
+                    ep_audio = epi['audio']
+                    ep_id = epi['id']
+                    ep_title = epi['title']
+                    ep_duration = epi['audio_length_sec']
+                    ep_image = epi['image']
+                    ep_description = epi['description']
+
+                    #Se debe convertir el HTML a texto
+                    parsed_description = html2text.html2text(ep_description)
+                    # saved_imag = save_image(ep_image, ep_id, 'episode')
+                    epi = PodcastEpisode(title=ep_title, duration = ep_duration,
+                        URI = ep_audio, id_listenotes=ep_id, podcast=pod, image=ep_image, description=parsed_description)
+                    epi.save()
+                    print('Episodio almacenado: ' + ep_title)
+
+        else:
+            pod_object = pod_object[0]
+            authent_user.podcast.add(pod_object)
+            authent_user.save()
+
+        estado = 'Añadido ' + pod_title+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
+        return Response({'status': estado})
+
 
 class FollowedPlaylistViewSet(viewsets.ModelViewSet):
     """
@@ -633,101 +727,6 @@ class PodcastEpisodeById(APIView):
         result = api.get_detailedInfo_episode(id)
         return Response(result)
 
-class AddPodcastViewSet(APIView):
-
-    def post(self, request):
-        """
-        This view save the Podcast indicated on the request and its episodes
-        and add the podcast to the podcast list of the user.
-        """
-
-        user = self.request.user
-        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
-        print('USER:', authent_user)
-
-        pod_rss = request.data['rss']
-        pod_id = request.data['id']
-        pod_genres = request.data['genre_ids']
-        pod_title = request.data['title']
-        pod_image = request.data['image']
-        pod_channel = request.data['publisher']
-        api = Podcasts_api()
-        episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
-        # titles = [ep['title'] for ep in episodes]
-        print("Num. Episodios: ", len(episodes))
-
-
-        #Ahora se comprueba si el podcast pertenece a la base de datos
-        pod_object = Podcast.objects.filter(id_listenotes = pod_id)
-
-        #No existe, así que se introduce el podcast y sus episodios
-        if not pod_object:
-            #Primero se almacena el canal (en caso de que no exista con anterioridad)
-            new_chan = Channel.objects.filter(name = pod_channel)
-            if not new_chan:
-                new_chan = Channel(name=pod_channel)
-                new_chan.save()
-                print('Canal almacenado')
-            else:
-                new_chan=new_chan[0] #Filter devuelve una lista
-
-            #Ahora creamos un nuevo objeto de Podcast
-            pod = Podcast(title=pod_title, RSS=pod_rss, id_listenotes=pod_id,
-                image=pod_image, channel=new_chan)
-
-            pod.save()
-
-            #Recorremos los generos y se los introducimos al podcast
-            for gen in pod_genres:
-                # Esto ha sido error de inserción. Hay varios generos iguales(mismo id)
-                found = Genre.objects.get(id_listenotes=gen)
-                pod.genre.add(found)
-
-            pod.save()
-
-            authent_user.podcasts.add(pod)
-            authent_user.save()
-
-            print('Podcast almacenado')
-
-            # Esto se hace porque
-            lista_separada = [episodes]
-            if len(episodes) > 10:
-                i = len(episodes) // 10
-                lista_separada = np.array_split(episodes, i+1)
-
-            for episodes in lista_separada:
-                ids = [ep['id'] for ep in episodes]
-                # print('IDS:', ids)
-
-                ids = ','.join(ids)
-                episodes = api.get_many_episodes(ids)
-
-                #print(episodes)
-
-                for epi in episodes:
-                    ep_audio = epi['audio']
-                    ep_id = epi['id']
-                    ep_title = epi['title']
-                    ep_duration = epi['audio_length_sec']
-                    ep_image = epi['image']
-                    ep_description = epi['description']
-
-                    #Se debe convertir el HTML a texto
-                    parsed_description = html2text.html2text(ep_description)
-                    # saved_imag = save_image(ep_image, ep_id, 'episode')
-                    epi = PodcastEpisode(title=ep_title, duration = ep_duration,
-                        URI = ep_audio, id_listenotes=ep_id, podcast=pod, image=ep_image, description=parsed_description)
-                    epi.save()
-                    print('Episodio almacenado: ' + ep_title)
-
-        else:
-            pod_object = pod_object[0]
-            authent_user.podcast.add(pod_object)
-            authent_user.save()
-
-        estado = 'Añadido ' + pod_title+ ' a ' + authent_user.username # TODO: que diga "ya estaba" si ya estaba
-        return Response({'status': estado})
 
 class debugAuthViewSet(viewsets.ModelViewSet):
     """

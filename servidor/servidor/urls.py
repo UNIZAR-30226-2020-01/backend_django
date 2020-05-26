@@ -45,7 +45,7 @@ urlpatterns = [
     #No las he sabido meter en el router. Aún así lo veo mejor así
     path('podcast/<str:id>/', views.PodcastById.as_view()),
     path('episode/<str:id>/', views.PodcastEpisodeById.as_view()),
-    path('addPodcast/', views.AddPodcastViewSet.as_view()),
+    # path('addPodcast/', views.AddPodcastViewSet.as_view()),
     ##Comprobar que esto no falle, en la docu ponia que habia que poner url, no path
     #path(r'accounts/', include('allauth.urls')),
 
