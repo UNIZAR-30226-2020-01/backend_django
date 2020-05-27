@@ -426,7 +426,6 @@ class UserRecomendedPodcast(viewsets.ViewSet):
         # return Response([prueba1, prueba2])
         return Response({'Hola': 'funciona', 'User': user.username})
 
-
 class UserPodcastsViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows the current user's podcasts to be viewed.

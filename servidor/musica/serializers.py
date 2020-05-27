@@ -100,7 +100,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class ArtistListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Artist # TODO: excluir biografia, albumes (los dos tipos) y el email
-        fields =  ['url', 'name', 'image']#(*todosloscampos(model), 'number_albums', 'number_songs')
+        fields =  ['url', 'name', 'image','number_albums', 'number_songs']#(*todosloscampos(model), 'number_albums', 'number_songs')
         depth = 0
 
 # url, titulo, artista (lista), icono (), number_songs
@@ -109,7 +109,7 @@ class AlbumListSerializer(serializers.HyperlinkedModelSerializer):
     artist = ArtistListSerializer()
     class Meta:
         model = Album
-        fields = ['url', 'title', 'artist', 'icon'] # number_songs solo pal detalle, un count menos a la bd
+        fields = ['url', 'title', 'artist', 'icon', 'number_songs'] # number_songs solo pal detalle, un count menos a la bd
         depth = 1
 
 
@@ -352,7 +352,7 @@ class PodcastEpisodeDetailSerializer(serializers.HyperlinkedModelSerializer):
     podcast = PodcastListSerializer()
     class Meta:
         model = PodcastEpisode
-        fields = (*todosloscampos(model,['s7_user', 'audio_ptr']), 'real_uri')
+        fields = (*todosloscampos(model, ['s7_user', 'audio_ptr']), 'real_uri')
         depth = 2
 
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
@@ -394,7 +394,7 @@ class AudioDetailSerializer(serializers.RelatedField):
         is_podcast = audio is None
         if is_podcast:
             audio = PodcastEpisode.objects.get(pk=instance.pk)
-            audio = PodcastEpisodeSerializer(source=audio, context=self.context)
+            audio = PodcastEpisodeDetailSerializer(source=audio, context=self.context)
             respuesta = {'podcast-ep:', audio.data}
         else:
             audio = SongDetailSerializer(audio, context=self.context)
