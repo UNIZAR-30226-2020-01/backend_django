@@ -101,6 +101,17 @@ class Album(models.Model):
 class Genre(models.Model):
     name = models.CharField(max_length=50)
     id_listenotes = models.IntegerField(default=0, unique=True)
+    number_podcasts = models.IntegerField(default=0)
+    
+    @property
+    def count_podcasts(self):
+        return self.podcasts.count()
+
+
+    def save(self, *args, **kwargs):
+        self.number_podcasts = self.count_podcasts() # actualizamos el numero de podcasts
+        super(Genre, self).save(*args, **kwargs)
+        #print("Listas: " + self.lists)
 
     def __str__(self):
         return self.name

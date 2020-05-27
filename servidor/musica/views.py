@@ -319,9 +319,15 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
 
 class GenreViewSet(viewsets.ModelViewSet):
+
+
     queryset = Genre.objects.all().prefetch_related('podcasts__episodes', 'podcasts__channel')#.prefetch_related('podcast__episode')
     serializer_class = GenreSerializer
 
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name']
+    # filter_backends = []
+    ordering_fields = ['number_podcasts']
 
     http_method_names = ['get']
 
