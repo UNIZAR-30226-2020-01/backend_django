@@ -325,7 +325,6 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
 class GenreViewSet(viewsets.ModelViewSet):
 
-
     queryset = Genre.objects.all().prefetch_related('podcasts__episodes', 'podcasts__channel')#.prefetch_related('podcast__episode')
     serializer_class = GenreSerializer
 

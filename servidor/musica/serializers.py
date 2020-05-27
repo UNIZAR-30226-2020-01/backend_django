@@ -357,10 +357,10 @@ class PodcastEpisodeDetailSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class GenreSerializer(serializers.HyperlinkedModelSerializer):
-    podcasts = PodcastListSerializer(many=True)
+    # podcasts = PodcastListSerializer(many=True)
     class Meta:
         model = Genre
-        fields = ['url', 'name', 'id_listenotes', 'podcasts']
+        fields = ['url', 'name', 'id_listenotes']
         depth = 2
 
 
