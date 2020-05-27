@@ -31,13 +31,14 @@ class Podcasts_api:
 
     # Existen muchos parámetros, de momento creo que los más importantes son los siguientes
     #   -query: nombre del podcast (obligatorio)
+    #   -genres: lista con ids de géneros de listennotes
     #   -type: episode, podcast, curated (default: episode)
     #   -language: lenguaje del podcast (default: all languages)
     #   -sort_by_date: indica si muestra los podcast ordenados por fecha (0 = NO y muestra por relevancia)
-    def search(self, query, type='episode', language='Spanish', sort_by_date=0):
+    def search(self, query, genres, type='podcast', language='Spanish', sort_by_date=0):
 
         #Contiene los parámetros para la búsqueda de podcast
-        querystring = { 'q': query, 'type': type, 'language': language,
+        querystring = { 'q': query, 'genre_ids': genres,'type': type, 'language': language,
         'sort_by_date': sort_by_date
         }
         #Se debe añadir /search para que la url sea correcta

@@ -34,8 +34,13 @@ from utils.debug.connections import num_queries
 
 import numpy as np
 import html2text
+import json
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
+def get_real_uri(url):
+    real_uri = requests.get(url)
+    url = real_uri.url
+    return url
 
 
 # Para permitir paginacion en views y viewsets que no sean genericos, hacemos que
@@ -632,6 +637,23 @@ class PodcastViewSet(viewsets.ModelViewSet):
 
         return super(PodcastViewSet, self).get_serializer_class()
 
+    @action (detail=False, methods=['get'])
+    def search(self, request):
+        # user = self.request.user
+        # authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        # print('USER:', authent_user)
+        pod_title = self.request.query_params.get('title', None)
+        pod_genre = self.request.query_params.get('genre', None)
+        api = Podcasts_api()
+        podcast = api.search(query=pod_title, genres=pod_genre) #Para que devuelve todos episodios
+        if podcast != 'ERROR':
+            print("Devolviendo podcasts")
+            podcast = podcast["results"]
+            return Response(podcast)
+        else:
+            print("No existen podcasts")
+            return Response({'ERROR': "No podcast retreived"}, status = status.HTTP_400_BAD_REQUEST)
+
 class PodcastEpisodeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows songs to be viewed.
@@ -818,8 +840,13 @@ class PodcastEpisodeById(APIView):
         api = Podcasts_api()
         print(id)
         result = api.get_detailedInfo_episode(id)
-        return Response(result)
-
+        if result != 'ERROR':
+            ep_url = result['audio']
+            print('URL:', ep_url)
+            result['real_uri'] = get_real_uri(ep_url)
+            return Response(result)
+        else:
+            return Response({'ERROR': "El id no es valido"}, status = status.HTTP_400_BAD_REQUEST)
 
 class debugAuthViewSet(viewsets.ModelViewSet):
     """
