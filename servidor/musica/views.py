@@ -345,6 +345,36 @@ class UserPlaylistViewSet(viewsets.ModelViewSet):
         print("Usuario en request: ", user)
         return Playlist.objects.filter(user=user)
 
+class UserRecomendedPodcast(viewsets.ViewSet):
+    authentication_classes = [TokenAuthentication, BasicAuthentication, OAuth2Authentication]
+    permission_classes = [IsAuthenticated]
+
+    serializer_class = TrendingPodcastsSerializer
+
+    http_method_names = ['get']
+
+    def list(self, request):
+        user = self.request.user
+        authent_user = S7_user.objects.get(pk=user.pk) # usuario autentificado
+        podcast = authent_user.podcasts.all()
+        try:
+            to_recommend = podcast[0]
+            api = Podcasts_api()
+            result = api.get_podcast_recommendation(to_recommend.id_listenotes)
+            if result != 'ERROR':
+                serializer = TrendingPodcastsSerializer(
+                    instance=result, many=True)
+                return Response(serializer.data)
+            else:
+                return Response({'ERROR': "El id no es valido"}, status = status.HTTP_400_BAD_REQUEST)
+            return Response(result)
+        except Exception as e:
+            return Response({'ERROR': 'El usuario no está suscrito a ningún podcast', 'User': user.username},status = status.HTTP_400_BAD_REQUEST)
+
+        # return Response([prueba1, prueba2])
+        return Response({'Hola': 'funciona', 'User': user.username})
+
+
 class UserPodcastsViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows the current user's podcasts to be viewed.
@@ -396,6 +426,8 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
             #Si no aparece en la BD, se busca con la api
             api = Podcasts_api()
             podcast, episodes = api.get_allEpisodes(pod_id) #Para que devuelve todos episodios
+            if podcast == 'ERROR':
+                return Response({'ERROR': "El id no es valido"}, status = status.HTTP_400_BAD_REQUEST)
             pod_rss = podcast['rss']
             pod_genres =  podcast['genre_ids']
             pod_title = podcast['title']
@@ -705,22 +737,6 @@ class S7_userViewSet(viewsets.ModelViewSet):
         else:
             authent_user.unfollow(this_user)
             return Response({'status': 'Ok'})
-
-#Para obtener los podcast recomendados dado un usuario
-class UserRecomendedPodcast(viewsets.GenericViewSet):
-    def list(self, request):
-        user =  S7_user.objects.get(username='P.Rueba')
-        podcast = user.podcasts.all()
-        try:
-            to_recommend = podcast[0]
-            api = Podcasts_api()
-            result = api.get_podcast_recommendation(to_recommend.id_listenotes)
-            return Response(result)
-        except Exception as e:
-            return Response({'ERROR': 'El usuario no está suscrito a ningún podcast', 'User': user.username})
-
-        # return Response([prueba1, prueba2])
-        return Response({'Hola': 'funciona', 'User': user.username})
 
 #Para trending podcast mediante router
 class TrendingPodcastsViewSet(viewsets.ViewSet):

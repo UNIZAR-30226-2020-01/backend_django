@@ -21,11 +21,11 @@ router.register(r'channels', views.ChannelViewSet)
 router.register(r'podcasts', views.PodcastViewSet)
 router.register(r'podcast-episodes', views.PodcastEpisodeViewSet)
 router.register(r'playlists', views.PlaylistViewSet)
+router.register(r'user/podcasts', views.UserPodcastsViewSet, basename='UserPodcasts')
 router.register(r'user/playlists', views.UserPlaylistViewSet, basename='UserPlaylists') # Basename necesario si no hay queryset en el viewset
 router.register(r'user/followed/playlists', views.FollowedPlaylistViewSet, basename='FollowedPlaylists') # Basename necesario si no hay queryset en el viewset
 router.register(r'user/favorites', views.UserFavoritesViewSet, basename='UserFavorites')
 router.register(r'user/recomendedPodcast', views.UserRecomendedPodcast, basename='UserRecomendations')
-router.register(r'user/podcasts', views.UserPodcastsViewSet, basename='UserPodcasts')
 router.register(r's7_user', views.S7_userViewSet, basename='s7_user')
 # debug de autorización, provisional:
 router.register(r'debug_auth', views.debugAuthViewSet, basename="debug-auth") # en este caso basename es necesario para diferenciarlo de s7-user

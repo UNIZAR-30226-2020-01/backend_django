@@ -58,6 +58,8 @@ class Podcasts_api:
         response = requests.get(self.url + '/best_podcasts', headers=self.headers, params=querystring)
         #Mostramos las peticiones restantes
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+        if response.status_code != 200:
+            return 'ERROR'
         return response.json()['podcasts']
 
     # Dado un id, devuelve TODA información sobre un podcast, en formato JSON
@@ -70,6 +72,8 @@ class Podcasts_api:
         }
         response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+        if response.status_code != 200:
+            return 'ERROR'
         return response.json()
 
     # Devuelve TODOS los episodios de un podcast
@@ -81,6 +85,8 @@ class Podcasts_api:
             'sort': sort
         }
         response = requests.get(self.url + '/podcasts/'+id, headers=self.headers, params=querystring)
+        if response.status_code != 200:
+            return 'ERROR', 'ERROR'
         podcast = response.json()
         result = episodes = response.json()["episodes"]
         veces = 0
@@ -99,6 +105,7 @@ class Podcasts_api:
             # print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
 
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
+
         return podcast, result
 
     # Dado un id, devuelve TODA información sobre un episodio, en formato JSON
@@ -107,6 +114,8 @@ class Podcasts_api:
             'id': id
         }
         response = requests.get(self.url + '/episodes/'+id, headers=self.headers, params=querystring)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
@@ -114,18 +123,24 @@ class Podcasts_api:
     def get_genres(self):
 
         response = requests.get(self.url + '/genres', headers=self.headers)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()['genres']
 
     #Devuelve las posibles regiones de podcast en forma de json
     def get_regions(self):
         response = requests.get(self.url + '/regions', headers=self.headers)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
     #Devuleve un episodio de un podcast random. No necesita parámetros
     def get_randomEpisode(self):
         response = requests.get(self.url + '/just_listen', headers=self.headers)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
@@ -141,6 +156,8 @@ class Podcasts_api:
             'show_genres' : show_genres
         }
         response = requests.get(self.url + '/typeahead', headers=self.headers, params=querystring)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()
 
@@ -166,6 +183,8 @@ class Podcasts_api:
             'ids': ids
         }
         response = requests.post(self.url + '/episodes', headers=self.headers, data=querystring)
+        if response.status_code != 200:
+            return 'ERROR'
         return response.json()["episodes"]
 
     def get_podcast_recommendation(self, id):
@@ -173,6 +192,8 @@ class Podcasts_api:
         #     'id': id
         # }
         response = requests.get(self.url + '/podcasts/' + id + '/recommendations', headers=self.headers)
+        if response.status_code != 200:
+            return 'ERROR'
         print('DEBUG ----- Usage: ', response.headers['X-ListenAPI-Usage'])
         return response.json()["recommendations"]
 
