@@ -37,6 +37,43 @@ import html2text
 # En general, usamos viewsets ya que facilitan la consistencia de la API, documentacion: https://www.django-rest-framework.org/api-guide/viewsets/
 
 
+
+# Para permitir paginacion en views y viewsets que no sean genericos, hacemos que
+# hereden de este mixin:
+# Fuente: https://stackoverflow.com/a/45670649
+# class MyPaginationMixin(object):
+#     @property
+#     def paginator(self):
+#         """
+#         The paginator instance associated with the view, or `None`.
+#         """
+#         if not hasattr(self, '_paginator'):
+#             if self.pagination_class is None:
+#                 self._paginator = None
+#             else:
+#                  self._paginator = self.pagination_class()
+#         return self._paginator
+#
+#      def paginate_queryset(self, queryset):
+#          """
+#          Return a single page of results, or `None` if pagination
+#          is disabled.
+#          """
+#          if self.paginator is None:
+#              return None
+#          return self.paginator.paginate_queryset(
+#              queryset, self.request, view=self)
+#
+#      def get_paginated_response(self, data):
+#          """
+#          Return a paginated style `Response` object for the given
+#          output data.
+#          """
+#          assert self.paginator is not None
+#          return self.paginator.get_paginated_response(data)
+
+
+
 # Nuevas:
 class ArtistViewSet(viewsets.ModelViewSet):
     """
@@ -64,7 +101,12 @@ class ArtistViewSet(viewsets.ModelViewSet):
 
         return super(MyModelViewSet, self).get_serializer_class()
 
-
+    # def get_queryset(self):
+    #     if self.action=='list':
+    #         return Artist.objects.only('id', 'name', 'image', 'biography')
+    #     else:
+    #         print('???')
+    #         return self.queryset.prefetch_related('albums', 'featured_in_album')
 
 # Para diferenciar de list y detail, basado en: https://stackoverflow.com/a/30670569
 # class AlbumViewSet(viewsets.ModelViewSet):
@@ -277,7 +319,7 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    queryset = Genre.objects.all()
+    queryset = Genre.objects.all().prefetch_related('podcasts__episodes', 'podcasts__channel')#.prefetch_related('podcast__episode')
     serializer_class = GenreSerializer
 
 
@@ -376,7 +418,7 @@ class UserPodcastsViewSet(viewsets.ModelViewSet):
         print("Usuario en request: ", user)
         return user.s7_user.podcasts.all()
 
-    @action (detail=False, methods=['post'])
+    @action (detail=False, methods=['post', 'get'], permission_classes=[IsAuthenticated])
     def followPodcast(self, request):
         """
         This view save the Podcast indicated on the request and its episodes
@@ -732,6 +774,11 @@ class TrendingPodcastsViewSet(viewsets.ViewSet):
         result = api.get_bestpodcast()
         serializer = TrendingPodcastsSerializer(
             instance=result, many=True)
+        # page = self.paginate_queryset(self.queryset)
+        # if page is not None:
+        #     serializer = self.serializer_class(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+
         return Response(serializer.data)
 
 

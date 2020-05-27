@@ -128,7 +128,7 @@ class Podcast(models.Model):
 
     @property
     def number_episodes(self):
-        return len(self.episodes.all())
+        return self.episodes.count()#len(self.episodes.all())
 
     def __str__(self):
         return self.title

@@ -313,11 +313,6 @@ class PlaylistCreateSerializer(serializers.HyperlinkedModelSerializer):
         return title
 
 
-class GenreSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Genre
-        fields = '__all__'
-        depth = 2
 
 class ChannelSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -358,6 +353,14 @@ class PodcastEpisodeDetailSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = PodcastEpisode
         fields = (*todosloscampos(model,['s7_user', 'audio_ptr']), 'real_uri')
+        depth = 2
+
+
+class GenreSerializer(serializers.HyperlinkedModelSerializer):
+    podcasts = PodcastListSerializer(many=True)
+    class Meta:
+        model = Genre
+        fields = ['url', 'name', 'id_listenotes', 'podcasts']
         depth = 2
 
 
