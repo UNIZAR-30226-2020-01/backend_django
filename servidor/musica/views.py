@@ -30,6 +30,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import filters
 
 
+from django.db.models import Prefetch
+
 from utils.debug.connections import num_queries
 
 import numpy as np
@@ -616,7 +618,7 @@ class PodcastViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows podcasts to be viewed.
     """
-    queryset = Podcast.objects.all()
+    queryset = Podcast.objects.all().prefetch_related(Prefetch('episodes', queryset=PodcastEpisode.objects.order_by('title')))
     action_serializers = {
         'retrieve': PodcastDetailSerializer,
         'list': PodcastListSerializer,
